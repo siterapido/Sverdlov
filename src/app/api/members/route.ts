@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
             fullName,
             socialName,
             cpf,
+            voterTitle,
             dateOfBirth,
             gender,
             phone,
