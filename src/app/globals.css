@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #FBFBFA;
+  --color-bg-hover: rgba(55, 53, 47, 0.08);
+
+  --color-fg-primary: #37352F;
+  --color-fg-secondary: rgba(55, 53, 47, 0.65);
+
+  --color-border-subtle: rgba(55, 53, 47, 0.09);
+
+  --color-primary: #2383E2;
+  --color-danger: #EB5757;
+  --color-warning: #E16B16;
+  --color-success: #0F7B6C;
+
+  --color-sidebar-bg: var(--color-bg-secondary);
+  --color-sidebar-border: var(--color-border-subtle);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-fg-primary);
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .notion-card {
+    @apply rounded-lg border border-border-subtle bg-bg-primary text-fg-primary shadow-sm transition-colors cursor-pointer;
+  }
+
+  .notion-card:hover {
+    background-color: var(--color-bg-hover);
+  }
+
+  .notion-input {
+    @apply flex h-9 w-full rounded-sm border-b border-border-subtle bg-transparent px-3 py-1 text-sm transition-colors placeholder:text-fg-secondary focus-visible:outline-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .notion-button {
+    @apply inline-flex items-center justify-center rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50;
+  }
 }
