@@ -29,14 +29,12 @@ export default function MembersPage() {
 
     return (
         <PageTransition>
-            <div className="flex flex-col h-screen overflow-hidden">
-                <main className="flex-1 overflow-auto">
-                    <MembersTable
-                        initialMembers={members}
-                        onImportClick={() => setIsImportModalOpen(true)}
-                        onNewClick={() => setIsNewMemberModalOpen(true)}
-                    />
-                </main>
+            <div className="flex flex-col">
+                <MembersTable
+                    initialMembers={members}
+                    onImportClick={() => setIsImportModalOpen(true)}
+                    onNewClick={() => setIsNewMemberModalOpen(true)}
+                />
 
                 <ImportModal
                     isOpen={isImportModalOpen}

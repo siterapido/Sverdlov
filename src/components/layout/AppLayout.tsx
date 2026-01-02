@@ -1,34 +1,40 @@
-"use client";
-
 import React, { useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { Menu } from "lucide-react";
+import { AppHeader } from "./AppHeader";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const isMobile = useIsMobile();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        if (isMobile) {
+            setIsSidebarOpen(!isSidebarOpen);
+        } else {
+            setIsCollapsed(!isCollapsed);
+        }
+    };
 
     return (
         <div className="flex min-h-screen bg-bg-primary font-sans text-fg-primary">
-            <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Sidebar
+                isOpen={isMobile ? isSidebarOpen : true}
+                isCollapsed={!isMobile && isCollapsed}
+                isMobile={isMobile}
+                toggleSidebar={toggleSidebar}
+            />
 
             <div
                 className={cn(
-                    "flex-1 transition-all duration-300 ease-in-out",
-                    isSidebarOpen ? "md:ml-64" : "ml-0"
+                    "flex-1 flex flex-col transition-all duration-300 ease-in-out font-sans",
+                    isMobile ? "ml-0" : (isCollapsed ? "ml-16" : "ml-64")
                 )}
             >
-                {!isSidebarOpen && (
-                    <div className="fixed top-3 left-3 z-50">
-                        <button
-                            onClick={() => setIsSidebarOpen(true)}
-                            className="text-fg-secondary hover:bg-bg-hover p-1 rounded-sm"
-                        >
-                            <Menu className="h-5 w-5" />
-                        </button>
-                    </div>
-                )}
-                <main className="min-h-screen w-full">
+                <AppHeader onMenuClick={() => setIsSidebarOpen(true)} />
+
+                <main className="flex-1 overflow-auto">
                     {children}
                 </main>
             </div>
