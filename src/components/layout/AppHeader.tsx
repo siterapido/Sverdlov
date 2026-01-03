@@ -80,7 +80,7 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
                                     key={tab.name}
                                     href={tab.href}
                                     className={cn(
-                                        "px-2.5 py-1 text-sm transition-colors rounded-sm",
+                                        "px-3 py-1 text-sm transition-all rounded-sm inline-flex items-center justify-center min-w-[80px]",
                                         isActive
                                             ? "bg-bg-hover text-fg-primary font-medium"
                                             : "text-fg-secondary hover:text-fg-primary hover:bg-bg-hover/50"

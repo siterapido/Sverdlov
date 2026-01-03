@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export function AppLayout({ children }: { children: React.ReactNode }) {
     const isMobile = useIsMobile();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const toggleSidebar = () => {
         if (isMobile) {
@@ -30,7 +30,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
             <div
                 className={cn(
-                    "flex-1 flex flex-col transition-all duration-300 ease-in-out font-sans",
+                    "flex-1 flex flex-col transition-[margin] duration-300 ease-in-out font-sans",
                     isMobile ? "ml-0" : (isCollapsed ? "ml-16" : "ml-64")
                 )}
             >
