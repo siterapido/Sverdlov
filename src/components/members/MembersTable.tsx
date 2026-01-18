@@ -2,17 +2,24 @@
 
 import React, { useState } from "react";
 import {
-    Search,
-    Plus,
-    ArrowUpDown,
     MoreHorizontal,
-    ChevronDown,
     FileDown,
     Filter,
-    Users
+    Users,
+    Mail,
+    Phone,
+    MapPin,
+    Trash2,
+    Eye
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Member {
     id: string;
@@ -35,137 +42,234 @@ interface MembersTableProps {
 
 export function MembersTable({ initialMembers, onImportClick, onNewClick }: MembersTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState<string | null>(null);
     const router = useRouter();
 
-    const filteredMembers = initialMembers.filter(member =>
-        member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.cpf.includes(searchTerm) ||
-        (member.city && member.city.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredMembers = initialMembers.filter(member => {
+        const matchesSearch =
+            member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            member.cpf.includes(searchTerm) ||
+            (member.city && member.city.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        const matchesStatus = !filterStatus || member.status === filterStatus;
+
+        return matchesSearch && matchesStatus;
+    });
+
+    const statusCounts = {
+        all: initialMembers.length,
+        active: initialMembers.filter(m => m.status === 'active').length,
+        interested: initialMembers.filter(m => m.status === 'interested').length,
+    };
 
     return (
-        <div className="flex flex-col h-full bg-bg-primary">
-            {/* Table Header/Toolbar */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
-                <div className="flex items-center gap-4 flex-1">
-                    <div className="relative max-w-sm w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-secondary" />
-                        <input
-                            type="text"
-                            placeholder="Pesquisar filiados..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="notion-input pl-9 border-none bg-bg-hover hover:bg-bg-hover/80 transition-colors"
-                        />
-                    </div>
-                    <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-fg-secondary hover:bg-bg-hover rounded transition-colors font-medium">
-                        <Filter className="h-4 w-4" />
-                        Filtrar
-                    </button>
-                    <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-fg-secondary hover:bg-bg-hover rounded transition-colors font-medium">
-                        <ArrowUpDown className="h-4 w-4" />
-                        Ordenar
-                    </button>
+        <div className="space-y-6">
+            {/* Toolbar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+                    <FilterButton
+                        label="Todos"
+                        count={statusCounts.all}
+                        active={filterStatus === null}
+                        onClick={() => setFilterStatus(null)}
+                    />
+                    <FilterButton
+                        label="Ativos"
+                        count={statusCounts.active}
+                        active={filterStatus === 'active'}
+                        onClick={() => setFilterStatus('active')}
+                        variant="success"
+                    />
+                    <FilterButton
+                        label="Interessados"
+                        count={statusCounts.interested}
+                        active={filterStatus === 'interested'}
+                        onClick={() => setFilterStatus('interested')}
+                        variant="primary"
+                    />
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={onImportClick}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-fg-secondary hover:bg-bg-hover rounded transition-colors"
-                    >
+                    <div className="w-full md:w-80">
+                        <SearchInput
+                            placeholder="Pesquisar por nome, CPF ou cidade..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onClear={() => setSearchTerm("")}
+                        />
+                    </div>
+                    <Button variant="outline" size="sm" onClick={onImportClick} className="hidden sm:flex items-center gap-2">
                         <FileDown className="h-4 w-4" />
-                        Importar
-                    </button>
-                    <button
-                        onClick={onNewClick}
-                        className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Novo Filiado
-                    </button>
+                        Exportar
+                    </Button>
                 </div>
             </div>
 
-            {/* Table Body */}
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="border-b border-border-subtle">
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider w-8">#</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Nome</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">CPF</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Título de Eleitor</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Localidade</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Núcleo</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider w-10"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredMembers.map((member, index) => (
-                            <tr
-                                key={member.id}
-                                onClick={() => router.push(`/members/${member.id}`)}
-                                className="group border-b border-border-subtle hover:bg-bg-hover/50 cursor-pointer transition-colors"
-                            >
-                                <td className="px-6 py-3 text-sm text-fg-secondary tabular-nums">
-                                    {index + 1}
-                                </td>
-                                <td className="px-6 py-3">
-                                    <span className="text-sm font-semibold text-fg-primary group-hover:text-primary transition-colors">
-                                        {member.fullName}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-3 text-sm text-fg-secondary tabular-nums">
-                                    {member.cpf}
-                                </td>
-                                <td className="px-6 py-3 text-sm text-fg-secondary tabular-nums">
-                                    {member.voterTitle || "—"}
-                                </td>
-                                <td className="px-6 py-3 text-sm text-fg-secondary">
-                                    {member.city}, {member.state} {member.zone ? `(Zona ${member.zone})` : ""}
-                                </td>
-                                <td className="px-6 py-3">
-                                    {member.nucleusName ? (
-                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-bg-hover text-fg-secondary">
-                                            {member.nucleusName}
-                                        </span>
-                                    ) : (
-                                        <span className="text-sm text-fg-secondary">Nenhum</span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-3">
-                                    <span className={cn(
-                                        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                                        member.status === 'active' ? "bg-success/10 text-success" :
-                                            member.status === 'interested' ? "bg-primary/10 text-primary" :
-                                                "bg-fg-secondary/10 text-fg-secondary"
-                                    )}>
-                                        {member.status === 'active' ? 'Ativo' :
-                                            member.status === 'interested' ? 'Interessado' :
-                                                member.status === 'in_formation' ? 'Em Formação' : 'Inativo'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-3 text-right">
-                                    <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-bg-hover rounded transition-all">
-                                        <MoreHorizontal className="h-4 w-4 text-fg-secondary" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {filteredMembers.length === 0 && (
-                            <tr>
-                                <td colSpan={8} className="px-6 py-20 text-center">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <Users className="h-10 w-10 text-fg-secondary opacity-20" />
-                                        <p className="text-fg-secondary text-sm">Nenhum filiado encontrado.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            {/* Table Card */}
+            <Card hover={false} className="overflow-hidden border-border-subtle">
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-bg-tertiary/50 border-b border-border-subtle">
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Filiado</th>
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Documentação</th>
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Localidade</th>
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Núcleo</th>
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-[12px] font-semibold text-fg-secondary uppercase tracking-wider"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border-subtle">
+                                <AnimatePresence mode="popLayout">
+                                    {filteredMembers.map((member) => (
+                                        <motion.tr
+                                            key={member.id}
+                                            layout
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="group hover:bg-bg-hover/30 transition-colors"
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar fallback={member.fullName} size="md" ring />
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-semibold text-fg-primary group-hover:text-primary transition-colors">
+                                                            {member.fullName}
+                                                        </span>
+                                                        <span className="text-xs text-fg-tertiary italic">
+                                                            Filiado em {new Date(member.createdAt).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1.5 text-xs text-fg-secondary tabular-nums">
+                                                        <span className="font-medium">CPF:</span> {member.cpf}
+                                                    </div>
+                                                    {member.voterTitle && (
+                                                        <div className="flex items-center gap-1.5 text-xs text-fg-tertiary tabular-nums">
+                                                            <span className="font-medium">Título:</span> {member.voterTitle}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1.5 text-sm text-fg-secondary">
+                                                        <MapPin className="h-3 w-3 text-primary-500" />
+                                                        {member.city}, {member.state}
+                                                    </div>
+                                                    {member.zone && (
+                                                        <span className="text-xs text-fg-tertiary ml-4.5">
+                                                            Zona {member.zone}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {member.nucleusName ? (
+                                                    <Badge variant="secondary" className="font-medium">
+                                                        {member.nucleusName}
+                                                    </Badge>
+                                                ) : (
+                                                    <span className="text-xs text-fg-tertiary italic">Sem núcleo</span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <Badge
+                                                    variant={
+                                                        member.status === 'active' ? "success" :
+                                                            member.status === 'interested' ? "default" :
+                                                                "default"
+                                                    }
+                                                    dot
+                                                    dotColor={
+                                                        member.status === 'active' ? "success" :
+                                                            member.status === 'interested' ? "primary" :
+                                                                "primary"
+                                                    }
+                                                >
+                                                    {member.status === 'active' ? 'Ativo' :
+                                                        member.status === 'interested' ? 'Interessado' :
+                                                            member.status === 'in_formation' ? 'Em Formação' : 'Inativo'}
+                                                </Badge>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Button variant="ghost" size="icon" onClick={() => router.push(`/members/${member.id}`)}>
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="text-danger hover:text-danger hover:bg-danger/10">
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </AnimatePresence>
+                                {filteredMembers.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="h-16 w-16 bg-bg-tertiary rounded-full flex items-center justify-center">
+                                                    <Users className="h-8 w-8 text-fg-tertiary opacity-30" />
+                                                </div>
+                                                <div className="max-w-[250px]">
+                                                    <p className="text-fg-primary font-medium">Nenhum filiado encontrado</p>
+                                                    <p className="text-fg-tertiary text-sm mt-1">Tente ajustar sua busca ou filtros para encontrar o que procura.</p>
+                                                </div>
+                                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus(null); }}>
+                                                    Limpar filtros
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
+
+function FilterButton({
+    label,
+    count,
+    active,
+    onClick,
+    variant = "default"
+}: {
+    label: string,
+    count: number,
+    active: boolean,
+    onClick: () => void,
+    variant?: "default" | "primary" | "success"
+}) {
+    return (
+        <button
+            onClick={onClick}
+            className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap",
+                active
+                    ? (variant === "success" ? "bg-success-500 text-white shadow-lg shadow-success-500/20" :
+                        variant === "primary" ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" :
+                            "bg-fg-primary text-bg-primary shadow-lg shadow-fg-primary/20")
+                    : "bg-bg-tertiary text-fg-secondary hover:bg-bg-hover"
+            )}
+        >
+            {label}
+            <span className={cn(
+                "px-1.5 py-0.5 rounded-full text-[10px] tabular-nums",
+                active ? "bg-white/20 text-white" : "bg-bg-hover text-fg-tertiary"
+            )}>
+                {count}
+            </span>
+        </button>
+    );
+}
+
