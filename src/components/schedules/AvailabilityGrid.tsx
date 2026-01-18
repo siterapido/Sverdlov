@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, X, Copy, Trash2 } from 'lucide-react';
+import { Plus, Copy, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const HOURS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
@@ -91,25 +93,32 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                 {DAYS.map((dayName, dayIndex) => {
                     const day = getDay(dayIndex);
                     const hasSlots = day && day.slots.length > 0;
+                    const isSelected = selectedDay === dayIndex;
 
                     return (
                         <motion.button
                             key={dayIndex}
                             type="button"
                             disabled={readOnly}
-                            onClick={() => setSelectedDay(selectedDay === dayIndex ? null : dayIndex)}
-                            className={`p-3 rounded-xl border-2 text-center transition-all ${selectedDay === dayIndex
-                                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                            onClick={() => setSelectedDay(isSelected ? null : dayIndex)}
+                            className={cn(
+                                "flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all min-h-[70px]",
+                                readOnly ? "cursor-default" : "cursor-pointer",
+                                isSelected
+                                    ? "border-accent bg-accent-light text-accent"
                                     : hasSlots
-                                        ? 'border-green-300 bg-green-50 dark:bg-green-900/20'
-                                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                                } ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}
+                                        ? "border-success-light bg-success-light/30 text-fg-primary"
+                                        : "border-border-default bg-bg-primary text-fg-secondary hover:border-border-strong"
+                            )}
                             whileHover={readOnly ? {} : { scale: 1.02 }}
                             whileTap={readOnly ? {} : { scale: 0.98 }}
                         >
-                            <span className="text-sm font-medium">{dayName}</span>
+                            <span className="text-xs font-medium uppercase tracking-wide">{dayName}</span>
                             {hasSlots && (
-                                <div className="mt-1 text-xs text-green-600 dark:text-green-400">
+                                <div className={cn(
+                                    "mt-1 text-[10px] font-medium",
+                                    isSelected ? "text-accent" : "text-success"
+                                )}>
                                     {day.slots.length} horário{day.slots.length > 1 ? 's' : ''}
                                 </div>
                             )}
@@ -119,77 +128,80 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
             </div>
 
             {/* Detalhes do dia selecionado */}
-            {selectedDay !== null && (
-                <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4"
-                >
-                    <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-medium">{DAYS[selectedDay]} - Horários Disponíveis</h4>
-                        <div className="flex items-center gap-2">
-                            {!readOnly && getDay(selectedDay)?.slots.length && (
-                                <button
-                                    type="button"
-                                    onClick={() => copyToAllDays(selectedDay)}
-                                    className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
-                                >
-                                    <Copy className="w-3 h-3" />
-                                    Copiar para todos
-                                </button>
-                            )}
-                            {!readOnly && (
-                                <button
-                                    type="button"
-                                    onClick={() => addSlot(selectedDay)}
-                                    className="flex items-center gap-1 px-2 py-1 text-xs bg-green-500 text-white rounded-lg hover:bg-green-600"
-                                >
-                                    <Plus className="w-3 h-3" />
-                                    Adicionar
-                                </button>
-                            )}
+            <motion.div
+                initial={false}
+                animate={{ height: selectedDay !== null ? 'auto' : 0, opacity: selectedDay !== null ? 1 : 0 }}
+                className="overflow-hidden"
+            >
+                {selectedDay !== null && (
+                    <div className="bg-bg-secondary rounded-lg p-4 border border-border-default mt-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-sm font-medium text-fg-primary">{DAYS[selectedDay]} - Horários Disponíveis</h4>
+                            <div className="flex items-center gap-2">
+                                {!readOnly && getDay(selectedDay)?.slots.length ? (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => copyToAllDays(selectedDay)}
+                                        leftIcon={<Copy className="w-3 h-3" />}
+                                    >
+                                        Copiar para todos
+                                    </Button>
+                                ) : null}
+                                {!readOnly && (
+                                    <Button
+                                        variant="default"
+                                        size="sm"
+                                        onClick={() => addSlot(selectedDay)}
+                                        leftIcon={<Plus className="w-3 h-3" />}
+                                    >
+                                        Adicionar
+                                    </Button>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    {!getDay(selectedDay)?.slots.length ? (
-                        <p className="text-sm text-gray-500 text-center py-4">Nenhum horário cadastrado</p>
-                    ) : (
-                        <div className="space-y-2">
-                            {getDay(selectedDay)?.slots.map(slot => (
-                                <div key={slot.id} className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded-lg">
-                                    <select
-                                        value={slot.startTime}
-                                        onChange={e => updateSlot(selectedDay, slot.id, 'startTime', e.target.value)}
-                                        disabled={readOnly}
-                                        className="px-2 py-1 text-sm border rounded bg-gray-50 dark:bg-gray-700"
-                                    >
-                                        {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                                    </select>
-                                    <span className="text-gray-400">até</span>
-                                    <select
-                                        value={slot.endTime}
-                                        onChange={e => updateSlot(selectedDay, slot.id, 'endTime', e.target.value)}
-                                        disabled={readOnly}
-                                        className="px-2 py-1 text-sm border rounded bg-gray-50 dark:bg-gray-700"
-                                    >
-                                        {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                                    </select>
-                                    {!readOnly && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeSlot(selectedDay, slot.id)}
-                                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                        {!getDay(selectedDay)?.slots.length ? (
+                            <p className="text-sm text-fg-muted text-center py-6 border border-dashed border-border-default rounded-lg">
+                                Nenhum horário cadastrado para este dia
+                            </p>
+                        ) : (
+                            <div className="space-y-2">
+                                {getDay(selectedDay)?.slots.map(slot => (
+                                    <div key={slot.id} className="flex items-center gap-3 p-2 bg-bg-primary border border-border-default rounded-md">
+                                        <select
+                                            value={slot.startTime}
+                                            onChange={e => updateSlot(selectedDay, slot.id, 'startTime', e.target.value)}
+                                            disabled={readOnly}
+                                            className="px-2 py-1 text-sm border border-border-default rounded bg-bg-secondary focus:border-accent outline-none"
                                         >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </motion.div>
-            )}
+                                            {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                                        </select>
+                                        <span className="text-fg-tertiary text-xs">até</span>
+                                        <select
+                                            value={slot.endTime}
+                                            onChange={e => updateSlot(selectedDay, slot.id, 'endTime', e.target.value)}
+                                            disabled={readOnly}
+                                            className="px-2 py-1 text-sm border border-border-default rounded bg-bg-secondary focus:border-accent outline-none"
+                                        >
+                                            {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                                        </select>
+                                        {!readOnly && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSlot(selectedDay, slot.id)}
+                                                className="ml-auto p-1.5 text-fg-tertiary hover:text-danger hover:bg-danger-light rounded-md transition-colors"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </motion.div>
         </div>
     );
 }

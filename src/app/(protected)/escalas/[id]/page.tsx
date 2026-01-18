@@ -8,15 +8,16 @@ import { useRouter } from 'next/navigation';
 import { getScheduleById, toggleScheduleStatus, deleteSchedule, ScheduleWithSlots } from '@/app/actions/schedules';
 import { getAssignmentsBySlot, AssignmentWithDetails } from '@/app/actions/slot-assignments';
 import { ScheduleSlot } from '@/lib/db/schema';
+import { CATEGORY_VARIANTS } from '@/components/schedules';
 
-const CATEGORY_COLORS: Record<string, string> = {
-    vigilancia: '#ef4444', formacao: '#3b82f6', agitacao: '#f59e0b',
-    administrativa: '#6b7280', financeira: '#10b981', outras: '#8b5cf6',
+const VARIANT_COLORS: Record<string, string> = {
+    red: 'bg-danger',
+    blue: 'bg-accent',
+    yellow: 'bg-warning',
+    green: 'bg-success',
+    gray: 'bg-fg-muted',
 };
-const CATEGORY_LABELS: Record<string, string> = {
-    vigilancia: 'Vigilância', formacao: 'Formação', agitacao: 'Agitação',
-    administrativa: 'Administrativa', financeira: 'Financeira', outras: 'Outras',
-};
+
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
     draft: { label: 'Rascunho', bg: 'bg-gray-100', text: 'text-gray-600' },
     active: { label: 'Ativa', bg: 'bg-green-100', text: 'text-green-700' },
@@ -73,7 +74,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
     }
 
     const statusConfig = STATUS_CONFIG[schedule.status];
-    const categoryColor = CATEGORY_COLORS[schedule.category] || CATEGORY_COLORS.outras;
+    const categoryVariant = CATEGORY_VARIANTS[schedule.category] || 'gray';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -85,7 +86,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
                                 <ArrowLeft className="w-5 h-5" />
                             </Link>
                             <div className="flex items-center gap-3">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: categoryColor }} />
+                                <div className={`w-3 h-3 rounded-full ${VARIANT_COLORS[categoryVariant]}`} />
                                 <h1 className="text-xl font-bold">{schedule.name}</h1>
                                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>{statusConfig.label}</span>
                             </div>
