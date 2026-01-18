@@ -5,23 +5,23 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const avatarVariants = cva(
-    "relative inline-flex items-center justify-center overflow-hidden rounded-full font-medium text-white select-none",
+    "relative inline-flex items-center justify-center overflow-hidden font-medium select-none",
     {
         variants: {
             size: {
-                xs: "h-6 w-6 text-[10px]",
-                sm: "h-8 w-8 text-xs",
-                md: "h-10 w-10 text-sm",
-                lg: "h-12 w-12 text-base",
-                xl: "h-16 w-16 text-lg",
-                "2xl": "h-24 w-24 text-2xl",
+                xs: "h-5 w-5 text-[10px] rounded-[3px]",
+                sm: "h-6 w-6 text-xs rounded-[4px]",
+                md: "h-8 w-8 text-sm rounded-[4px]",
+                lg: "h-10 w-10 text-base rounded-[5px]",
+                xl: "h-12 w-12 text-lg rounded-[6px]",
             },
             variant: {
-                default: "bg-gradient-to-br from-primary-400 to-secondary-500",
-                primary: "bg-gradient-to-br from-primary-500 to-primary-600",
-                secondary: "bg-gradient-to-br from-secondary-400 to-secondary-600",
-                accent: "bg-gradient-to-br from-accent-400 to-accent-600",
-                muted: "bg-bg-tertiary text-fg-secondary",
+                default: "bg-accent-light text-accent",
+                gray: "bg-bg-tertiary text-fg-secondary",
+                blue: "bg-accent-light text-accent",
+                green: "bg-success-light text-success",
+                yellow: "bg-warning-light text-warning",
+                red: "bg-danger-light text-danger",
             },
         },
         defaultVariants: {
@@ -38,14 +38,13 @@ export interface AvatarProps
     alt?: string;
     fallback?: string;
     status?: "online" | "offline" | "busy" | "away";
-    ring?: boolean;
 }
 
 const statusColors = {
-    online: "bg-success-500",
-    offline: "bg-fg-tertiary",
-    busy: "bg-danger-500",
-    away: "bg-warning-500",
+    online: "bg-success",
+    offline: "bg-fg-muted",
+    busy: "bg-danger",
+    away: "bg-warning",
 };
 
 function getInitials(name: string): string {
@@ -58,18 +57,14 @@ function getInitials(name: string): string {
 }
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-    ({ className, size, variant, src, alt, fallback, status, ring = false, ...props }, ref) => {
+    ({ className, size, variant, src, alt, fallback, status, ...props }, ref) => {
         const [imageError, setImageError] = React.useState(false);
         const showFallback = !src || imageError;
 
         return (
             <div
                 ref={ref}
-                className={cn(
-                    avatarVariants({ size, variant }),
-                    ring && "ring-2 ring-bg-primary ring-offset-2 ring-offset-bg-primary",
-                    className
-                )}
+                className={cn(avatarVariants({ size, variant }), className)}
                 {...props}
             >
                 {!showFallback ? (
@@ -86,14 +81,13 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
                 {status && (
                     <span
                         className={cn(
-                            "absolute bottom-0 right-0 block rounded-full border-2 border-bg-secondary",
+                            "absolute bottom-0 right-0 block rounded-full border-2 border-bg-primary",
                             statusColors[status],
                             size === "xs" && "h-1.5 w-1.5",
                             size === "sm" && "h-2 w-2",
-                            size === "md" && "h-2.5 w-2.5",
-                            size === "lg" && "h-3 w-3",
-                            size === "xl" && "h-4 w-4",
-                            size === "2xl" && "h-5 w-5"
+                            size === "md" && "h-2 w-2",
+                            size === "lg" && "h-2.5 w-2.5",
+                            size === "xl" && "h-3 w-3"
                         )}
                     />
                 )}
@@ -121,7 +115,7 @@ function AvatarGroup({ children, max = 4, size = "md", className }: AvatarGroupP
             {visibleAvatars.map((child, index) => (
                 <div
                     key={index}
-                    className="ring-2 ring-bg-secondary rounded-full"
+                    className="ring-2 ring-bg-primary rounded-[4px]"
                     style={{ zIndex: visibleAvatars.length - index }}
                 >
                     {React.isValidElement(child)
@@ -132,8 +126,8 @@ function AvatarGroup({ children, max = 4, size = "md", className }: AvatarGroupP
             {remainingCount > 0 && (
                 <div
                     className={cn(
-                        avatarVariants({ size, variant: "muted" }),
-                        "ring-2 ring-bg-secondary"
+                        avatarVariants({ size, variant: "gray" }),
+                        "ring-2 ring-bg-primary"
                     )}
                     style={{ zIndex: 0 }}
                 >

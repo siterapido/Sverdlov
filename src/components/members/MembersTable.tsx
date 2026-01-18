@@ -78,14 +78,14 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                         count={statusCounts.active}
                         active={filterStatus === 'active'}
                         onClick={() => setFilterStatus('active')}
-                        variant="success"
+                        variant="green"
                     />
                     <FilterButton
                         label="Interessados"
                         count={statusCounts.interested}
                         active={filterStatus === 'interested'}
                         onClick={() => setFilterStatus('interested')}
-                        variant="primary"
+                        variant="blue"
                     />
                 </div>
 
@@ -133,7 +133,7 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <Avatar fallback={member.fullName} size="md" ring />
+                                                    <Avatar fallback={member.fullName} size="md" />
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-semibold text-fg-primary group-hover:text-primary transition-colors">
                                                             {member.fullName}
@@ -171,7 +171,7 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                                             </td>
                                             <td className="px-6 py-4">
                                                 {member.nucleusName ? (
-                                                    <Badge variant="secondary" className="font-medium">
+                                                    <Badge variant="gray" className="font-medium">
                                                         {member.nucleusName}
                                                     </Badge>
                                                 ) : (
@@ -181,15 +181,15 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                                             <td className="px-6 py-4">
                                                 <Badge
                                                     variant={
-                                                        member.status === 'active' ? "success" :
+                                                        member.status === 'active' ? "green" :
                                                             member.status === 'interested' ? "default" :
                                                                 "default"
                                                     }
                                                     dot
                                                     dotColor={
-                                                        member.status === 'active' ? "success" :
-                                                            member.status === 'interested' ? "primary" :
-                                                                "primary"
+                                                        member.status === 'active' ? "green" :
+                                                            member.status === 'interested' ? "blue" :
+                                                                "blue"
                                                     }
                                                 >
                                                     {member.status === 'active' ? 'Ativo' :
@@ -248,24 +248,28 @@ function FilterButton({
     count: number,
     active: boolean,
     onClick: () => void,
-    variant?: "default" | "primary" | "success"
+    variant?: "default" | "blue" | "green"
 }) {
     return (
         <button
             onClick={onClick}
             className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap",
+                "flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-sm transition-all whitespace-nowrap border border-transparent",
                 active
-                    ? (variant === "success" ? "bg-success-500 text-white shadow-lg shadow-success-500/20" :
-                        variant === "primary" ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" :
-                            "bg-fg-primary text-bg-primary shadow-lg shadow-fg-primary/20")
-                    : "bg-bg-tertiary text-fg-secondary hover:bg-bg-hover"
+                    ? (variant === "green" ? "bg-success-light text-success border-success-light" :
+                        variant === "blue" ? "bg-accent-light text-accent border-accent-light" :
+                            "bg-bg-active text-fg-primary border-border-default")
+                    : "text-fg-secondary hover:bg-bg-hover hover:text-fg-primary"
             )}
         >
             {label}
             <span className={cn(
                 "px-1.5 py-0.5 rounded-full text-[10px] tabular-nums",
-                active ? "bg-white/20 text-white" : "bg-bg-hover text-fg-tertiary"
+                active
+                    ? (variant === "green" ? "bg-success/10 text-success" :
+                        variant === "blue" ? "bg-accent/10 text-accent" :
+                            "bg-fg-primary/5 text-fg-secondary")
+                    : "bg-bg-tertiary text-fg-tertiary"
             )}>
                 {count}
             </span>

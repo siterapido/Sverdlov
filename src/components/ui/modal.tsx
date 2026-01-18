@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, IconButton } from "./button";
@@ -28,34 +27,24 @@ export function Modal({ open, onOpenChange, children }: ModalProps) {
         };
     }, [open, onOpenChange]);
 
-    return (
-        <AnimatePresence>
-            {open && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => onOpenChange(false)}
-                    />
+    if (!open) return null;
 
-                    {/* Content */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="relative z-10 w-full"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {children}
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-black/20 animate-fade-in"
+                onClick={() => onOpenChange(false)}
+            />
+
+            {/* Content */}
+            <div
+                className="relative z-10 w-full animate-slide-up"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {children}
+            </div>
+        </div>
     );
 }
 
@@ -77,8 +66,8 @@ export function ModalContent({ children, className, size = "md" }: ModalContentP
     return (
         <div
             className={cn(
-                "mx-auto w-full rounded-2xl border border-border-subtle",
-                "bg-bg-secondary shadow-2xl",
+                "mx-auto w-full rounded-lg border border-border-default",
+                "bg-bg-primary shadow-popup",
                 sizeClasses[size],
                 className
             )}
@@ -98,14 +87,14 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
     return (
         <div
             className={cn(
-                "flex items-center justify-between p-6 border-b border-border-subtle",
+                "flex items-center justify-between px-4 py-3 border-b border-border-default",
                 className
             )}
         >
             <div className="flex-1">{children}</div>
             {onClose && (
                 <IconButton
-                    icon={<X className="h-5 w-5" />}
+                    icon={<X className="h-4 w-4" />}
                     aria-label="Close"
                     variant="ghost"
                     size="icon-sm"
@@ -123,7 +112,7 @@ interface ModalTitleProps {
 
 export function ModalTitle({ children, className }: ModalTitleProps) {
     return (
-        <h2 className={cn("text-lg font-semibold text-fg-primary", className)}>
+        <h2 className={cn("text-sm font-medium text-fg-primary", className)}>
             {children}
         </h2>
     );
@@ -136,7 +125,7 @@ interface ModalDescriptionProps {
 
 export function ModalDescription({ children, className }: ModalDescriptionProps) {
     return (
-        <p className={cn("text-sm text-fg-secondary mt-1", className)}>
+        <p className={cn("text-sm text-fg-secondary mt-0.5", className)}>
             {children}
         </p>
     );
@@ -148,7 +137,7 @@ interface ModalBodyProps {
 }
 
 export function ModalBody({ children, className }: ModalBodyProps) {
-    return <div className={cn("p-6", className)}>{children}</div>;
+    return <div className={cn("p-4", className)}>{children}</div>;
 }
 
 interface ModalFooterProps {
@@ -160,7 +149,7 @@ export function ModalFooter({ children, className }: ModalFooterProps) {
     return (
         <div
             className={cn(
-                "flex items-center justify-end gap-3 p-6 border-t border-border-subtle",
+                "flex items-center justify-end gap-2 px-4 py-3 border-t border-border-default bg-bg-secondary",
                 className
             )}
         >
@@ -205,11 +194,12 @@ export function ConfirmDialog({
                     <ModalTitle>{title}</ModalTitle>
                 </ModalHeader>
                 <ModalBody>
-                    <p className="text-fg-secondary">{description}</p>
+                    <p className="text-sm text-fg-secondary">{description}</p>
                 </ModalBody>
                 <ModalFooter>
                     <Button
                         variant="ghost"
+                        size="sm"
                         onClick={() => onOpenChange(false)}
                         disabled={loading}
                     >
@@ -217,6 +207,7 @@ export function ConfirmDialog({
                     </Button>
                     <Button
                         variant={variant === "danger" ? "destructive" : "default"}
+                        size="sm"
                         onClick={handleConfirm}
                         loading={loading}
                     >

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
     Users,
     TrendingUp,
@@ -39,30 +38,6 @@ interface DashboardClientProps {
     };
 }
 
-// Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-} as const;
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 100,
-            damping: 15,
-        },
-    },
-} as const;
-
 export function DashboardClient({ data }: DashboardClientProps) {
     const { stats, recentMembers } = data;
 
@@ -75,125 +50,94 @@ export function DashboardClient({ data }: DashboardClientProps) {
 
     return (
         <PageTransition>
-            <div className="container mx-auto py-8 px-4 md:px-8 max-w-7xl">
+            <div className="max-w-5xl">
                 {/* Header */}
-                <motion.div
-                    className="mb-8"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-fg-primary">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-semibold text-fg-primary">
                         Dashboard
                     </h1>
-                    <p className="text-fg-secondary mt-1">
-                        Visão geral da organização • Atualizado agora
+                    <p className="text-sm text-fg-secondary mt-0.5">
+                        Visão geral da organização
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Stats Grid */}
-                <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                >
-                    <motion.div variants={itemVariants}>
-                        <StatCard
-                            title="Membros Ativos"
-                            value={<AnimatedCounter value={stats.totalMembers} />}
-                            icon={<Users className="h-5 w-5 text-white" />}
-                            variant="primary"
-                        />
-                    </motion.div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+                    <StatCard
+                        title="Membros Ativos"
+                        value={<AnimatedCounter value={stats.totalMembers} />}
+                        icon={<Users className="h-4 w-4" />}
+                        variant="blue"
+                    />
 
-                    <motion.div variants={itemVariants}>
-                        <StatCard
-                            title="Novos (Mês)"
-                            value={<AnimatedCounter value={stats.newLeadsThisMonth} />}
-                            subtitle="Novas filiações"
-                            icon={<TrendingUp className="h-5 w-5 text-white" />}
-                            trend={stats.memberTrend}
-                            variant="secondary"
-                        />
-                    </motion.div>
+                    <StatCard
+                        title="Novos (Mês)"
+                        value={<AnimatedCounter value={stats.newLeadsThisMonth} />}
+                        subtitle="Novas filiações"
+                        icon={<TrendingUp className="h-4 w-4" />}
+                        trend={stats.memberTrend}
+                        variant="green"
+                    />
 
-                    <motion.div variants={itemVariants}>
-                        <StatCard
-                            title="Taxa de Conversão"
-                            value={`${stats.conversionRate}%`}
-                            icon={<Target className="h-5 w-5 text-white" />}
-                            variant="accent"
-                        />
-                    </motion.div>
+                    <StatCard
+                        title="Taxa Conversão"
+                        value={`${stats.conversionRate}%`}
+                        icon={<Target className="h-4 w-4" />}
+                        variant="yellow"
+                    />
 
-                    <motion.div variants={itemVariants}>
-                        <StatCard
-                            title="Receita Mensal"
-                            value={<AnimatedCurrency value={stats.monthlyRevenue} />}
-                            icon={<DollarSign className="h-5 w-5" />}
-                            trend={stats.revenueTrend}
-                            variant="default"
-                        />
-                    </motion.div>
+                    <StatCard
+                        title="Receita Mensal"
+                        value={<AnimatedCurrency value={stats.monthlyRevenue} />}
+                        icon={<DollarSign className="h-4 w-4" />}
+                        trend={stats.revenueTrend}
+                    />
 
-                    <motion.div variants={itemVariants}>
-                        <StatCard
-                            title="Núcleos Ativos"
-                            value={<AnimatedCounter value={stats.activeNuclei} />}
-                            icon={<Building2 className="h-5 w-5" />}
-                            variant="default"
-                        />
-                    </motion.div>
-                </motion.div>
+                    <StatCard
+                        title="Núcleos"
+                        value={<AnimatedCounter value={stats.activeNuclei} />}
+                        icon={<Building2 className="h-4 w-4" />}
+                    />
+                </div>
 
                 {/* Main Content Grid */}
-                <motion.div
-                    className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                >
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Quick Actions */}
-                    <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card hover={false} className="h-full">
+                    <div className="lg:col-span-2">
+                        <Card bordered className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Ações Rápidas</span>
-                                    <Badge variant="secondary">Atalhos</Badge>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <ActionCard
                                         href="/members?action=new"
-                                        icon={<UserPlus className="h-5 w-5" />}
+                                        icon={<UserPlus className="h-4 w-4" />}
                                         label="Novo Membro"
                                         description="Cadastrar filiado"
-                                        color="primary"
                                     />
                                     <ActionCard
                                         href="/filie-se"
-                                        icon={<FileText className="h-5 w-5" />}
+                                        icon={<FileText className="h-4 w-4" />}
                                         label="Formulário"
                                         description="Ver página pública"
-                                        color="secondary"
                                     />
                                     <ActionCard
                                         href="/members"
-                                        icon={<Users className="h-5 w-5" />}
+                                        icon={<Users className="h-4 w-4" />}
                                         label="Membros"
                                         description="Gerenciar filiados"
-                                        color="accent"
                                     />
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
+                    </div>
 
                     {/* Upcoming Events */}
-                    <motion.div variants={itemVariants}>
-                        <Card hover={false} className="h-full">
+                    <div>
+                        <Card bordered className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Próximos Eventos</span>
@@ -205,35 +149,34 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-3">
+                                <div className="space-y-1">
                                     {upcomingEvents.map((event, index) => (
-                                        <motion.div
+                                        <div
                                             key={index}
-                                            className="flex items-center gap-3 p-3 rounded-lg bg-bg-tertiary/50 hover:bg-bg-hover transition-colors cursor-pointer"
-                                            whileHover={{ x: 4 }}
+                                            className="flex items-center gap-3 p-2 rounded-[4px] hover:bg-bg-hover transition-colors cursor-pointer"
                                         >
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10">
-                                                <Calendar className="h-5 w-5 text-primary-500" />
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-accent-light">
+                                                <Calendar className="h-4 w-4 text-accent" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium text-fg-primary truncate">
                                                     {event.title}
                                                 </p>
-                                                <p className="text-xs text-fg-secondary">
+                                                <p className="text-xs text-fg-muted">
                                                     {event.date}
                                                 </p>
                                             </div>
-                                            <ArrowUpRight className="h-4 w-4 text-fg-tertiary" />
-                                        </motion.div>
+                                            <ArrowUpRight className="h-3.5 w-3.5 text-fg-muted" />
+                                        </div>
                                     ))}
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
+                    </div>
 
                     {/* Recent Members */}
-                    <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card hover={false}>
+                    <div className="lg:col-span-2">
+                        <Card bordered>
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Membros Recentes</span>
@@ -252,16 +195,12 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                     {recentMembers.length > 0 ? (
-                                        recentMembers.map((member, index) => (
-                                            <motion.div
+                                        recentMembers.map((member) => (
+                                            <div
                                                 key={member.id}
-                                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-bg-hover transition-colors cursor-pointer"
-                                                whileHover={{ x: 4 }}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: index * 0.1 }}
+                                                className="flex items-center gap-3 p-2 rounded-[4px] hover:bg-bg-hover transition-colors cursor-pointer"
                                             >
                                                 <Avatar fallback={member.name} size="sm" />
                                                 <div className="flex-1 min-w-0">
@@ -270,37 +209,37 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                                     </p>
                                                 </div>
                                                 <Badge
-                                                    variant={member.status === "active" ? "success" : "warning"}
+                                                    variant={member.status === "active" ? "green" : "yellow"}
                                                     dot
-                                                    dotColor={member.status === "active" ? "success" : "warning"}
+                                                    dotColor={member.status === "active" ? "green" : "yellow"}
                                                 >
                                                     {getStatusLabel(member.status)}
                                                 </Badge>
-                                            </motion.div>
+                                            </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-fg-secondary text-center py-4">Nenhum membro recente</p>
+                                        <p className="text-sm text-fg-muted text-center py-4">Nenhum membro recente</p>
                                     )}
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
+                    </div>
 
                     {/* Activity Chart Placeholder */}
-                    <motion.div variants={itemVariants}>
-                        <Card hover={false} className="h-full">
+                    <div>
+                        <Card bordered className="h-full">
                             <CardHeader>
                                 <CardTitle>Atividade</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex flex-col items-center justify-center h-40 text-fg-tertiary">
-                                    <TrendingUp className="h-10 w-10 mb-2 opacity-30" />
-                                    <p className="text-sm">Gráfico em breve</p>
+                                <div className="flex flex-col items-center justify-center h-32 text-fg-muted">
+                                    <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
+                                    <p className="text-xs">Gráfico em breve</p>
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
-                </motion.div>
+                    </div>
+                </div>
             </div>
         </PageTransition>
     );
@@ -322,38 +261,26 @@ function ActionCard({
     icon,
     label,
     description,
-    color,
 }: {
     href: string;
     icon: React.ReactNode;
     label: string;
     description: string;
-    color: "primary" | "secondary" | "accent";
 }) {
-    const colorClasses = {
-        primary: "from-primary-500 to-primary-600",
-        secondary: "from-secondary-500 to-secondary-600",
-        accent: "from-accent-500 to-accent-600",
-    };
-
     return (
         <Link href={href}>
-            <motion.div
-                className="group relative overflow-hidden rounded-xl p-4 bg-bg-tertiary hover:bg-bg-hover transition-all cursor-pointer border border-border-subtle"
-                whileHover={{ y: -4, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-            >
-                <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${colorClasses[color]} text-white mb-3 shadow-lg`}>
+            <div className="group relative rounded-[4px] p-3 border border-border-default hover:bg-bg-hover transition-colors cursor-pointer">
+                <div className="inline-flex h-8 w-8 items-center justify-center rounded-[4px] bg-accent-light text-accent mb-2">
                     {icon}
                 </div>
-                <h3 className="text-sm font-semibold text-fg-primary mb-1">
+                <h3 className="text-sm font-medium text-fg-primary mb-0.5">
                     {label}
                 </h3>
-                <p className="text-xs text-fg-secondary">
+                <p className="text-xs text-fg-muted">
                     {description}
                 </p>
-                <ArrowUpRight className="absolute top-4 right-4 h-4 w-4 text-fg-tertiary opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
+                <ArrowUpRight className="absolute top-3 right-3 h-3.5 w-3.5 text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
         </Link>
     );
 }

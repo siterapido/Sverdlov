@@ -3,25 +3,24 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 const badgeVariants = cva(
-    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors",
+    "inline-flex items-center rounded-[3px] text-xs font-medium transition-colors",
     {
         variants: {
             variant: {
-                default: "border-transparent bg-primary-100 text-primary-700",
-                secondary: "border-transparent bg-bg-tertiary text-fg-secondary",
-                success: "border-transparent bg-success-400/20 text-success-600",
-                warning: "border-transparent bg-warning-400/20 text-warning-600",
-                danger: "border-transparent bg-danger-400/20 text-danger-600",
-                outline: "border-border-default text-fg-primary bg-transparent",
-                gradient: "border-transparent bg-gradient-to-r from-primary-500 to-secondary-500 text-white",
+                default: "bg-bg-tertiary text-fg-secondary",
+                blue: "bg-accent-light text-accent",
+                green: "bg-success-light text-success",
+                yellow: "bg-warning-light text-warning",
+                red: "bg-danger-light text-danger",
+                gray: "bg-bg-active text-fg-secondary",
+                outline: "border border-border-default text-fg-secondary bg-transparent",
             },
             size: {
-                sm: "px-2 py-0.5 text-[10px]",
-                default: "px-2.5 py-0.5 text-xs",
-                lg: "px-3 py-1 text-sm",
+                sm: "px-1.5 py-0.5 text-[10px]",
+                default: "px-2 py-0.5",
+                lg: "px-2.5 py-1 text-sm",
             },
         },
         defaultVariants: {
@@ -34,25 +33,24 @@ const badgeVariants = cva(
 export interface BadgeProps
     extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
-    pulse?: boolean;
     dot?: boolean;
-    dotColor?: "success" | "warning" | "danger" | "primary";
+    dotColor?: "blue" | "green" | "yellow" | "red" | "gray";
 }
 
 const dotColors = {
-    success: "bg-success-500",
-    warning: "bg-warning-500",
-    danger: "bg-danger-500",
-    primary: "bg-primary-500",
+    blue: "bg-accent",
+    green: "bg-success",
+    yellow: "bg-warning",
+    red: "bg-danger",
+    gray: "bg-fg-muted",
 };
 
 function Badge({
     className,
     variant,
     size,
-    pulse = false,
     dot = false,
-    dotColor = "primary",
+    dotColor = "blue",
     children,
     ...props
 }: BadgeProps) {
@@ -62,19 +60,10 @@ function Badge({
             {...props}
         >
             {dot && (
-                <span className="relative mr-1.5">
-                    <span className={cn("h-1.5 w-1.5 rounded-full", dotColors[dotColor])} />
-                    {pulse && (
-                        <motion.span
-                            className={cn(
-                                "absolute inset-0 h-1.5 w-1.5 rounded-full",
-                                dotColors[dotColor]
-                            )}
-                            animate={{ scale: [1, 2], opacity: [0.5, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                        />
-                    )}
-                </span>
+                <span className={cn(
+                    "h-1.5 w-1.5 rounded-full mr-1.5",
+                    dotColors[dotColor]
+                )} />
             )}
             {children}
         </div>
@@ -94,17 +83,15 @@ function NotificationBadge({ count, max = 99, className }: NotificationBadgeProp
     if (count === 0) return null;
 
     return (
-        <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+        <span
             className={cn(
-                "absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full",
-                "bg-danger-500 text-white text-[10px] font-bold px-1.5",
+                "absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full",
+                "bg-danger text-white text-[10px] font-medium px-1",
                 className
             )}
         >
             {displayCount}
-        </motion.span>
+        </span>
     );
 }
 
@@ -114,32 +101,24 @@ type StatusType = "online" | "offline" | "busy" | "away";
 interface StatusBadgeProps {
     status: StatusType;
     label?: string;
+    showLabel?: boolean;
     className?: string;
 }
 
 const statusConfig: Record<StatusType, { color: string; label: string }> = {
-    online: { color: "bg-success-500", label: "Online" },
-    offline: { color: "bg-fg-tertiary", label: "Offline" },
-    busy: { color: "bg-danger-500", label: "Ocupado" },
-    away: { color: "bg-warning-500", label: "Ausente" },
+    online: { color: "bg-success", label: "Online" },
+    offline: { color: "bg-fg-muted", label: "Offline" },
+    busy: { color: "bg-danger", label: "Ocupado" },
+    away: { color: "bg-warning", label: "Ausente" },
 };
 
-function StatusBadge({ status, label, className }: StatusBadgeProps) {
+function StatusBadge({ status, label, showLabel = true, className }: StatusBadgeProps) {
     const config = statusConfig[status];
 
     return (
-        <span className={cn("inline-flex items-center gap-1.5", className)}>
-            <span className="relative flex h-2 w-2">
-                <span className={cn("h-2 w-2 rounded-full", config.color)} />
-                {status === "online" && (
-                    <motion.span
-                        className={cn("absolute inset-0 rounded-full", config.color)}
-                        animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                    />
-                )}
-            </span>
-            {label !== undefined ? label : config.label}
+        <span className={cn("inline-flex items-center gap-1.5 text-sm text-fg-secondary", className)}>
+            <span className={cn("h-2 w-2 rounded-full", config.color)} />
+            {showLabel && (label !== undefined ? label : config.label)}
         </span>
     );
 }

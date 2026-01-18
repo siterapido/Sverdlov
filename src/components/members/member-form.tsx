@@ -247,9 +247,9 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                 <Button
                     type="submit"
                     disabled={loading}
-                    variant="gradient"
+                    variant="default"
                     size="lg"
-                    className="w-full md:w-auto min-w-[200px] shadow-lg shadow-primary-500/20"
+                    className="w-full md:w-auto min-w-[200px]"
                 >
                     {loading ? "Processando..." : (
                         <>

@@ -146,9 +146,9 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                 />
 
                                 <div className="mt-4 flex gap-2">
-                                    <Badge variant="secondary">Excel</Badge>
-                                    <Badge variant="secondary">CSV</Badge>
-                                    <Badge variant="secondary">Google Sheets</Badge>
+                                    <Badge variant="gray">Excel</Badge>
+                                    <Badge variant="gray">CSV</Badge>
+                                    <Badge variant="gray">Google Sheets</Badge>
                                 </div>
                             </motion.div>
                         ) : (
@@ -215,11 +215,11 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                         </Button>
                         {step === 2 && (
                             <Button
-                                variant="gradient"
+                                variant="default"
                                 size="sm"
                                 onClick={handleImport}
                                 disabled={isImporting}
-                                className="shadow-lg shadow-primary-500/20"
+                                className="shadow-none"
                             >
                                 {isImporting ? "Importando..." : (
                                     <>

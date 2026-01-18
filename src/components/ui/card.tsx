@@ -2,44 +2,28 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { motion, HTMLMotionProps } from "framer-motion";
 
-// === CARD VARIANTS ===
-type CardVariant = "default" | "glass" | "gradient" | "elevated" | "outline";
-
-interface CardProps extends Omit<HTMLMotionProps<"div">, "children"> {
-    variant?: CardVariant;
+// === CARD ===
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     hover?: boolean;
-    glow?: boolean;
-    children?: React.ReactNode;
+    bordered?: boolean;
 }
 
-const variantStyles: Record<CardVariant, string> = {
-    default: "bg-bg-secondary border border-border-subtle",
-    glass: "glass",
-    gradient: "card-gradient",
-    elevated: "bg-bg-secondary shadow-lg border-0",
-    outline: "bg-transparent border-2 border-border-default",
-};
-
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-    ({ className, variant = "default", hover = true, glow = false, children, ...props }, ref) => {
+    ({ className, hover = false, bordered = true, children, ...props }, ref) => {
         return (
-            <motion.div
+            <div
                 ref={ref}
                 className={cn(
-                    "rounded-xl p-6 transition-all duration-200",
-                    variantStyles[variant],
-                    hover && "cursor-pointer",
-                    glow && "hover-glow",
+                    "rounded-lg bg-bg-primary",
+                    bordered && "border border-border-default",
+                    hover && "cursor-pointer transition-colors duration-100 hover:bg-bg-hover",
                     className
                 )}
-                whileHover={hover ? { y: -4, scale: 1.01 } : undefined}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 {...props}
             >
                 {children}
-            </motion.div>
+            </div>
         );
     }
 );
@@ -52,7 +36,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     ({ className, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn("flex flex-col space-y-1.5 pb-4", className)}
+            className={cn("flex flex-col space-y-1 p-4 pb-2", className)}
             {...props}
         />
     )
@@ -66,7 +50,7 @@ const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
     ({ className, ...props }, ref) => (
         <h3
             ref={ref}
-            className={cn("text-lg font-semibold leading-none tracking-tight text-fg-primary", className)}
+            className={cn("text-sm font-medium text-fg-primary", className)}
             {...props}
         />
     )
@@ -92,7 +76,7 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("", className)} {...props} />
+        <div ref={ref} className={cn("p-4 pt-0", className)} {...props} />
     )
 );
 CardContent.displayName = "CardContent";
@@ -104,15 +88,15 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
     ({ className, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn("flex items-center pt-4 border-t border-border-subtle", className)}
+            className={cn("flex items-center p-4 pt-0", className)}
             {...props}
         />
     )
 );
 CardFooter.displayName = "CardFooter";
 
-// === STAT CARD ===
-type StatCardVariant = "default" | "primary" | "secondary" | "accent" | "success" | "warning" | "danger";
+// === STAT CARD (Notion Style) ===
+type StatCardVariant = "default" | "blue" | "green" | "yellow" | "red";
 
 interface StatCardProps {
     title: string;
@@ -124,85 +108,59 @@ interface StatCardProps {
     className?: string;
 }
 
-const statCardVariants: Record<StatCardVariant, string> = {
-    default: "stat-card",
-    primary: "stat-card-primary",
-    secondary: "stat-card-secondary",
-    accent: "stat-card-accent",
-    success: "bg-gradient-to-br from-success-500 to-success-600 text-white",
-    warning: "bg-gradient-to-br from-warning-400 to-warning-500 text-white",
-    danger: "bg-gradient-to-br from-danger-400 to-danger-500 text-white",
+const statCardVariants: Record<StatCardVariant, { bg: string; icon: string }> = {
+    default: { bg: "bg-bg-tertiary", icon: "text-fg-secondary" },
+    blue: { bg: "bg-accent-light", icon: "text-accent" },
+    green: { bg: "bg-success-light", icon: "text-success" },
+    yellow: { bg: "bg-warning-light", icon: "text-warning" },
+    red: { bg: "bg-danger-light", icon: "text-danger" },
 };
 
 function StatCard({ title, value, subtitle, icon, trend, variant = "default", className }: StatCardProps) {
-    const isGradient = variant !== "default";
+    const styles = statCardVariants[variant];
 
     return (
-        <motion.div
+        <div
             className={cn(
-                "relative overflow-hidden rounded-2xl p-6 transition-all duration-300",
-                statCardVariants[variant],
+                "rounded-lg border border-border-default bg-bg-primary p-4",
                 className
             )}
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-            {/* Decorative circles for gradient cards */}
-            {isGradient && (
-                <>
-                    <div className="absolute -top-4 -right-4 h-24 w-24 rounded-full bg-white/10" />
-                    <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/5" />
-                </>
-            )}
-
-            <div className="relative z-10">
-                <div className="flex items-center justify-between mb-3">
-                    {icon && (
-                        <div className={cn(
-                            "flex items-center justify-center h-10 w-10 rounded-xl",
-                            isGradient ? "bg-white/20" : "bg-primary-100"
-                        )}>
-                            {icon}
-                        </div>
-                    )}
-                    {trend && (
-                        <span className={cn(
-                            "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
-                            isGradient
-                                ? "bg-white/20"
-                                : trend.isPositive
-                                    ? "bg-success-100 text-success-600"
-                                    : "bg-danger-100 text-danger-600"
-                        )}>
-                            {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
-                        </span>
-                    )}
-                </div>
-
-                <h3 className={cn(
-                    "text-sm font-medium mb-1",
-                    isGradient ? "text-white/80" : "text-fg-secondary"
-                )}>
-                    {title}
-                </h3>
-
-                <p className={cn(
-                    "text-3xl font-bold tracking-tight",
-                    isGradient ? "text-white" : "text-fg-primary"
-                )}>
-                    {value}
-                </p>
-
-                {subtitle && (
-                    <p className={cn(
-                        "text-xs mt-2",
-                        isGradient ? "text-white/60" : "text-fg-tertiary"
+            <div className="flex items-start justify-between mb-3">
+                {icon && (
+                    <div className={cn(
+                        "flex items-center justify-center h-8 w-8 rounded-md",
+                        styles.bg
                     )}>
-                        {subtitle}
-                    </p>
+                        <span className={styles.icon}>{icon}</span>
+                    </div>
+                )}
+                {trend && (
+                    <span className={cn(
+                        "text-xs font-medium px-2 py-0.5 rounded-sm",
+                        trend.isPositive
+                            ? "bg-success-light text-success"
+                            : "bg-danger-light text-danger"
+                    )}>
+                        {trend.isPositive ? "+" : ""}{trend.value}%
+                    </span>
                 )}
             </div>
-        </motion.div>
+
+            <p className="text-xs font-medium text-fg-muted uppercase tracking-wide mb-1">
+                {title}
+            </p>
+
+            <p className="text-2xl font-semibold text-fg-primary">
+                {value}
+            </p>
+
+            {subtitle && (
+                <p className="text-xs text-fg-muted mt-1">
+                    {subtitle}
+                </p>
+            )}
+        </div>
     );
 }
 

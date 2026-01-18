@@ -4,33 +4,34 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { motion, HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 select-none",
     {
         variants: {
             variant: {
-                default: "bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg",
-                gradient: "bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-md hover:shadow-lg hover:brightness-110",
-                glow: "bg-primary-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)]",
-                secondary: "bg-bg-tertiary text-fg-primary hover:bg-bg-hover",
-                destructive: "bg-danger-500 text-white hover:bg-danger-600 shadow-md",
-                outline: "border border-border-default bg-transparent text-fg-primary hover:bg-bg-hover hover:border-primary-500",
-                ghost: "text-fg-secondary hover:bg-bg-hover hover:text-fg-primary",
-                link: "text-primary-500 underline-offset-4 hover:underline",
-                glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20",
-                success: "bg-success-500 text-white hover:bg-success-600 shadow-md",
+                // Primary - Azul Notion
+                default: "bg-accent text-white hover:bg-accent-hover rounded-[4px]",
+                // Ghost - Transparente com hover
+                ghost: "text-fg-secondary hover:bg-bg-hover hover:text-fg-primary rounded-[4px]",
+                // Secondary - Fundo cinza
+                secondary: "bg-bg-hover text-fg-primary hover:bg-bg-active rounded-[4px]",
+                // Outline - Apenas borda
+                outline: "border border-border-default bg-transparent text-fg-primary hover:bg-bg-hover rounded-[4px]",
+                // Destructive - Vermelho
+                destructive: "bg-danger text-white hover:opacity-90 rounded-[4px]",
+                // Link - Texto simples
+                link: "text-accent underline-offset-4 hover:underline p-0 h-auto",
+                // Success
+                success: "bg-success text-white hover:opacity-90 rounded-[4px]",
             },
             size: {
-                sm: "h-8 px-3 text-xs rounded-md",
-                default: "h-10 px-4",
-                lg: "h-12 px-6 text-base",
-                xl: "h-14 px-8 text-lg rounded-xl",
-                icon: "h-10 w-10 p-0",
-                "icon-sm": "h-8 w-8 p-0",
-                "icon-lg": "h-12 w-12 p-0",
+                sm: "h-7 px-2 text-xs",
+                default: "h-8 px-3",
+                lg: "h-9 px-4",
+                icon: "h-7 w-7 p-0",
+                "icon-sm": "h-6 w-6 p-0",
             },
         },
         defaultVariants: {
@@ -41,13 +42,12 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-    extends Omit<HTMLMotionProps<"button">, "children">,
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     loading?: boolean;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
-    children?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -64,27 +64,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ...props
     }, ref) => {
         const isDisabled = disabled || loading;
-
-        if (asChild) {
-            return (
-                <Slot
-                    className={cn(buttonVariants({ variant, size, className }))}
-                    ref={ref as React.RefObject<HTMLElement>}
-                    {...(props as React.HTMLAttributes<HTMLElement>)}
-                >
-                    {children}
-                </Slot>
-            );
-        }
+        const Comp = asChild ? Slot : "button";
 
         return (
-            <motion.button
+            <Comp
                 className={cn(buttonVariants({ variant, size, className }))}
                 ref={ref}
                 disabled={isDisabled}
-                whileHover={!isDisabled ? { scale: 1.02, y: -1 } : undefined}
-                whileTap={!isDisabled ? { scale: 0.98 } : undefined}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 {...props}
             >
                 {loading ? (
@@ -96,7 +82,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {rightIcon && !loading && (
                     <span className="shrink-0">{rightIcon}</span>
                 )}
-            </motion.button>
+            </Comp>
         );
     }
 );
@@ -109,9 +95,15 @@ interface IconButtonProps extends Omit<ButtonProps, "leftIcon" | "rightIcon" | "
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-    ({ icon, size = "icon", variant = "ghost", ...props }, ref) => {
+    ({ icon, size = "icon", variant = "ghost", className, ...props }, ref) => {
         return (
-            <Button ref={ref} variant={variant} size={size} {...props}>
+            <Button
+                ref={ref}
+                variant={variant}
+                size={size}
+                className={cn("rounded-[4px]", className)}
+                {...props}
+            >
                 {icon}
             </Button>
         );
@@ -132,8 +124,8 @@ function ButtonGroup({ children, className, attached = false }: ButtonGroupProps
             <div className={cn(
                 "inline-flex",
                 "[&>button]:rounded-none",
-                "[&>button:first-child]:rounded-l-lg",
-                "[&>button:last-child]:rounded-r-lg",
+                "[&>button:first-child]:rounded-l-[4px]",
+                "[&>button:last-child]:rounded-r-[4px]",
                 "[&>button:not(:last-child)]:border-r-0",
                 className
             )}>

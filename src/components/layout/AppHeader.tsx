@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import {
     Menu,
     Bell,
@@ -13,8 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Button, IconButton } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
-import { NotificationBadge } from "@/components/ui/badge";
 import { ThemeToggle } from "./ThemeProvider";
 
 interface AppHeaderProps {
@@ -24,7 +21,7 @@ interface AppHeaderProps {
 
 // Breadcrumb mapping
 const breadcrumbMap: Record<string, { label: string; icon?: React.ReactNode }> = {
-    dashboard: { label: "Dashboard", icon: <Home className="h-4 w-4" /> },
+    dashboard: { label: "Dashboard", icon: <Home className="h-3.5 w-3.5" /> },
     members: { label: "Membros" },
     escalas: { label: "Escalas" },
     finance: { label: "Financeiro" },
@@ -53,22 +50,20 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
     });
 
     return (
-        <motion.header
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+        <header
             className={cn(
                 "sticky top-0 z-30",
-                "flex h-16 items-center justify-between gap-4 px-4 md:px-6",
-                "bg-bg-primary/80 backdrop-blur-xl",
-                "border-b border-border-subtle"
+                "flex h-11 items-center justify-between gap-4 px-4",
+                "bg-bg-primary",
+                "border-b border-border-default"
             )}
         >
             {/* Left Side */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 {/* Mobile menu toggle */}
                 {isMobile && (
                     <IconButton
-                        icon={<Menu className="h-5 w-5" />}
+                        icon={<Menu className="h-4 w-4" />}
                         aria-label="Toggle menu"
                         variant="ghost"
                         onClick={toggleSidebar}
@@ -80,68 +75,60 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                     {breadcrumbs.map((crumb, index) => (
                         <React.Fragment key={crumb.path}>
                             {index > 0 && (
-                                <ChevronRight className="h-4 w-4 text-fg-tertiary" />
+                                <ChevronRight className="h-3 w-3 text-fg-muted" />
                             )}
-                            <motion.a
+                            <a
                                 href={crumb.path}
                                 className={cn(
-                                    "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
+                                    "flex items-center gap-1.5 px-1.5 py-0.5 rounded-[4px] transition-colors",
                                     crumb.isLast
                                         ? "text-fg-primary font-medium"
                                         : "text-fg-secondary hover:text-fg-primary hover:bg-bg-hover"
                                 )}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
                             >
                                 {crumb.icon}
                                 {crumb.label}
-                            </motion.a>
+                            </a>
                         </React.Fragment>
                     ))}
                 </nav>
 
                 {/* Mobile: Page title */}
                 {isMobile && breadcrumbs.length > 0 && (
-                    <h1 className="text-lg font-semibold text-fg-primary">
+                    <h1 className="text-sm font-medium text-fg-primary">
                         {breadcrumbs[breadcrumbs.length - 1]?.label}
                     </h1>
                 )}
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 {/* Search */}
                 <div className="hidden md:block relative">
                     {searchOpen ? (
-                        <motion.div
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 280, opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
-                            className="relative"
-                        >
+                        <div className="relative w-64">
                             <SearchInput
                                 placeholder="Buscar..."
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 onClear={() => setSearchValue("")}
                                 inputSize="sm"
-                                className="pr-8"
                                 autoFocus
                                 onBlur={() => {
                                     if (!searchValue) setSearchOpen(false);
                                 }}
                             />
-                        </motion.div>
+                        </div>
                     ) : (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setSearchOpen(true)}
-                            leftIcon={<Search className="h-4 w-4" />}
+                            leftIcon={<Search className="h-3.5 w-3.5" />}
                             className="text-fg-secondary"
                         >
                             Buscar
-                            <kbd className="ml-2 hidden lg:inline-flex h-5 items-center gap-1 rounded border border-border-subtle bg-bg-tertiary px-1.5 text-[10px] font-medium text-fg-tertiary">
+                            <kbd className="ml-2 hidden lg:inline-flex h-5 items-center rounded-[3px] border border-border-default bg-bg-secondary px-1.5 text-[10px] font-medium text-fg-muted">
                                 ⌘K
                             </kbd>
                         </Button>
@@ -151,7 +138,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                 {/* Mobile search button */}
                 {isMobile && (
                     <IconButton
-                        icon={<Search className="h-5 w-5" />}
+                        icon={<Search className="h-4 w-4" />}
                         aria-label="Search"
                         variant="ghost"
                     />
@@ -163,12 +150,13 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                 {/* Notifications */}
                 <div className="relative">
                     <IconButton
-                        icon={<Bell className="h-5 w-5" />}
+                        icon={<Bell className="h-4 w-4" />}
                         aria-label="Notifications"
                         variant="ghost"
                         onClick={() => setNotificationsOpen(!notificationsOpen)}
                     />
-                    <NotificationBadge count={3} />
+                    {/* Notification dot */}
+                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-danger" />
 
                     {/* Notification dropdown */}
                     {notificationsOpen && (
@@ -177,19 +165,15 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                 className="fixed inset-0 z-40"
                                 onClick={() => setNotificationsOpen(false)}
                             />
-                            <motion.div
-                                initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                            <div
                                 className={cn(
-                                    "absolute right-0 top-full mt-2 z-50",
-                                    "w-80 rounded-xl border border-border-subtle",
-                                    "bg-bg-secondary shadow-xl overflow-hidden"
+                                    "absolute right-0 top-full mt-1 z-50",
+                                    "w-80 rounded-lg border border-border-default",
+                                    "bg-bg-primary shadow-popup"
                                 )}
                             >
-                                <div className="p-4 border-b border-border-subtle">
-                                    <h3 className="font-semibold text-fg-primary">Notificações</h3>
-                                    <p className="text-xs text-fg-secondary">3 novas notificações</p>
+                                <div className="px-3 py-2 border-b border-border-default">
+                                    <h3 className="font-medium text-sm text-fg-primary">Notificações</h3>
                                 </div>
                                 <div className="max-h-80 overflow-y-auto">
                                     <NotificationItem
@@ -208,29 +192,26 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                         title="Reunião agendada"
                                         description="Amanhã às 19h - Núcleo Centro"
                                         time="Há 2 horas"
-                                        unread
                                     />
                                 </div>
-                                <div className="p-3 border-t border-border-subtle">
-                                    <Button variant="ghost" size="sm" className="w-full">
-                                        Ver todas as notificações
+                                <div className="px-3 py-2 border-t border-border-default">
+                                    <Button variant="ghost" size="sm" className="w-full text-fg-secondary">
+                                        Ver todas
                                     </Button>
                                 </div>
-                            </motion.div>
+                            </div>
                         </>
                     )}
                 </div>
 
-                {/* User Avatar (mobile only - desktop shows in sidebar) */}
+                {/* User Avatar (mobile only) */}
                 {isMobile && (
-                    <Avatar
-                        size="sm"
-                        fallback="UP"
-                        status="online"
-                    />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent-light text-accent text-xs font-medium">
+                        UP
+                    </div>
                 )}
             </div>
-        </motion.header>
+        </header>
     );
 }
 
@@ -247,23 +228,22 @@ function NotificationItem({
     unread?: boolean;
 }) {
     return (
-        <motion.div
+        <div
             className={cn(
-                "flex gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-bg-hover",
-                unread && "bg-primary-500/5"
+                "flex gap-3 px-3 py-2 cursor-pointer transition-colors hover:bg-bg-hover",
+                unread && "bg-accent-light/30"
             )}
-            whileHover={{ x: 4 }}
         >
-            <div className="shrink-0 mt-1">
+            <div className="shrink-0 mt-1.5">
                 {unread && (
-                    <span className="block h-2 w-2 rounded-full bg-primary-500" />
+                    <span className="block h-2 w-2 rounded-full bg-accent" />
                 )}
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-fg-primary truncate">{title}</p>
                 <p className="text-xs text-fg-secondary truncate">{description}</p>
-                <p className="text-[10px] text-fg-tertiary mt-1">{time}</p>
+                <p className="text-[10px] text-fg-muted mt-0.5">{time}</p>
             </div>
-        </motion.div>
+        </div>
     );
 }
