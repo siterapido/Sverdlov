@@ -1,7 +1,12 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { ThemeProvider } from '@/components/layout/ThemeProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata = {
   title: 'Sverdlov | Unidade Popular',
@@ -14,11 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>
-        <main className="min-h-screen">
-          {children}
-        </main>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${inter.className} ${inter.variable} antialiased`}>
+        <ThemeProvider defaultTheme="system" storageKey="sverdlov-theme">
+          <main className="min-h-screen bg-bg-primary text-fg-primary transition-colors duration-300">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

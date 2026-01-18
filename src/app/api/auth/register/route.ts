@@ -8,12 +8,12 @@ import { eq } from 'drizzle-orm';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { email, password, role = 'member', territoryScope } = body;
+        const { fullName, email, password, role = 'member', territoryScope } = body;
 
         // Validate input
-        if (!email || !password) {
+        if (!email || !password || !fullName) {
             return NextResponse.json(
-                { error: 'Email e senha são obrigatórios' },
+                { error: 'Nome, email e senha são obrigatórios' },
                 { status: 400 }
             );
         }
@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
         // Hash password and create user
         const passwordHash = await hashPassword(password);
         const [newUser] = await db.insert(users).values({
+            fullName,
             email,
             passwordHash,
             role,

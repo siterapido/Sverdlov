@@ -1,0 +1,757 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-01-18T16:44:25.681Z",
+  "stack": {
+    "primaryLanguage": "typescript",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "frameworks": [
+      "nextjs"
+    ],
+    "buildTools": [],
+    "testFrameworks": [
+      "vitest"
+    ],
+    "packageManager": "npm",
+    "isMonorepo": false,
+    "hasDocker": false,
+    "hasCI": false
+  },
+  "structure": {
+    "totalFiles": 59,
+    "topDirectories": [
+      {
+        "name": "drizzle",
+        "fileCount": 3
+      },
+      {
+        "name": "drizzle.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "eslint.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "next-env.d.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "next.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "package-lock.json",
+        "fileCount": 1
+      },
+      {
+        "name": "package.json",
+        "fileCount": 1
+      },
+      {
+        "name": "postcss.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "public",
+        "fileCount": 5
+      },
+      {
+        "name": "README.md",
+        "fileCount": 1
+      },
+      {
+        "name": "src",
+        "fileCount": 41
+      },
+      {
+        "name": "tsconfig.json",
+        "fileCount": 1
+      },
+      {
+        "name": "vitest.config.ts",
+        "fileCount": 1
+      }
+    ],
+    "languageDistribution": [
+      {
+        "extension": ".ts",
+        "count": 22
+      },
+      {
+        "extension": ".tsx",
+        "count": 21
+      },
+      {
+        "extension": ".json",
+        "count": 5
+      },
+      {
+        "extension": ".svg",
+        "count": 5
+      },
+      {
+        "extension": ".mjs",
+        "count": 2
+      },
+      {
+        "extension": ".md",
+        "count": 1
+      },
+      {
+        "extension": ".sql",
+        "count": 1
+      },
+      {
+        "extension": ".ico",
+        "count": 1
+      },
+      {
+        "extension": ".css",
+        "count": 1
+      }
+    ]
+  },
+  "architecture": {
+    "layers": [
+      {
+        "name": "Utils",
+        "description": "Shared utilities and helpers",
+        "directories": [
+          "src/lib",
+          "src/lib/db",
+          "src/lib/auth"
+        ],
+        "symbolCount": 9,
+        "dependsOn": []
+      },
+      {
+        "name": "Controllers",
+        "description": "Request handling and routing",
+        "directories": [
+          "src/app/api/members",
+          "src/app/api/members/[id]",
+          "src/app/api/auth/register",
+          "src/app/api/auth/login"
+        ],
+        "symbolCount": 6,
+        "dependsOn": []
+      },
+      {
+        "name": "Components",
+        "description": "UI components and views",
+        "directories": [
+          "src/app",
+          "src/components/ui",
+          "src/components/members",
+          "src/components/layout",
+          "src/app/(public)/filie-se",
+          "src/app/(protected)/settings",
+          "src/app/(protected)/members",
+          "src/app/(protected)/finance",
+          "src/app/(protected)/dashboard",
+          "src/app/(protected)/chat",
+          "src/app/(protected)/calendar",
+          "src/app/(protected)/members/[id]"
+        ],
+        "symbolCount": 27,
+        "dependsOn": []
+      }
+    ],
+    "patterns": [],
+    "entryPoints": [
+      "src/lib/db/index.ts",
+      "src/lib/db/schema/index.ts"
+    ]
+  },
+  "symbols": {
+    "classes": [],
+    "interfaces": [
+      {
+        "name": "ButtonProps",
+        "kind": "interface",
+        "file": "src/components/ui/button.tsx",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "name": "InputProps",
+        "kind": "interface",
+        "file": "src/components/ui/input.tsx",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "JWTPayload",
+        "kind": "interface",
+        "file": "src/lib/auth/jwt.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "AppHeaderProps",
+        "kind": "interface",
+        "file": "src/components/layout/AppHeader.tsx",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "name": "ImportModalProps",
+        "kind": "interface",
+        "file": "src/components/members/ImportModal.tsx",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "Member",
+        "kind": "interface",
+        "file": "src/components/members/MembersTable.tsx",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "MemberFormProps",
+        "kind": "interface",
+        "file": "src/components/members/member-form.tsx",
+        "line": 9,
+        "exported": false
+      },
+      {
+        "name": "MembersTableProps",
+        "kind": "interface",
+        "file": "src/components/members/MembersTable.tsx",
+        "line": 30,
+        "exported": false
+      },
+      {
+        "name": "SidebarProps",
+        "kind": "interface",
+        "file": "src/components/layout/Sidebar.tsx",
+        "line": 21,
+        "exported": false
+      }
+    ],
+    "functions": [
+      {
+        "name": "AppHeader",
+        "kind": "function",
+        "file": "src/components/layout/AppHeader.tsx",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "AppLayout",
+        "kind": "function",
+        "file": "src/components/layout/AppLayout.tsx",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "canAccessTerritory",
+        "kind": "function",
+        "file": "src/lib/auth/rbac.ts",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "name": "cn",
+        "kind": "function",
+        "file": "src/lib/utils.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "DELETE",
+        "kind": "function",
+        "file": "src/app/api/members/[id]/route.ts",
+        "line": 75,
+        "exported": true
+      },
+      {
+        "name": "deleteMember",
+        "kind": "function",
+        "file": "src/app/actions/members.ts",
+        "line": 60,
+        "exported": true
+      },
+      {
+        "name": "GET",
+        "kind": "function",
+        "file": "src/app/api/members/route.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "getAuthUser",
+        "kind": "function",
+        "file": "src/lib/auth/rbac.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "getMembers",
+        "kind": "function",
+        "file": "src/app/actions/members.ts",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "hashPassword",
+        "kind": "function",
+        "file": "src/lib/auth/password.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "hasRole",
+        "kind": "function",
+        "file": "src/lib/auth/rbac.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "importMembers",
+        "kind": "function",
+        "file": "src/app/actions/members.ts",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "name": "ImportModal",
+        "kind": "function",
+        "file": "src/components/members/ImportModal.tsx",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "name": "MemberForm",
+        "kind": "function",
+        "file": "src/components/members/member-form.tsx",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "MembersTable",
+        "kind": "function",
+        "file": "src/components/members/MembersTable.tsx",
+        "line": 36,
+        "exported": true
+      },
+      {
+        "name": "PageTransition",
+        "kind": "function",
+        "file": "src/components/ui/page-transition.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "PATCH",
+        "kind": "function",
+        "file": "src/app/api/members/[id]/route.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "POST",
+        "kind": "function",
+        "file": "src/app/api/members/route.ts",
+        "line": 32,
+        "exported": true
+      },
+      {
+        "name": "POST",
+        "kind": "function",
+        "file": "src/app/api/auth/register/route.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "POST",
+        "kind": "function",
+        "file": "src/app/api/auth/login/route.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "QuickCapture",
+        "kind": "function",
+        "file": "src/components/layout/QuickCapture.tsx",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "Sidebar",
+        "kind": "function",
+        "file": "src/components/layout/Sidebar.tsx",
+        "line": 28,
+        "exported": true
+      },
+      {
+        "name": "signToken",
+        "kind": "function",
+        "file": "src/lib/auth/jwt.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "useIsMobile",
+        "kind": "function",
+        "file": "src/hooks/use-mobile.ts",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "verifyPassword",
+        "kind": "function",
+        "file": "src/lib/auth/password.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "verifyToken",
+        "kind": "function",
+        "file": "src/lib/auth/jwt.ts",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "name": "ActionButton",
+        "kind": "function",
+        "file": "src/app/(protected)/dashboard/page.tsx",
+        "line": 81,
+        "exported": false
+      },
+      {
+        "name": "fetchMember",
+        "kind": "function",
+        "file": "src/app/(protected)/members/[id]/page.tsx",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "fetchMembers",
+        "kind": "function",
+        "file": "src/app/(protected)/members/page.tsx",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "getSectionInfo",
+        "kind": "function",
+        "file": "src/components/layout/AppHeader.tsx",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "name": "handleClickOutside",
+        "kind": "function",
+        "file": "src/components/layout/QuickCapture.tsx",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "name": "handleFileUpload",
+        "kind": "function",
+        "file": "src/components/members/ImportModal.tsx",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "name": "handleImport",
+        "kind": "function",
+        "file": "src/components/members/ImportModal.tsx",
+        "line": 77,
+        "exported": false
+      },
+      {
+        "name": "handleSubmit",
+        "kind": "function",
+        "file": "src/components/members/member-form.tsx",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "name": "handleSubmit",
+        "kind": "function",
+        "file": "src/app/(public)/filie-se/page.tsx",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "name": "onChange",
+        "kind": "function",
+        "file": "src/hooks/use-mobile.ts",
+        "line": 10,
+        "exported": false
+      },
+      {
+        "name": "StatCard",
+        "kind": "function",
+        "file": "src/app/(protected)/dashboard/page.tsx",
+        "line": 63,
+        "exported": false
+      },
+      {
+        "name": "toggleSidebar",
+        "kind": "function",
+        "file": "src/components/layout/AppLayout.tsx",
+        "line": 14,
+        "exported": false
+      }
+    ],
+    "types": [],
+    "enums": []
+  },
+  "publicAPI": [
+    {
+      "name": "AppHeader",
+      "kind": "function",
+      "file": "src/components/layout/AppHeader.tsx",
+      "line": 15,
+      "exported": true
+    },
+    {
+      "name": "AppLayout",
+      "kind": "function",
+      "file": "src/components/layout/AppLayout.tsx",
+      "line": 9,
+      "exported": true
+    },
+    {
+      "name": "ButtonProps",
+      "kind": "interface",
+      "file": "src/components/ui/button.tsx",
+      "line": 35,
+      "exported": true
+    },
+    {
+      "name": "canAccessTerritory",
+      "kind": "function",
+      "file": "src/lib/auth/rbac.ts",
+      "line": 22,
+      "exported": true
+    },
+    {
+      "name": "cn",
+      "kind": "function",
+      "file": "src/lib/utils.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "DELETE",
+      "kind": "function",
+      "file": "src/app/api/members/[id]/route.ts",
+      "line": 75,
+      "exported": true
+    },
+    {
+      "name": "deleteMember",
+      "kind": "function",
+      "file": "src/app/actions/members.ts",
+      "line": 60,
+      "exported": true
+    },
+    {
+      "name": "GET",
+      "kind": "function",
+      "file": "src/app/api/members/route.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "getAuthUser",
+      "kind": "function",
+      "file": "src/lib/auth/rbac.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "getMembers",
+      "kind": "function",
+      "file": "src/app/actions/members.ts",
+      "line": 9,
+      "exported": true
+    },
+    {
+      "name": "hashPassword",
+      "kind": "function",
+      "file": "src/lib/auth/password.ts",
+      "line": 3,
+      "exported": true
+    },
+    {
+      "name": "hasRole",
+      "kind": "function",
+      "file": "src/lib/auth/rbac.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "importMembers",
+      "kind": "function",
+      "file": "src/app/actions/members.ts",
+      "line": 35,
+      "exported": true
+    },
+    {
+      "name": "ImportModal",
+      "kind": "function",
+      "file": "src/components/members/ImportModal.tsx",
+      "line": 23,
+      "exported": true
+    },
+    {
+      "name": "InputProps",
+      "kind": "interface",
+      "file": "src/components/ui/input.tsx",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "JWTPayload",
+      "kind": "interface",
+      "file": "src/lib/auth/jwt.ts",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "MemberForm",
+      "kind": "function",
+      "file": "src/components/members/member-form.tsx",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "MembersTable",
+      "kind": "function",
+      "file": "src/components/members/MembersTable.tsx",
+      "line": 36,
+      "exported": true
+    },
+    {
+      "name": "PageTransition",
+      "kind": "function",
+      "file": "src/components/ui/page-transition.tsx",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "PATCH",
+      "kind": "function",
+      "file": "src/app/api/members/[id]/route.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "POST",
+      "kind": "function",
+      "file": "src/app/api/members/route.ts",
+      "line": 32,
+      "exported": true
+    },
+    {
+      "name": "POST",
+      "kind": "function",
+      "file": "src/app/api/auth/register/route.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "POST",
+      "kind": "function",
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "QuickCapture",
+      "kind": "function",
+      "file": "src/components/layout/QuickCapture.tsx",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "Sidebar",
+      "kind": "function",
+      "file": "src/components/layout/Sidebar.tsx",
+      "line": 28,
+      "exported": true
+    },
+    {
+      "name": "signToken",
+      "kind": "function",
+      "file": "src/lib/auth/jwt.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "useIsMobile",
+      "kind": "function",
+      "file": "src/hooks/use-mobile.ts",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "verifyPassword",
+      "kind": "function",
+      "file": "src/lib/auth/password.ts",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "verifyToken",
+      "kind": "function",
+      "file": "src/lib/auth/jwt.ts",
+      "line": 22,
+      "exported": true
+    }
+  ],
+  "dependencies": {
+    "mostImported": [
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/auth/jwt.ts",
+        "importedBy": 2
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/db/schema/index.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/db/index.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/auth/password.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/db/schema/users.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/lib/db/schema/members.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/components/layout/Sidebar.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/components/layout/AppHeader.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "/Users/marcosalexandre/projetos/Sverdlov/src/components/layout/QuickCapture.tsx",
+        "importedBy": 1
+      }
+    ]
+  },
+  "stats": {
+    "totalSymbols": 47,
+    "exportedSymbols": 29,
+    "analysisTimeMs": 35
+  }
+}

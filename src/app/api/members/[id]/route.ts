@@ -4,14 +4,18 @@ import { members } from '@/lib/db/schema';
 import { getAuthUser, hasRole } from '@/lib/auth/rbac';
 import { eq } from 'drizzle-orm';
 
+type RouteContext = {
+    params: Promise<{ id: string }>;
+};
+
 // PATCH - Update member
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         const user = await getAuthUser(request);
-        const { id } = params;
+        const { id } = await context.params;
 
         if (!user || !hasRole(user, ['national_admin', 'state_leader', 'municipal_leader'])) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
@@ -74,11 +78,11 @@ export async function PATCH(
 // DELETE - Remove member
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         const user = await getAuthUser(request);
-        const { id } = params;
+        const { id } = await context.params;
 
         if (!user || !hasRole(user, ['national_admin'])) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });

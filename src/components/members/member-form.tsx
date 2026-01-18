@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useState, FormEvent, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-
-import { Button } from '@/components/ui/button';
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input, FormGroup, Label } from "@/components/ui/input";
+import { User, Mail, Phone, MapPin, Calendar, CreditCard, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface MemberFormProps {
     initialData?: any;
@@ -13,50 +14,51 @@ interface MemberFormProps {
 
 export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
+        setError("");
 
         const formData = new FormData(e.currentTarget);
         const data = {
-            fullName: formData.get('fullName'),
-            socialName: formData.get('socialName'),
-            cpf: formData.get('cpf'),
-            voterTitle: formData.get('voterTitle'),
-            dateOfBirth: formData.get('dateOfBirth'),
-            gender: formData.get('gender'),
-            phone: formData.get('phone'),
-            email: formData.get('email'),
-            state: formData.get('state'),
-            city: formData.get('city'),
-            zone: formData.get('zone'),
-            neighborhood: formData.get('neighborhood'),
+            fullName: formData.get("fullName"),
+            socialName: formData.get("socialName"),
+            cpf: formData.get("cpf"),
+            voterTitle: formData.get("voterTitle"),
+            dateOfBirth: formData.get("dateOfBirth"),
+            gender: formData.get("gender"),
+            phone: formData.get("phone"),
+            email: formData.get("email"),
+            state: formData.get("state"),
+            city: formData.get("city"),
+            zone: formData.get("zone"),
+            neighborhood: formData.get("neighborhood"),
         };
 
         try {
-            const endpoint = isEditing ? `/api/members/${initialData.id}` : '/api/members';
-            const method = isEditing ? 'PATCH' : 'POST';
+            const endpoint = isEditing ? `/api/members/${initialData.id}` : "/api/members";
+            const method = isEditing ? "PATCH" : "POST";
 
             const response = await fetch(endpoint, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || `Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} membro`);
+                throw new Error(errorData.error || `Erro ao ${isEditing ? "atualizar" : "cadastrar"} membro`);
             }
 
-            alert(`Membro ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso!`);
             if (!isEditing) {
                 e.currentTarget.reset();
             }
             router.refresh();
+            // Dispatch a custom event or use a callback to close modal if needed
+            // For now, let's assume the client component handles this via refresh
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -65,162 +67,199 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6 notion-card">
-            <h2 className="text-2xl font-semibold mb-6 text-fg-primary">
-                {isEditing ? 'Editar Filiado' : 'Cadastro de Novo Membro'}
-            </h2>
-
+        <form onSubmit={handleSubmit} className="space-y-8 py-2">
             {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-sm text-red-700 text-sm">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl text-danger-500 text-sm flex items-center gap-2"
+                >
+                    <div className="h-2 w-2 rounded-full bg-danger-500 animate-pulse" />
                     {error}
-                </div>
+                </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Nome Completo</label>
-                        <input
+            <div className="space-y-6">
+                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
+                    <div className="h-8 w-8 rounded-lg bg-primary-500/10 flex items-center justify-center">
+                        <User className="h-4 w-4 text-primary-500" />
+                    </div>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-fg-secondary">Informações Pessoais</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <FormGroup>
+                        <Label required>Nome Completo</Label>
+                        <Input
                             name="fullName"
-                            type="text"
-                            className="notion-input"
-                            placeholder="Ex: João Silva"
+                            placeholder="Ex: João da Silva"
                             defaultValue={initialData?.fullName}
+                            leftIcon={<User className="h-4 w-4" />}
                             required
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Nome Social</label>
-                        <input
+                    <FormGroup>
+                        <Label>Nome Social</Label>
+                        <Input
                             name="socialName"
-                            type="text"
-                            className="notion-input"
-                            placeholder="Opcional"
+                            placeholder="Como prefere ser chamado"
                             defaultValue={initialData?.socialName}
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">CPF</label>
-                        <input
+                    <FormGroup>
+                        <Label required>CPF</Label>
+                        <Input
                             name="cpf"
-                            type="text"
-                            className="notion-input"
                             placeholder="000.000.000-00"
                             defaultValue={initialData?.cpf}
+                            leftIcon={<CreditCard className="h-4 w-4" />}
                             required
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Título de Eleitor</label>
-                        <input
+                    <FormGroup>
+                        <Label>Título de Eleitor</Label>
+                        <Input
                             name="voterTitle"
-                            type="text"
-                            className="notion-input"
-                            placeholder="Opcional"
+                            placeholder="Número do título"
                             defaultValue={initialData?.voterTitle}
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Data de Nascimento</label>
-                        <input
+                    <FormGroup>
+                        <Label required>Data de Nascimento</Label>
+                        <Input
                             name="dateOfBirth"
                             type="date"
-                            className="notion-input"
                             defaultValue={initialData?.dateOfBirth}
+                            leftIcon={<Calendar className="h-4 w-4" />}
                             required
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Telefone/WhatsApp</label>
-                        <input
+                    <FormGroup>
+                        <Label required>Telefone / WhatsApp</Label>
+                        <Input
                             name="phone"
-                            type="tel"
-                            className="notion-input"
                             placeholder="(11) 99999-9999"
                             defaultValue={initialData?.phone}
+                            leftIcon={<Phone className="h-4 w-4" />}
                             required
                         />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-fg-secondary">Email</label>
-                        <input
+                    <FormGroup className="md:col-span-2">
+                        <Label required>Email</Label>
+                        <Input
                             name="email"
                             type="email"
-                            className="notion-input"
-                            placeholder="email@exemplo.com"
+                            placeholder="joao@exemplo.com"
                             defaultValue={initialData?.email}
+                            leftIcon={<Mail className="h-4 w-4" />}
                             required
                         />
+                    </FormGroup>
+                </div>
+            </div>
+
+            <div className="space-y-6 pt-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
+                    <div className="h-8 w-8 rounded-lg bg-secondary-500/10 flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-secondary-500" />
                     </div>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-fg-secondary">Localização</h3>
                 </div>
 
-                <div className="border-t border-border-subtle pt-6 mt-6">
-                    <h3 className="text-lg font-medium mb-4 text-fg-primary">Informação Territorial</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-fg-secondary">Estado</label>
-                            <select name="state" className="notion-input" defaultValue={initialData?.state} required>
-                                <option value="">Selecione...</option>
-                                <option value="SP">São Paulo</option>
-                                <option value="RJ">Rio de Janeiro</option>
-                                <option value="MG">Minas Gerais</option>
-                                <option value="BA">Bahia</option>
-                            </select>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <FormGroup>
+                        <Label required>Estado (UF)</Label>
+                        <select
+                            name="state"
+                            className="flex h-11 w-full rounded-xl border border-border-subtle bg-bg-primary px-3 py-2 text-sm text-fg-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none"
+                            defaultValue={initialData?.state || ""}
+                            required
+                        >
+                            <option value="">Selecione...</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </FormGroup>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-fg-secondary">Cidade</label>
-                            <input
-                                name="city"
-                                type="text"
-                                className="notion-input"
-                                placeholder="Ex: São Paulo"
-                                defaultValue={initialData?.city}
-                                required
-                            />
-                        </div>
+                    <FormGroup>
+                        <Label required>Cidade</Label>
+                        <Input
+                            name="city"
+                            placeholder="Ex: São Paulo"
+                            defaultValue={initialData?.city}
+                            required
+                        />
+                    </FormGroup>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-fg-secondary">Bairro</label>
-                            <input
-                                name="neighborhood"
-                                type="text"
-                                className="notion-input"
-                                placeholder="Ex: Centro"
-                                defaultValue={initialData?.neighborhood}
-                                required
-                            />
-                        </div>
+                    <FormGroup>
+                        <Label required>Bairro</Label>
+                        <Input
+                            name="neighborhood"
+                            placeholder="Ex: Pinheiros"
+                            defaultValue={initialData?.neighborhood}
+                            required
+                        />
+                    </FormGroup>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-fg-secondary">Zona (Opcional)</label>
-                            <input
-                                name="zone"
-                                type="text"
-                                className="notion-input"
-                                placeholder="Ex: Zona Sul"
-                                defaultValue={initialData?.zone}
-                            />
-                        </div>
-                    </div>
+                    <FormGroup>
+                        <Label>Zona (Opcional)</Label>
+                        <Input
+                            name="zone"
+                            placeholder="Ex: 001"
+                            defaultValue={initialData?.zone}
+                        />
+                    </FormGroup>
                 </div>
+            </div>
 
+            <div className="pt-6 flex items-center justify-end gap-3">
                 <Button
                     type="submit"
                     disabled={loading}
-                    variant="default"
-                    className="w-full"
+                    variant="gradient"
+                    size="lg"
+                    className="w-full md:w-auto min-w-[200px] shadow-lg shadow-primary-500/20"
                 >
-                    {loading ? 'Processando...' : isEditing ? 'Salvar Alterações' : 'Cadastrar Membro'}
+                    {loading ? "Processando..." : (
+                        <>
+                            {isEditing ? "Salvar Alterações" : "Cadastrar Membro"}
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                        </>
+                    )}
                 </Button>
-            </form>
-        </div>
+            </div>
+        </form>
     );
 };
 

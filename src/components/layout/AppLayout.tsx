@@ -34,7 +34,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     isMobile ? "ml-0" : (isCollapsed ? "ml-16" : "ml-64")
                 )}
             >
-                <AppHeader onMenuClick={() => setIsSidebarOpen(true)} />
+                <AppHeader toggleSidebar={toggleSidebar} isMobile={isMobile} />
 
                 <main className="flex-1 overflow-auto">
                     {children}
