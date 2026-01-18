@@ -8,6 +8,13 @@
       "when": 1767179501600,
       "tag": "0000_abnormal_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768755276065,
+      "tag": "0001_rapid_red_wolf",
+      "breakpoints": true
     }
   ]
 }
