@@ -167,7 +167,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                             <div
                                 className={cn(
                                     "absolute right-0 top-full mt-2 z-50",
-                                    "w-80 rounded-sm border border-border",
+                                    "w-80 rounded-none border border-border",
                                     "bg-white shadow-2xl"
                                 )}
                             >
@@ -205,7 +205,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
 
                 {/* User Avatar (mobile only) */}
                 {isMobile && (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-black border border-border">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-none bg-zinc-100 text-zinc-900 text-xs font-black border border-border">
                         UP
                     </div>
                 )}

@@ -5,23 +5,23 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const avatarVariants = cva(
-    "relative inline-flex items-center justify-center overflow-hidden rounded-full font-medium select-none bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400",
+    "relative inline-flex items-center justify-center overflow-hidden rounded-none font-black select-none bg-zinc-100 text-zinc-900 border border-zinc-200 uppercase tracking-tighter",
     {
         variants: {
             size: {
-                xs: "h-5 w-5 text-[10px]",
-                sm: "h-8 w-8 text-xs",
-                md: "h-10 w-10 text-sm",
-                lg: "h-12 w-12 text-base",
-                xl: "h-14 w-14 text-lg",
+                xs: "h-5 w-5 text-[9px]",
+                sm: "h-8 w-8 text-[11px]",
+                md: "h-11 w-11 text-sm",
+                lg: "h-14 w-14 text-base",
+                xl: "h-20 w-20 text-xl",
             },
             variant: {
                 default: "", // Default handles colors in base class
                 gray: "bg-zinc-100 text-zinc-500",
-                blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300",
-                green: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300",
-                yellow: "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300",
-                red: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300",
+                blue: "bg-primary text-white border-primary",
+                green: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                yellow: "bg-amber-100 text-amber-700 border-amber-200",
+                red: "bg-red-100 text-red-700 border-red-200",
             },
         },
         defaultVariants: {
@@ -111,11 +111,11 @@ function AvatarGroup({ children, max = 4, size = "md", className }: AvatarGroupP
     const remainingCount = childrenArray.length - max;
 
     return (
-        <div className={cn("flex -space-x-2", className)}>
+        <div className={cn("flex -space-x-1.5", className)}>
             {visibleAvatars.map((child, index) => (
                 <div
                     key={index}
-                    className="ring-2 ring-bg-primary rounded-[4px]"
+                    className="ring-1 ring-white"
                     style={{ zIndex: visibleAvatars.length - index }}
                 >
                     {React.isValidElement(child)
@@ -127,7 +127,7 @@ function AvatarGroup({ children, max = 4, size = "md", className }: AvatarGroupP
                 <div
                     className={cn(
                         avatarVariants({ size, variant: "gray" }),
-                        "ring-2 ring-bg-primary"
+                        "ring-1 ring-white"
                     )}
                     style={{ zIndex: 0 }}
                 >

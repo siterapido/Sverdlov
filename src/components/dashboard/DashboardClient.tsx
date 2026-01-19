@@ -157,7 +157,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                                 key={index}
                                                 className="flex items-center gap-4 p-4 hover:bg-surface-hover transition-all cursor-pointer border-b border-zinc-50 last:border-0 dark:border-zinc-900"
                                             >
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
                                                     <Calendar className="h-5 w-5" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -199,7 +199,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                                 key={member.id}
                                                 className="flex items-center gap-4 p-4 hover:bg-surface-hover transition-all cursor-pointer group"
                                             >
-                                                <Avatar fallback={member.name} size="md" className="bg-zinc-100 text-zinc-900 rounded-sm border border-border group-hover:border-primary transition-colors" />
+                                                <Avatar fallback={member.name} size="md" className="bg-zinc-100 text-zinc-900 rounded-none border border-border group-hover:border-primary transition-colors" />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-bold text-zinc-900">
                                                         {member.name}
@@ -210,7 +210,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                                 </div>
                                                 <Badge
                                                     variant={member.status === "active" ? "green" : "yellow"}
-                                                    className="rounded-sm font-black uppercase text-[9px] px-2 py-0.5"
+                                                    className="rounded-none font-black uppercase text-[9px] px-2 py-0.5"
                                                 >
                                                     {getStatusLabel(member.status)}
                                                 </Badge>
@@ -269,7 +269,7 @@ function ActionCard({
     return (
         <Link href={href}>
             <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-sm bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-none bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
                     {icon}
                 </div>
                 <h3 className="text-sm font-black text-zinc-900 mb-1 uppercase tracking-tight">

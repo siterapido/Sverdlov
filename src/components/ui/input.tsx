@@ -6,18 +6,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Eye, EyeOff, Search, X } from "lucide-react";
 
 const inputVariants = cva(
-    "flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300",
+    "flex h-10 w-full rounded-none border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 transition-all",
     {
         variants: {
             variant: {
-                default: "",
-                error: "border-red-500 focus-visible:ring-red-500 dark:border-red-900",
-                success: "border-emerald-500 focus-visible:ring-emerald-500 dark:border-emerald-900",
+                default: "focus:border-primary",
+                error: "border-red-500 focus-visible:ring-red-500",
+                success: "border-emerald-500 focus-visible:ring-emerald-500",
             },
             inputSize: {
-                sm: "h-9 px-3 text-xs",
-                default: "h-10 px-3",
-                lg: "h-11 px-4",
+                sm: "h-8 px-3 text-xs",
+                default: "h-11 px-3",
+                lg: "h-14 px-4 text-base",
             },
         },
         defaultVariants: {
@@ -158,7 +158,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={cn("bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800", className)}
+                className={cn("bg-zinc-50 border-zinc-200", className)}
                 {...props}
             />
         );
@@ -183,7 +183,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 <textarea
                     className={cn(
                         inputVariants({ variant: computedVariant }),
-                        "min-h-[80px] py-2 resize-none h-auto",
+                        "min-h-[100px] py-3 resize-none h-auto",
                         className
                     )}
                     ref={ref}
@@ -191,9 +191,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 />
                 {(error || success) && (
                     <p className={cn(
-                        "text-xs mt-1.5 font-medium",
-                        error && "text-red-500 dark:text-red-400",
-                        success && "text-emerald-500 dark:text-emerald-400"
+                        "text-[10px] mt-1.5 font-black uppercase tracking-tight",
+                        error && "text-red-500",
+                        success && "text-emerald-500"
                     )}>
                         {error || success}
                     </p>
@@ -215,13 +215,13 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
             <label
                 ref={ref}
                 className={cn(
-                    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-900 dark:text-zinc-100 mb-2 block",
+                    "text-[10px] font-black uppercase tracking-[0.15em] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-500 mb-2.5 block",
                     className
                 )}
                 {...props}
             >
                 {children}
-                {required && <span className="text-red-500 ml-0.5">*</span>}
+                {required && <span className="text-primary ml-1">*</span>}
             </label>
         );
     }

@@ -118,7 +118,7 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
             <motion.button
                 onClick={handleClick}
                 className={cn(
-                    "relative flex h-10 w-10 items-center justify-center rounded-sm",
+                    "relative flex h-10 w-10 items-center justify-center rounded-none",
                     "bg-zinc-50 hover:bg-zinc-100 border border-border transition-all",
                     "focus:outline-none focus:ring-2 focus:ring-primary",
                     className
@@ -157,7 +157,7 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "flex h-10 items-center gap-2 rounded-lg px-3",
+                    "flex h-10 items-center gap-2 rounded-none px-3",
                     "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors",
                     "focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
                 )}
@@ -184,7 +184,7 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                         exit={{ opacity: 0, y: -8 }}
                         className={cn(
                             "absolute right-0 top-full mt-2 z-50",
-                            "min-w-[140px] rounded-xl border border-zinc-200 dark:border-zinc-800",
+                            "min-w-[140px] rounded-none border border-zinc-200 dark:border-zinc-800",
                             "bg-white dark:bg-zinc-900 shadow-xl overflow-hidden"
                         )}
                     >

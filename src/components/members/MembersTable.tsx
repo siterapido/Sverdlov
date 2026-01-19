@@ -2,12 +2,8 @@
 
 import React, { useState } from "react";
 import {
-    MoreHorizontal,
     FileDown,
-    Filter,
     Users,
-    Mail,
-    Phone,
     MapPin,
     Trash2,
     Eye
@@ -18,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Member {
@@ -38,6 +33,46 @@ interface MembersTableProps {
     initialMembers: Member[];
     onImportClick: () => void;
     onNewClick: () => void;
+}
+
+function FilterButton({
+    label,
+    count,
+    active,
+    onClick,
+    variant = "default"
+}: {
+    label: string,
+    count: number,
+    active: boolean,
+    onClick: () => void,
+    variant?: "default" | "blue" | "green"
+}) {
+    return (
+        <button
+            onClick={onClick}
+            className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-none text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-b-2",
+                active
+                    ? (variant === "green" ? "text-emerald-600 border-emerald-600" :
+                        variant === "blue" ? "text-primary border-primary" :
+                            "text-zinc-900 border-zinc-900")
+                    : "text-zinc-400 border-transparent hover:text-zinc-900"
+            )}
+        >
+            {label}
+            <span className={cn(
+                "px-1.5 py-0.5 text-[9px] tabular-nums",
+                active
+                    ? (variant === "green" ? "bg-emerald-600 text-white" :
+                        variant === "blue" ? "bg-primary text-white" :
+                            "bg-zinc-900 text-white")
+                    : "bg-zinc-100 text-zinc-500"
+            )}>
+                {count}
+            </span>
+        </button>
+    );
 }
 
 export function MembersTable({ initialMembers, onImportClick, onNewClick }: MembersTableProps) {
@@ -62,11 +97,21 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
         interested: initialMembers.filter(m => m.status === 'interested').length,
     };
 
+    const getStatusLabel = (status: string) => {
+        const labels: Record<string, string> = {
+            active: "Ativo",
+            interested: "Interessado",
+            in_formation: "Em Formação",
+            inactive: "Inativo"
+        };
+        return labels[status] || status;
+    };
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-10">
             {/* Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="flex items-center gap-2 overflow-x-auto pb-0 scrollbar-none border-b border-zinc-100 w-full md:w-auto">
                     <FilterButton
                         label="Todos"
                         count={statusCounts.all}
@@ -89,192 +134,143 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                     />
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="w-full md:w-80">
+                <div className="flex items-center gap-4">
+                    <div className="w-full md:w-96">
                         <SearchInput
-                            placeholder="Pesquisar por nome, CPF ou cidade..."
+                            placeholder="PESQUISAR FILIADOS..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onClear={() => setSearchTerm("")}
+                            className="rounded-none border-zinc-900 border-2"
                         />
                     </div>
-                    <Button variant="outline" size="sm" onClick={onImportClick} className="hidden sm:flex items-center gap-2">
-                        <FileDown className="h-4 w-4" />
-                        Exportar
+                    <Button variant="outline" size="lg" onClick={onImportClick} className="hidden sm:flex items-center gap-2 border-2 border-zinc-900 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                        <FileDown className="h-5 w-5" />
+                        EXPORTAR
                     </Button>
                 </div>
             </div>
 
             {/* Table Card */}
-            <Card hover={false} className="overflow-hidden border-zinc-200 dark:border-zinc-800">
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-zinc-50/50 border-b border-zinc-200 dark:bg-zinc-900/50 dark:border-zinc-800">
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400">Filiado</th>
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400">Documentação</th>
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400">Localidade</th>
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400">Núcleo</th>
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400">Status</th>
-                                    <th className="px-6 py-4 text-[12px] font-semibold text-zinc-500 uppercase tracking-wider dark:text-zinc-400"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                                <AnimatePresence mode="popLayout">
-                                    {filteredMembers.map((member) => (
-                                        <motion.tr
-                                            key={member.id}
-                                            layout
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            className="group hover:bg-zinc-50 transition-colors dark:hover:bg-zinc-900"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar fallback={member.fullName} size="md" className="bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400" />
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-semibold text-zinc-900 group-hover:text-blue-600 transition-colors dark:text-zinc-50 dark:group-hover:text-blue-400">
-                                                            {member.fullName}
-                                                        </span>
-                                                        <span className="text-xs text-zinc-500 italic dark:text-zinc-400">
-                                                            Filiado em {new Date(member.createdAt).toLocaleDateString()}
-                                                        </span>
-                                                    </div>
+            <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-zinc-900 border-b-2 border-zinc-900">
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Filiado</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Documentação</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Localidade</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Núcleo</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]"></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            <AnimatePresence mode="popLayout">
+                                {filteredMembers.map((member) => (
+                                    <motion.tr
+                                        key={member.id}
+                                        layout
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="group hover:bg-zinc-50 transition-all cursor-pointer"
+                                        onClick={() => router.push(`/members/${member.id}`)}
+                                    >
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-4">
+                                                <Avatar fallback={member.fullName} size="md" className="bg-zinc-100 text-zinc-900 rounded-none border-2 border-zinc-900" />
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="text-[15px] font-black text-zinc-900 group-hover:text-primary transition-colors leading-tight">
+                                                        {member.fullName}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                                                        DESDE {new Date(member.createdAt).toLocaleDateString()}
+                                                    </span>
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-col gap-1">
-                                                    <div className="flex items-center gap-1.5 text-xs text-zinc-600 tabular-nums dark:text-zinc-400">
-                                                        <span className="font-medium text-zinc-900 dark:text-zinc-200">CPF:</span> {member.cpf}
-                                                    </div>
-                                                    {member.voterTitle && (
-                                                        <div className="flex items-center gap-1.5 text-xs text-zinc-500 tabular-nums dark:text-zinc-500">
-                                                            <span className="font-medium">Título:</span> {member.voterTitle}
-                                                        </div>
-                                                    )}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-col gap-1.5">
+                                                <div className="flex items-center gap-2 text-[11px] font-bold text-zinc-600 tabular-nums">
+                                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest bg-zinc-50 px-1.5 py-0.5 border border-zinc-100">CPF</span> {member.cpf}
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-col gap-1">
-                                                    <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300">
-                                                        <MapPin className="h-3 w-3 text-zinc-400" />
-                                                        {member.city}, {member.state}
+                                                {member.voterTitle && (
+                                                    <div className="flex items-center gap-2 text-[11px] font-bold text-zinc-500 tabular-nums">
+                                                        <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest bg-zinc-50 px-1.5 py-0.5 border border-zinc-100">TÍTULO</span> {member.voterTitle}
                                                     </div>
-                                                    {member.zone && (
-                                                        <span className="text-xs text-zinc-400 ml-4.5">
-                                                            Zona {member.zone}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {member.nucleusName ? (
-                                                    <Badge variant="blue" className="font-medium">
-                                                        {member.nucleusName}
-                                                    </Badge>
-                                                ) : (
-                                                    <span className="text-xs text-zinc-400 italic">Sem núcleo</span>
                                                 )}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <Badge
-                                                    variant={
-                                                        member.status === 'active' ? "green" :
-                                                            member.status === 'interested' ? "blue" :
-                                                                "yellow"
-                                                    }
-                                                    dot
-                                                    dotColor={
-                                                        member.status === 'active' ? "green" :
-                                                            member.status === 'interested' ? "blue" :
-                                                                "yellow"
-                                                    }
-                                                    className="shadow-none"
-                                                >
-                                                    {member.status === 'active' ? 'Ativo' :
-                                                        member.status === 'interested' ? 'Interessado' :
-                                                            member.status === 'in_formation' ? 'Em Formação' : 'Inativo'}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2 text-[13px] font-bold text-zinc-900">
+                                                    <MapPin className="h-4 w-4 text-primary" />
+                                                    {member.city}, {member.state}
+                                                </div>
+                                                {member.zone && (
+                                                    <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider ml-6">
+                                                        Zona {member.zone}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            {member.nucleusName ? (
+                                                <Badge variant="blue" className="font-black border-2 border-primary">
+                                                    {member.nucleusName}
                                                 </Badge>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <Button variant="ghost" size="icon" onClick={() => router.push(`/members/${member.id}`)}>
-                                                        <Eye className="h-4 w-4 text-zinc-500" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </AnimatePresence>
-                                {filteredMembers.length === 0 && (
-                                    <tr>
-                                        <td colSpan={6} className="px-6 py-20 text-center">
-                                            <div className="flex flex-col items-center gap-3">
-                                                <div className="h-16 w-16 bg-zinc-100 rounded-full flex items-center justify-center dark:bg-zinc-800">
-                                                    <Users className="h-8 w-8 text-zinc-400" />
-                                                </div>
-                                                <div className="max-w-[250px]">
-                                                    <p className="text-zinc-900 font-medium dark:text-zinc-50">Nenhum filiado encontrado</p>
-                                                    <p className="text-zinc-500 text-sm mt-1 dark:text-zinc-400">Tente ajustar sua busca ou filtros para encontrar o que procura.</p>
-                                                </div>
-                                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus(null); }}>
-                                                    Limpar filtros
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest italic">SEM NÚCLEO</span>
+                                            )}
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <Badge
+                                                variant={
+                                                    member.status === 'active' ? "green" :
+                                                        member.status === 'interested' ? "blue" :
+                                                            "yellow"
+                                                }
+                                                className="border-2 font-black"
+                                            >
+                                                {getStatusLabel(member.status).toUpperCase()}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-8 py-6 text-right">
+                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                <Button variant="ghost" size="icon" className="hover:bg-zinc-100 rounded-none">
+                                                    <Eye className="h-5 w-5 text-zinc-400" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="hover:bg-red-50 hover:text-red-600 rounded-none">
+                                                    <Trash2 className="h-5 w-5" />
                                                 </Button>
                                             </div>
                                         </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
+                                    </motion.tr>
+                                ))}
+                            </AnimatePresence>
+                            {filteredMembers.length === 0 && (
+                                <tr>
+                                    <td colSpan={6} className="px-8 py-24 text-center">
+                                        <div className="flex flex-col items-center gap-6">
+                                            <div className="h-20 w-20 bg-zinc-50 border-2 border-zinc-100 flex items-center justify-center">
+                                                <Users className="h-10 w-10 text-zinc-300" />
+                                            </div>
+                                            <div className="max-w-[300px] space-y-2">
+                                                <p className="text-xl font-black uppercase tracking-tight text-zinc-900">Nenhum filiado encontrado</p>
+                                                <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Tente ajustar sua busca ou filtros para encontrar o que procura.</p>
+                                            </div>
+                                            <Button variant="outline" size="lg" className="rounded-none border-2 border-zinc-900 font-black uppercase tracking-widest text-[10px]" onClick={() => { setSearchTerm(""); setFilterStatus(null); }}>
+                                                Limpar filtros
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 }
-
-function FilterButton({
-    label,
-    count,
-    active,
-    onClick,
-    variant = "default"
-}: {
-    label: string,
-    count: number,
-    active: boolean,
-    onClick: () => void,
-    variant?: "default" | "blue" | "green"
-}) {
-    return (
-        <button
-            onClick={onClick}
-            className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all whitespace-nowrap border dark:border-zinc-800",
-                active
-                    ? (variant === "green" ? "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800" :
-                        variant === "blue" ? "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800" :
-                            "bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-50 dark:text-zinc-900")
-                    : "text-zinc-600 border-transparent hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
-            )}
-        >
-            {label}
-            <span className={cn(
-                "px-1.5 py-0.5 rounded-full text-[10px] tabular-nums",
-                active
-                    ? (variant === "green" ? "bg-white/50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400" :
-                        variant === "blue" ? "bg-white/50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400" :
-                            "bg-zinc-700 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-700")
-                    : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-            )}>
-                {count}
-            </span>
-        </button>
-    );
-}
-

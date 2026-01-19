@@ -10,7 +10,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white selection:bg-primary/20">
             <div className="w-full flex flex-col items-center max-w-sm mb-12 space-y-6">
-                <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                <div className="flex h-14 w-14 items-center justify-center rounded-none bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
                     <span className="text-xl font-black">UP</span>
                 </div>
                 <div className="text-center space-y-2">

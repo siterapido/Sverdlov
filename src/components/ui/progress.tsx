@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const progressVariants = cva(
-    "h-full rounded-full transition-all duration-500 ease-out",
+    "h-full rounded-none transition-all duration-700 ease-in-out",
     {
         variants: {
             variant: {
-                default: "bg-zinc-900 dark:bg-zinc-50",
+                default: "bg-primary",
                 success: "bg-emerald-500",
                 warning: "bg-amber-500",
-                danger: "bg-red-500",
+                danger: "bg-red-600",
             },
         },
         defaultVariants: {
@@ -32,9 +32,9 @@ interface ProgressProps
 }
 
 const sizeClasses = {
-    sm: "h-1",
-    md: "h-2",
-    lg: "h-3",
+    sm: "h-1.5",
+    md: "h-3",
+    lg: "h-5",
 };
 
 export function Progress({
@@ -52,21 +52,21 @@ export function Progress({
     return (
         <div className={cn("relative w-full", className)} {...props}>
             {showLabel && (
-                <div className="flex justify-between text-xs text-zinc-500 mb-1 dark:text-zinc-400">
-                    <span>Progresso</span>
-                    <span>{Math.round(percentage)}%</span>
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1.5">
+                    <span>PROGRESSO</span>
+                    <span className="text-zinc-900 tabular-nums">{Math.round(percentage)}%</span>
                 </div>
             )}
             <div
                 className={cn(
-                    "w-full rounded-full bg-zinc-100 overflow-hidden dark:bg-zinc-800",
+                    "w-full rounded-none bg-zinc-50 border border-zinc-100 overflow-hidden",
                     sizeClasses[size]
                 )}
             >
                 <div
                     className={cn(
                         progressVariants({ variant }),
-                        animated && "transition-all duration-700 ease-out"
+                        animated && "transition-all"
                     )}
                     style={{ width: `${percentage}%` }}
                 />
@@ -118,7 +118,7 @@ export function CircularProgress({
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={strokeWidth}
-                    className="text-zinc-200 dark:text-zinc-800"
+                    className="text-zinc-100"
                 />
                 {/* Progress circle */}
                 <circle
@@ -126,16 +126,16 @@ export function CircularProgress({
                     cy={size / 2}
                     r={radius}
                     fill="none"
-                    stroke={variant === 'default' ? 'currentColor' : variantColors[variant]} // Use currentColor for default to support dark mode via css or hardcode if needed
+                    stroke={variant === 'default' ? '#0052FF' : variantColors[variant]} 
                     strokeWidth={strokeWidth}
-                    strokeLinecap="round"
+                    strokeLinecap="butt"
                     strokeDasharray={circumference}
                     strokeDashoffset={offset}
-                    className={cn("transition-all duration-500 ease-out", variant === 'default' && "text-zinc-900 dark:text-zinc-50")}
+                    className="transition-all duration-700 ease-in-out"
                 />
             </svg>
             {showLabel && (
-                <span className="absolute text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                <span className="absolute text-[10px] font-black tabular-nums text-zinc-900">
                     {Math.round(percentage)}%
                 </span>
             )}
@@ -164,46 +164,41 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
 
                 return (
                     <React.Fragment key={index}>
-                        {/* Step Circle */}
+                        {/* Step Square */}
                         <div className="flex flex-col items-center">
                             <div
                                 className={cn(
-                                    "flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold transition-all duration-300",
-                                    isCompleted && "bg-zinc-900 border-zinc-900 text-white dark:bg-zinc-50 dark:border-zinc-50 dark:text-zinc-900",
-                                    isCurrent && "border-zinc-900 text-zinc-900 bg-zinc-100 dark:border-zinc-50 dark:text-zinc-50 dark:bg-zinc-900",
-                                    !isCompleted && !isCurrent && "border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
+                                    "flex h-10 w-10 items-center justify-center rounded-none border-2 font-black transition-all",
+                                    isCompleted && "bg-primary border-primary text-white shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]",
+                                    isCurrent && "border-zinc-900 text-zinc-900 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]",
+                                    !isCompleted && !isCurrent && "border-zinc-100 text-zinc-300 bg-zinc-50"
                                 )}
                             >
                                 {isCompleted ? (
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
                                 ) : (
-                                    index + 1
+                                    String(index + 1).padStart(2, '0')
                                 )}
                             </div>
-                            <div className="mt-2 text-center">
+                            <div className="mt-4 text-center">
                                 <p className={cn(
-                                    "text-sm font-medium",
-                                    isCurrent ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400"
+                                    "text-[10px] font-black uppercase tracking-widest",
+                                    isCurrent ? "text-primary" : "text-zinc-500"
                                 )}>
                                     {step.label}
                                 </p>
-                                {step.description && (
-                                    <p className="text-xs text-zinc-400 mt-0.5 dark:text-zinc-500">
-                                        {step.description}
-                                    </p>
-                                )}
                             </div>
                         </div>
 
                         {/* Connector Line */}
                         {index < steps.length - 1 && (
-                            <div className="flex-1 mx-4">
+                            <div className="flex-1 mx-0 -mt-6">
                                 <div
                                     className={cn(
-                                        "h-0.5 transition-all duration-300",
-                                        index < currentStep ? "bg-zinc-900 dark:bg-zinc-50" : "bg-zinc-200 dark:bg-zinc-800"
+                                        "h-0.5 w-full transition-all",
+                                        index < currentStep ? "bg-primary" : "bg-zinc-100"
                                     )}
                                 />
                             </div>

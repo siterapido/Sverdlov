@@ -30,47 +30,50 @@ export default function MemberProfilePage() {
 
     return (
         <PageTransition>
-            <div className="flex flex-col h-screen bg-bg-primary overflow-hidden">
+            <div className="flex flex-col h-screen bg-white overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center gap-4 px-6 py-4 border-b border-border-subtle bg-bg-primary">
+                <div className="flex items-center gap-6 px-10 py-6 border-b border-zinc-100 bg-white">
                     <button
                         onClick={() => router.back()}
-                        className="p-1 hover:bg-bg-hover rounded transition-colors text-fg-secondary"
+                        className="p-2 hover:bg-zinc-50 rounded-none transition-all text-zinc-400 hover:text-zinc-900 border border-transparent hover:border-zinc-200"
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <User className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 bg-primary flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
+                            <User className="h-5 w-5 text-white" />
                         </div>
-                        <h1 className="text-lg font-semibold text-fg-primary">{member.fullName}</h1>
+                        <div>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Ficha Cadastral</span>
+                            <h1 className="text-2xl font-black text-zinc-900 uppercase tracking-tighter leading-none">{member.fullName}</h1>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8">
-                    <div className="max-w-4xl mx-auto space-y-8">
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-bg-secondary p-4 rounded-lg border border-border-subtle">
-                                <p className="text-xs text-fg-secondary font-medium uppercase tracking-wider mb-1">Status</p>
-                                <p className="text-sm font-semibold">{member.status}</p>
+                <div className="flex-1 overflow-y-auto p-10">
+                    <div className="max-w-4xl space-y-12">
+                        {/* Quick Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-2 border-zinc-900 divide-x-2 divide-zinc-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)]">
+                            <div className="p-6 bg-white">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">STATUS OPERACIONAL</p>
+                                <p className="text-sm font-black uppercase text-primary">{member.status}</p>
                             </div>
-                            <div className="bg-bg-secondary p-4 rounded-lg border border-border-subtle">
-                                <p className="text-xs text-fg-secondary font-medium uppercase tracking-wider mb-1">CPF</p>
-                                <p className="text-sm font-semibold">{member.cpf}</p>
+                            <div className="p-6 bg-white">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">DOCUMENTO IDENTIDADE</p>
+                                <p className="text-sm font-black tabular-nums">{member.cpf}</p>
                             </div>
-                            <div className="bg-bg-secondary p-4 rounded-lg border border-border-subtle">
-                                <p className="text-xs text-fg-secondary font-medium uppercase tracking-wider mb-1">Localidade</p>
-                                <p className="text-sm font-semibold">{member.city}, {member.state}</p>
+                            <div className="p-6 bg-white">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">LOCALIDADE TÉCNICA</p>
+                                <p className="text-sm font-black uppercase">{member.city} / {member.state}</p>
                             </div>
                         </div>
 
-                        {/* Full Edit Form */}
-                        <div className="bg-bg-primary border border-border-subtle rounded-lg overflow-hidden shadow-sm">
-                            <div className="px-6 py-4 border-b border-border-subtle bg-bg-hover/30">
-                                <h3 className="text-sm font-semibold text-fg-primary uppercase tracking-wider">Dados do Filiado</h3>
+                        {/* Full Edit Form Section */}
+                        <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                            <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
+                                <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Dados Estatutários e Operacionais</h3>
                             </div>
-                            <div className="p-6">
+                            <div className="p-10">
                                 <MemberForm initialData={member} isEditing={true} />
                             </div>
                         </div>

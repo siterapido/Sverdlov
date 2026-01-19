@@ -53,7 +53,7 @@ export default function TurnosPage({ params }: { params: Promise<{ id: string }>
             <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href={`/escalas/${scheduleId}`} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        <Link href={`/escalas/${scheduleId}`} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                         <div>
@@ -61,7 +61,7 @@ export default function TurnosPage({ params }: { params: Promise<{ id: string }>
                             <p className="text-sm text-gray-500">{schedule.name}</p>
                         </div>
                     </div>
-                    <button onClick={() => setShowNewSlot(true)} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    <button onClick={() => setShowNewSlot(true)} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-none hover:bg-red-600">
                         <Plus className="w-4 h-4" />Novo Turno
                     </button>
                 </div>
@@ -73,7 +73,7 @@ export default function TurnosPage({ params }: { params: Promise<{ id: string }>
                         <Clock className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                         <h3 className="text-lg font-medium mb-2">Nenhum turno cadastrado</h3>
                         <p className="text-gray-500 mb-6">Adicione turnos para organizar as atividades da escala</p>
-                        <button onClick={() => setShowNewSlot(true)} className="inline-flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        <button onClick={() => setShowNewSlot(true)} className="inline-flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-none hover:bg-red-600">
                             <Plus className="w-5 h-5" />Criar Primeiro Turno
                         </button>
                     </div>
@@ -127,7 +127,7 @@ function SlotCard({ slot, index, onDelete, onAssign, onReload }: { slot: Schedul
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}
-            className="bg-white dark:bg-gray-800 rounded-xl border overflow-hidden">
+            className="bg-white dark:bg-gray-800 rounded-none border overflow-hidden">
             <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50" onClick={() => setExpanded(!expanded)}>
                 <div className="flex items-center gap-4">
                     <div className="text-center min-w-[60px]">
@@ -145,10 +145,10 @@ function SlotCard({ slot, index, onDelete, onAssign, onReload }: { slot: Schedul
                 <div className="flex items-center gap-3">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>{statusConfig.label}</span>
                     <span className="text-sm text-gray-500"><Users className="w-4 h-4 inline mr-1" />0/{slot.maxParticipants}</span>
-                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg text-blue-500">
+                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-none text-blue-500">
                         <UserPlus className="w-4 h-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg text-red-500">
+                    <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-none text-red-500">
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </div>
@@ -164,7 +164,7 @@ function SlotCard({ slot, index, onDelete, onAssign, onReload }: { slot: Schedul
                             ) : (
                                 <div className="space-y-2">
                                     {assignments.map(a => (
-                                        <div key={a.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg">
+                                        <div key={a.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-none">
                                             <span className="text-sm">{a.memberName}</span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs text-gray-500">{a.status}</span>
@@ -200,52 +200,52 @@ function NewSlotModal({ scheduleId, onClose, onCreated }: { scheduleId: string; 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} onClick={e => e.stopPropagation()}
-                className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                className="bg-white dark:bg-gray-800 rounded-none w-full max-w-md max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b flex items-center justify-between">
                     <h2 className="text-lg font-semibold">Novo Turno</h2>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none"><X className="w-5 h-5" /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Nome do Turno *</label>
                         <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ex: Turno Manhã"
-                            className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                            className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Data *</label>
                         <input type="date" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })}
-                            className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                            className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Início *</label>
                             <input type="time" required value={form.startTime} onChange={e => setForm({ ...form, startTime: e.target.value })}
-                                className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                                className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Término *</label>
                             <input type="time" required value={form.endTime} onChange={e => setForm({ ...form, endTime: e.target.value })}
-                                className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                                className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                         </div>
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Local</label>
                         <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="Ex: Sede do partido"
-                            className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                            className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Máximo de Participantes</label>
                         <input type="number" min={1} value={form.maxParticipants} onChange={e => setForm({ ...form, maxParticipants: Number(e.target.value) })}
-                            className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700" />
+                            className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Observações</label>
                         <textarea rows={2} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
-                            className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 resize-none" />
+                            className="w-full px-4 py-2 border rounded-none bg-gray-50 dark:bg-gray-700 resize-none" />
                     </div>
                     <div className="flex gap-3 pt-4">
-                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
-                        <button type="submit" disabled={loading || !form.name} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50">
+                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border rounded-none hover:bg-gray-50">Cancelar</button>
+                        <button type="submit" disabled={loading || !form.name} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-none hover:bg-red-600 disabled:opacity-50">
                             {loading ? 'Criando...' : 'Criar Turno'}
                         </button>
                     </div>
@@ -280,10 +280,10 @@ function AssignMemberModal({ slotId, onClose, onAssigned }: { slotId: string; on
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} onClick={e => e.stopPropagation()}
-                className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+                className="bg-white dark:bg-gray-800 rounded-none w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col">
                 <div className="p-6 border-b flex items-center justify-between">
                     <h2 className="text-lg font-semibold">Atribuir Membro</h2>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none"><X className="w-5 h-5" /></button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
                     {loading ? (
@@ -294,13 +294,13 @@ function AssignMemberModal({ slotId, onClose, onAssigned }: { slotId: string; on
                         <div className="space-y-2">
                             <p className="text-sm text-gray-500 mb-4">Sugestões baseadas em disponibilidade:</p>
                             {suggestions.map(s => (
-                                <div key={s.memberId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                <div key={s.memberId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-none">
                                     <div>
                                         <p className="font-medium">{s.memberName}</p>
                                         <p className="text-xs text-gray-500">{s.reasons.join(' • ')}</p>
                                     </div>
                                     <button onClick={() => handleAssign(s.memberId)} disabled={assigning === s.memberId}
-                                        className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:opacity-50">
+                                        className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-none hover:bg-blue-600 disabled:opacity-50">
                                         {assigning === s.memberId ? '...' : 'Atribuir'}
                                     </button>
                                 </div>

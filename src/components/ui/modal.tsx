@@ -66,7 +66,7 @@ export function ModalContent({ children, className, size = "md" }: ModalContentP
     return (
         <div
             className={cn(
-                "mx-auto w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900",
+                "mx-auto w-full rounded-none border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]",
                 sizeClasses[size],
                 className
             )}
@@ -86,19 +86,19 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
     return (
         <div
             className={cn(
-                "flex items-center justify-between p-6 pb-2",
+                "flex items-center justify-between p-8 pb-4 border-b border-zinc-100 mb-4",
                 className
             )}
         >
-            <div className="flex-1 space-y-1.5 text-center sm:text-left">{children}</div>
+            <div className="flex-1 space-y-2 text-left">{children}</div>
             {onClose && (
                 <IconButton
-                    icon={<X className="h-4 w-4" />}
+                    icon={<X className="h-5 w-5" />}
                     aria-label="Close"
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="absolute right-4 top-4"
+                    className="hover:bg-zinc-100 rounded-none"
                 />
             )}
         </div>
@@ -112,7 +112,7 @@ interface ModalTitleProps {
 
 export function ModalTitle({ children, className }: ModalTitleProps) {
     return (
-        <h2 className={cn("text-lg font-semibold leading-none tracking-tight text-zinc-900 dark:text-zinc-50", className)}>
+        <h2 className={cn("text-2xl font-black uppercase tracking-tighter text-zinc-900 leading-none", className)}>
             {children}
         </h2>
     );
@@ -125,7 +125,7 @@ interface ModalDescriptionProps {
 
 export function ModalDescription({ children, className }: ModalDescriptionProps) {
     return (
-        <p className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)}>
+        <p className={cn("text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2", className)}>
             {children}
         </p>
     );
@@ -137,7 +137,7 @@ interface ModalBodyProps {
 }
 
 export function ModalBody({ children, className }: ModalBodyProps) {
-    return <div className={cn("p-6 pt-2", className)}>{children}</div>;
+    return <div className={cn("p-8 pt-0", className)}>{children}</div>;
 }
 
 interface ModalFooterProps {
@@ -149,7 +149,7 @@ export function ModalFooter({ children, className }: ModalFooterProps) {
     return (
         <div
             className={cn(
-                "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 pt-0",
+                "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4 p-8 pt-4 border-t border-zinc-100 bg-zinc-50",
                 className
             )}
         >

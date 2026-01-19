@@ -49,7 +49,7 @@ export default function PublicMembershipPage() {
                     </div>
 
                     {success ? (
-                        <div className="bg-white rounded-lg shadow-sm border border-border p-8 text-center">
+                        <div className="bg-white rounded-none shadow-sm border border-border p-8 text-center">
                             <div className="text-5xl mb-4">✅</div>
                             <h2 className="text-2xl font-semibold mb-2">Solicitação Enviada!</h2>
                             <p className="text-muted-foreground">
@@ -57,9 +57,9 @@ export default function PublicMembershipPage() {
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-lg shadow-sm border border-border p-8">
+                        <div className="bg-white rounded-none shadow-sm border border-border p-8">
                             {error && (
-                                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-sm text-red-700 text-sm">
+                                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-none text-red-700 text-sm">
                                     {error}
                                 </div>
                             )}
@@ -150,7 +150,7 @@ export default function PublicMembershipPage() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-primary text-primary-foreground py-3 rounded-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                    className="w-full bg-primary text-primary-foreground py-3 rounded-none font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                                 >
                                     {loading ? 'Enviando...' : 'Enviar Solicitação'}
                                 </button>

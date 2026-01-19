@@ -102,24 +102,24 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                             disabled={readOnly}
                             onClick={() => setSelectedDay(isSelected ? null : dayIndex)}
                             className={cn(
-                                "flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all min-h-[70px]",
+                                "flex flex-col items-center justify-center p-2 rounded-none border-2 transition-all min-h-[80px]",
                                 readOnly ? "cursor-default" : "cursor-pointer",
                                 isSelected
-                                    ? "border-accent bg-accent-light text-accent"
+                                    ? "border-primary bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]"
                                     : hasSlots
-                                        ? "border-success-light bg-success-light/30 text-fg-primary"
-                                        : "border-border-default bg-bg-primary text-fg-secondary hover:border-border-strong"
+                                        ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                                        : "border-zinc-100 bg-white text-zinc-400 hover:border-zinc-900 hover:text-zinc-900"
                             )}
-                            whileHover={readOnly ? {} : { scale: 1.02 }}
-                            whileTap={readOnly ? {} : { scale: 0.98 }}
+                            whileHover={readOnly ? {} : { y: -2 }}
+                            whileTap={readOnly ? {} : { y: 0 }}
                         >
-                            <span className="text-xs font-medium uppercase tracking-wide">{dayName}</span>
+                            <span className="text-[11px] font-black uppercase tracking-widest">{dayName}</span>
                             {hasSlots && (
                                 <div className={cn(
-                                    "mt-1 text-[10px] font-medium",
-                                    isSelected ? "text-accent" : "text-success"
+                                    "mt-2 text-[9px] font-black uppercase tracking-tight",
+                                    isSelected ? "text-white" : "text-emerald-600"
                                 )}>
-                                    {day.slots.length} horário{day.slots.length > 1 ? 's' : ''}
+                                    {day.slots.length} HORÁRIO{day.slots.length > 1 ? 'S' : ''}
                                 </div>
                             )}
                         </motion.button>
@@ -134,18 +134,19 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                 className="overflow-hidden"
             >
                 {selectedDay !== null && (
-                    <div className="bg-bg-secondary rounded-lg p-4 border border-border-default mt-2">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-sm font-medium text-fg-primary">{DAYS[selectedDay]} - Horários Disponíveis</h4>
-                            <div className="flex items-center gap-2">
+                    <div className="bg-white rounded-none p-8 border-2 border-zinc-900 mt-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)]">
+                        <div className="flex items-center justify-between mb-8 border-b border-zinc-50 pb-4">
+                            <h4 className="text-sm font-black uppercase tracking-widest text-zinc-900">{DAYS[selectedDay]} — PLANEJAMENTO DE HORÁRIOS</h4>
+                            <div className="flex items-center gap-4">
                                 {!readOnly && getDay(selectedDay)?.slots.length ? (
                                     <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => copyToAllDays(selectedDay)}
                                         leftIcon={<Copy className="w-3 h-3" />}
+                                        className="text-[10px] font-black uppercase tracking-widest"
                                     >
-                                        Copiar para todos
+                                        REPLICAR
                                     </Button>
                                 ) : null}
                                 {!readOnly && (
@@ -154,35 +155,36 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                                         size="sm"
                                         onClick={() => addSlot(selectedDay)}
                                         leftIcon={<Plus className="w-3 h-3" />}
+                                        className="text-[10px] font-black uppercase tracking-widest"
                                     >
-                                        Adicionar
+                                        ADICIONAR
                                     </Button>
                                 )}
                             </div>
                         </div>
 
                         {!getDay(selectedDay)?.slots.length ? (
-                            <p className="text-sm text-fg-muted text-center py-6 border border-dashed border-border-default rounded-lg">
-                                Nenhum horário cadastrado para este dia
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 text-center py-10 border-2 border-dashed border-zinc-100 bg-zinc-50/50">
+                                Nenhum registro técnico para este ciclo
                             </p>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 {getDay(selectedDay)?.slots.map(slot => (
-                                    <div key={slot.id} className="flex items-center gap-3 p-2 bg-bg-primary border border-border-default rounded-md">
+                                    <div key={slot.id} className="flex items-center gap-4 p-3 bg-zinc-50 border-2 border-zinc-100 rounded-none group hover:border-zinc-900 transition-all">
                                         <select
                                             value={slot.startTime}
                                             onChange={e => updateSlot(selectedDay, slot.id, 'startTime', e.target.value)}
                                             disabled={readOnly}
-                                            className="px-2 py-1 text-sm border border-border-default rounded bg-bg-secondary focus:border-accent outline-none"
+                                            className="px-3 py-1.5 text-xs font-black bg-white border-2 border-zinc-200 focus:border-primary outline-none transition-all"
                                         >
                                             {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
                                         </select>
-                                        <span className="text-fg-tertiary text-xs">até</span>
+                                        <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">ATÉ</span>
                                         <select
                                             value={slot.endTime}
                                             onChange={e => updateSlot(selectedDay, slot.id, 'endTime', e.target.value)}
                                             disabled={readOnly}
-                                            className="px-2 py-1 text-sm border border-border-default rounded bg-bg-secondary focus:border-accent outline-none"
+                                            className="px-3 py-1.5 text-xs font-black bg-white border-2 border-zinc-200 focus:border-primary outline-none transition-all"
                                         >
                                             {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
                                         </select>
@@ -190,9 +192,9 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                                             <button
                                                 type="button"
                                                 onClick={() => removeSlot(selectedDay, slot.id)}
-                                                className="ml-auto p-1.5 text-fg-tertiary hover:text-danger hover:bg-danger-light rounded-md transition-colors"
+                                                className="ml-auto p-2 text-zinc-300 hover:text-red-600 hover:bg-red-50 transition-all"
                                             >
-                                                <Trash2 className="w-3.5 h-3.5" />
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         )}
                                     </div>

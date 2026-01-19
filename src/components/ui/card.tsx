@@ -16,7 +16,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "rounded-sm bg-white text-zinc-900",
+                    "rounded-none bg-white text-zinc-900",
                     bordered && "border border-zinc-200",
                     hover && "cursor-pointer transition-colors hover:bg-zinc-50",
                     className
@@ -121,7 +121,7 @@ function StatCard({ title, value, subtitle, icon, trend, variant = "default", cl
     return (
         <div
             className={cn(
-                "relative rounded-sm border border-zinc-200 bg-white p-6 overflow-hidden",
+                "relative rounded-none border border-zinc-200 bg-white p-6 overflow-hidden",
                 className
             )}
         >
@@ -142,7 +142,7 @@ function StatCard({ title, value, subtitle, icon, trend, variant = "default", cl
                 </div>
                 {trend && (
                     <span className={cn(
-                        "text-[10px] font-bold px-2 py-0.5 rounded-sm border",
+                        "text-[10px] font-bold px-2 py-0.5 rounded-none border",
                         trend.isPositive
                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : "bg-red-50 text-red-700 border-red-100"

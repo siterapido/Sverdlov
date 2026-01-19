@@ -116,27 +116,27 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, x: 100, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className={cn(
-                "pointer-events-auto flex items-start gap-3 rounded-lg p-4 shadow-lg min-w-[300px] max-w-[400px] border",
-                "bg-white border-zinc-200 dark:bg-zinc-950 dark:border-zinc-800"
+                "pointer-events-auto flex items-start gap-4 rounded-none p-6 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)] min-w-[320px] max-w-[420px] border-2",
+                "bg-white border-zinc-900"
             )}
         >
             <span className={cn("shrink-0 mt-0.5", style.colorClass)}>{style.icon}</span>
             <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">{toast.title}</p>
+                <p className="font-black uppercase tracking-tighter text-sm text-zinc-900">{toast.title}</p>
                 {toast.description && (
-                    <p className="text-sm text-zinc-500 mt-0.5 dark:text-zinc-400">{toast.description}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mt-1.5 leading-relaxed">{toast.description}</p>
                 )}
             </div>
             <button
                 onClick={onClose}
-                className="shrink-0 rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 absolute right-2 top-2 transition-colors dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+                className="shrink-0 rounded-none p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 absolute right-2 top-2 transition-colors"
             >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
             </button>
         </motion.div>
     );

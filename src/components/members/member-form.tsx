@@ -67,32 +67,32 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 py-2">
+        <form onSubmit={handleSubmit} className="space-y-12">
             {error && (
                 <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl text-danger-500 text-sm flex items-center gap-2"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="p-6 bg-red-50 border-2 border-red-600 rounded-none text-red-600 flex items-center gap-4"
                 >
-                    <div className="h-2 w-2 rounded-full bg-danger-500 animate-pulse" />
-                    {error}
+                    <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse shrink-0" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">{error}</span>
                 </motion.div>
             )}
 
-            <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <div className="h-8 w-8 rounded-lg bg-primary-500/10 flex items-center justify-center">
-                        <User className="h-4 w-4 text-primary-500" />
+            <div className="space-y-8">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-zinc-900">
+                    <div className="h-8 w-8 bg-zinc-900 flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
                     </div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-fg-secondary">Informações Pessoais</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-900">Informações Estatutárias</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <FormGroup>
-                        <Label required>Nome Completo</Label>
+                        <Label required>Nome Civil Completo</Label>
                         <Input
                             name="fullName"
-                            placeholder="Ex: João da Silva"
+                            placeholder="EX: JOÃO DA SILVA"
                             defaultValue={initialData?.fullName}
                             leftIcon={<User className="h-4 w-4" />}
                             required
@@ -100,16 +100,16 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                     </FormGroup>
 
                     <FormGroup>
-                        <Label>Nome Social</Label>
+                        <Label>Nome Social / Identidade</Label>
                         <Input
                             name="socialName"
-                            placeholder="Como prefere ser chamado"
+                            placeholder="COMO PREFERE SER CHAMADO"
                             defaultValue={initialData?.socialName}
                         />
                     </FormGroup>
 
                     <FormGroup>
-                        <Label required>CPF</Label>
+                        <Label required>Cadastro de Pessoa Física (CPF)</Label>
                         <Input
                             name="cpf"
                             placeholder="000.000.000-00"
@@ -123,7 +123,7 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                         <Label>Título de Eleitor</Label>
                         <Input
                             name="voterTitle"
-                            placeholder="Número do título"
+                            placeholder="NÚMERO DO TÍTULO"
                             defaultValue={initialData?.voterTitle}
                         />
                     </FormGroup>
@@ -140,7 +140,7 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                     </FormGroup>
 
                     <FormGroup>
-                        <Label required>Telefone / WhatsApp</Label>
+                        <Label required>Telefone / Comunicação</Label>
                         <Input
                             name="phone"
                             placeholder="(11) 99999-9999"
@@ -151,11 +151,11 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                     </FormGroup>
 
                     <FormGroup className="md:col-span-2">
-                        <Label required>Email</Label>
+                        <Label required>Endereço de Correio Eletrônico (Email)</Label>
                         <Input
                             name="email"
                             type="email"
-                            placeholder="joao@exemplo.com"
+                            placeholder="JOAO@EXEMPLO.COM"
                             defaultValue={initialData?.email}
                             leftIcon={<Mail className="h-4 w-4" />}
                             required
@@ -164,51 +164,51 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                 </div>
             </div>
 
-            <div className="space-y-6 pt-4">
-                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <div className="h-8 w-8 rounded-lg bg-secondary-500/10 flex items-center justify-center">
-                        <MapPin className="h-4 w-4 text-secondary-500" />
+            <div className="space-y-8 pt-4">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-zinc-900">
+                    <div className="h-8 w-8 bg-zinc-900 flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-white" />
                     </div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-fg-secondary">Localização</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-900">Território e Localidade</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <FormGroup>
-                        <Label required>Estado (UF)</Label>
+                        <Label required>Unidade Federativa (UF)</Label>
                         <select
                             name="state"
-                            className="flex h-11 w-full rounded-xl border border-border-subtle bg-bg-primary px-3 py-2 text-sm text-fg-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none"
+                            className="flex h-11 w-full rounded-none border-2 border-zinc-200 bg-white px-3 py-2 text-[13px] font-black uppercase tracking-tight focus:border-primary outline-none transition-all appearance-none"
                             defaultValue={initialData?.state || ""}
                             required
                         >
-                            <option value="">Selecione...</option>
-                            <option value="AC">Acre</option>
-                            <option value="AL">Alagoas</option>
-                            <option value="AP">Amapá</option>
-                            <option value="AM">Amazonas</option>
-                            <option value="BA">Bahia</option>
-                            <option value="CE">Ceará</option>
-                            <option value="DF">Distrito Federal</option>
-                            <option value="ES">Espírito Santo</option>
-                            <option value="GO">Goiás</option>
-                            <option value="MA">Maranhão</option>
-                            <option value="MT">Mato Grosso</option>
-                            <option value="MS">Mato Grosso do Sul</option>
-                            <option value="MG">Minas Gerais</option>
-                            <option value="PA">Pará</option>
-                            <option value="PB">Paraíba</option>
-                            <option value="PR">Paraná</option>
-                            <option value="PE">Pernambuco</option>
-                            <option value="PI">Piauí</option>
-                            <option value="RJ">Rio de Janeiro</option>
-                            <option value="RN">Rio Grande do Norte</option>
-                            <option value="RS">Rio Grande do Sul</option>
-                            <option value="RO">Rondônia</option>
-                            <option value="RR">Roraima</option>
-                            <option value="SC">Santa Catarina</option>
-                            <option value="SP">São Paulo</option>
-                            <option value="SE">Sergipe</option>
-                            <option value="TO">Tocantins</option>
+                            <option value="">SELECIONE O ESTADO...</option>
+                            <option value="AC">ACRE</option>
+                            <option value="AL">ALAGOAS</option>
+                            <option value="AP">AMAPÁ</option>
+                            <option value="AM">AMAZONAS</option>
+                            <option value="BA">BAHIA</option>
+                            <option value="CE">CEARÁ</option>
+                            <option value="DF">DISTRITO FEDERAL</option>
+                            <option value="ES">ESPÍRITO SANTO</option>
+                            <option value="GO">GOIÁS</option>
+                            <option value="MA">MARANHÃO</option>
+                            <option value="MT">MATO GROSSO</option>
+                            <option value="MS">MATO GROSSO DO SUL</option>
+                            <option value="MG">MINAS GERAIS</option>
+                            <option value="PA">PARÁ</option>
+                            <option value="PB">PARAÍBA</option>
+                            <option value="PR">PARANÁ</option>
+                            <option value="PE">PERNAMBUCO</option>
+                            <option value="PI">PIAUÍ</option>
+                            <option value="RJ">RIO DE JANEIRO</option>
+                            <option value="RN">RIO GRANDE DO NORTE</option>
+                            <option value="RS">RIO GRANDE DO SUL</option>
+                            <option value="RO">RONDÔNIA</option>
+                            <option value="RR">RORAIMA</option>
+                            <option value="SC">SANTA CATARINA</option>
+                            <option value="SP">SÃO PAULO</option>
+                            <option value="SE">SERGIPE</option>
+                            <option value="TO">TOCANTINS</option>
                         </select>
                     </FormGroup>
 
@@ -216,45 +216,45 @@ export const MemberForm = ({ initialData, isEditing = false }: MemberFormProps) 
                         <Label required>Cidade</Label>
                         <Input
                             name="city"
-                            placeholder="Ex: São Paulo"
+                            placeholder="EX: SÃO PAULO"
                             defaultValue={initialData?.city}
                             required
                         />
                     </FormGroup>
 
                     <FormGroup>
-                        <Label required>Bairro</Label>
+                        <Label required>Bairro / Comunidade</Label>
                         <Input
                             name="neighborhood"
-                            placeholder="Ex: Pinheiros"
+                            placeholder="EX: PINHEIROS"
                             defaultValue={initialData?.neighborhood}
                             required
                         />
                     </FormGroup>
 
                     <FormGroup>
-                        <Label>Zona (Opcional)</Label>
+                        <Label>Zona Eleitoral (Se houver)</Label>
                         <Input
                             name="zone"
-                            placeholder="Ex: 001"
+                            placeholder="EX: 001"
                             defaultValue={initialData?.zone}
                         />
                     </FormGroup>
                 </div>
             </div>
 
-            <div className="pt-6 flex items-center justify-end gap-3">
+            <div className="pt-10 flex items-center justify-end border-t border-zinc-100">
                 <Button
                     type="submit"
                     disabled={loading}
                     variant="default"
                     size="lg"
-                    className="w-full md:w-auto min-w-[200px]"
+                    className="w-full md:w-auto min-w-[240px] bg-primary hover:brightness-110 text-white font-black uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(0,82,255,0.1)] active:translate-y-0.5 active:shadow-none"
                 >
-                    {loading ? "Processando..." : (
+                    {loading ? "PROCESSANDO..." : (
                         <>
-                            {isEditing ? "Salvar Alterações" : "Cadastrar Membro"}
-                            <ChevronRight className="ml-2 h-4 w-4" />
+                            {isEditing ? "SALVAR ALTERAÇÕES" : "CADASTRAR FILIADO"}
+                            <ChevronRight className="ml-2 h-5 w-5" />
                         </>
                     )}
                 </Button>

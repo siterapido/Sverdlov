@@ -52,41 +52,41 @@ export function ScheduleCard({ schedule, index = 0, showLink = true, compact = f
         <Card
             bordered
             hover={showLink}
-            className="overflow-hidden transition-all duration-200"
+            className="overflow-hidden border-2 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_0px_rgba(0,82,255,0.1)] transition-all group"
         >
-            <div className="h-1 w-full" style={{ backgroundColor: schedule.color || 'var(--color-border-default)' }} />
+            <div className="h-2 w-full" style={{ backgroundColor: schedule.color || '#0052FF' }} />
             
-            <CardContent className={compact ? 'p-3' : 'p-4'}>
-                <div className="flex items-start justify-between mb-2">
+            <CardContent className={compact ? 'p-6' : 'p-8'}>
+                <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">
-                        <h3 className={`font-medium text-fg-primary truncate ${compact ? 'text-sm' : 'text-base'}`}>
+                        <h3 className={`font-black text-zinc-900 uppercase tracking-tighter group-hover:text-primary transition-colors leading-none ${compact ? 'text-lg' : 'text-xl'}`}>
                             {schedule.name}
                         </h3>
                         {!compact && schedule.description && (
-                            <p className="text-xs text-fg-secondary mt-0.5 line-clamp-2">
+                            <p className="text-[11px] font-bold text-zinc-400 mt-2 uppercase tracking-wider line-clamp-2">
                                 {schedule.description}
                             </p>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 mb-3">
-                    <Badge variant={categoryVariant} size="sm">
-                        {CATEGORY_LABELS[schedule.category] || schedule.category}
+                <div className="flex items-center gap-2 mb-6">
+                    <Badge variant={categoryVariant} className="border-2 font-black">
+                        {CATEGORY_LABELS[schedule.category]?.toUpperCase() || schedule.category}
                     </Badge>
-                    <Badge variant={statusInfo.variant} dot dotColor={statusInfo.variant === 'default' ? 'gray' : statusInfo.variant} size="sm">
-                        {statusInfo.label}
+                    <Badge variant={statusInfo.variant} className="border-2 font-black">
+                        {statusInfo.label.toUpperCase()}
                     </Badge>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs text-fg-secondary">
-                    <div className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-6 text-[10px] font-black text-zinc-900 uppercase tracking-widest border-t border-zinc-50 pt-6 mt-auto">
+                    <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-primary" />
                         <span>{formatDate(schedule.startDate)}</span>
                     </div>
                     {schedule.territoryScope && (
-                        <div className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-primary" />
                             <span>{schedule.territoryScope.split(':')[0]}</span>
                         </div>
                     )}

@@ -112,7 +112,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
             <ModalContent size="lg">
                 <ModalHeader>
                     <ModalTitle className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-success-500/10 flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-none bg-success-500/10 flex items-center justify-center">
                             <FileSpreadsheet className="h-5 w-5 text-success-500" />
                         </div>
                         Importar Filiados
@@ -127,10 +127,10 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
                                 onClick={() => fileInputRef.current?.click()}
-                                className="border-2 border-dashed border-border-subtle rounded-2xl p-12 flex flex-col items-center gap-4 hover:bg-bg-hover hover:border-primary-500/50 cursor-pointer transition-all group relative overflow-hidden"
+                                className="border-2 border-dashed border-border-subtle rounded-none p-12 flex flex-col items-center gap-4 hover:bg-bg-hover hover:border-primary-500/50 cursor-pointer transition-all group relative overflow-hidden"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="bg-bg-hover p-5 rounded-2xl group-hover:bg-primary-500/10 group-hover:scale-110 transition-all shadow-sm">
+                                <div className="bg-bg-hover p-5 rounded-none group-hover:bg-primary-500/10 group-hover:scale-110 transition-all shadow-sm">
                                     <Upload className="h-8 w-8 text-fg-secondary group-hover:text-primary-500" />
                                 </div>
                                 <div className="text-center relative z-10">
@@ -159,7 +159,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="bg-bg-tertiary/50 border border-border-subtle p-4 rounded-xl flex items-start gap-3">
+                                <div className="bg-bg-tertiary/50 border border-border-subtle p-4 rounded-none flex items-start gap-3">
                                     <div className="h-5 w-5 mt-0.5 rounded-full bg-primary-500 flex items-center justify-center">
                                         <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
                                     </div>
@@ -171,7 +171,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
 
                                 <div className="grid gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {dbFields.map(field => (
-                                        <div key={field.key} className="flex items-center justify-between p-3 rounded-xl border border-border-subtle hover:border-primary-500/30 hover:bg-bg-hover/50 transition-all group">
+                                        <div key={field.key} className="flex items-center justify-between p-3 rounded-none border border-border-subtle hover:border-primary-500/30 hover:bg-bg-hover/50 transition-all group">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-semibold text-fg-primary flex items-center gap-1.5">
                                                     {field.label}
@@ -181,7 +181,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                             <select
                                                 value={mapping[field.key] || ""}
                                                 onChange={(e) => setMapping({ ...mapping, [field.key]: e.target.value })}
-                                                className="text-sm border border-border-subtle rounded-lg px-3 py-1.5 bg-bg-primary min-w-[220px] focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer group-hover:border-primary-500/50"
+                                                className="text-sm border border-border-subtle rounded-none px-3 py-1.5 bg-bg-primary min-w-[220px] focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer group-hover:border-primary-500/50"
                                             >
                                                 <option value="">Não importar</option>
                                                 {headers.map(h => (

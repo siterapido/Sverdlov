@@ -70,7 +70,7 @@ export function LoginForm() {
                                 autoComplete="email"
                                 autoCorrect="off"
                                 disabled={isLoading}
-                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-sm"
+                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-none"
                                 required
                             />
                         </div>
@@ -93,14 +93,14 @@ export function LoginForm() {
                                 name="password"
                                 type="password"
                                 disabled={isLoading}
-                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-sm"
+                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-none"
                                 required
                             />
                         </div>
                     </div>
 
                     {error && (
-                        <div className="p-4 bg-red-50 border border-red-100 rounded-sm text-xs font-bold text-red-600 uppercase tracking-tight animate-in fade-in-50">
+                        <div className="p-4 bg-red-50 border border-red-100 rounded-none text-xs font-bold text-red-600 uppercase tracking-tight animate-in fade-in-50">
                             {error}
                         </div>
                     )}

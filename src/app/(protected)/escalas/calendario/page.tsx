@@ -56,7 +56,7 @@ export default function CalendarioPage() {
             <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/escalas" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        <Link href="/escalas" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                         <div className="flex items-center gap-2">
@@ -65,10 +65,10 @@ export default function CalendarioPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={today} className="px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Hoje</button>
-                        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
+                        <button onClick={today} className="px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none">Hoje</button>
+                        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none"><ChevronLeft className="w-5 h-5" /></button>
                         <span className="font-medium min-w-[140px] text-center">{MONTHS[month]} {year}</span>
-                        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
+                        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none"><ChevronRight className="w-5 h-5" /></button>
                     </div>
                 </div>
             </header>
@@ -76,7 +76,7 @@ export default function CalendarioPage() {
             <main className="max-w-6xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Calendar Grid */}
-                    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border p-6">
+                    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-none border p-6">
                         <div className="grid grid-cols-7 gap-1 mb-2">
                             {DAYS.map(d => <div key={d} className="text-center text-sm font-medium text-gray-500 py-2">{d}</div>)}
                         </div>
@@ -91,7 +91,7 @@ export default function CalendarioPage() {
 
                                 return (
                                     <motion.button key={day} whileHover={{ scale: 1.05 }} onClick={() => setSelectedDate(dateStr)}
-                                        className={`aspect-square rounded-lg p-1 flex flex-col items-center justify-start gap-1 transition-colors
+                                        className={`aspect-square rounded-none p-1 flex flex-col items-center justify-start gap-1 transition-colors
                                             ${isSelected ? 'bg-red-500 text-white' : isToday ? 'bg-red-50 dark:bg-red-900/20' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                                         <span className={`text-sm font-medium ${isToday && !isSelected ? 'text-red-500' : ''}`}>{day}</span>
                                         {events.length > 0 && (
@@ -108,7 +108,7 @@ export default function CalendarioPage() {
                     </div>
 
                     {/* Events Panel */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-none border p-6">
                         <h3 className="font-semibold mb-4 flex items-center gap-2">
                             <Clock className="w-5 h-5 text-red-500" />
                             {selectedDate ? new Date(selectedDate + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Selecione um dia'}
@@ -121,7 +121,7 @@ export default function CalendarioPage() {
                             <div className="space-y-3">
                                 {selectedEvents.map(event => (
                                     <motion.div key={event.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                                        className="p-3 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-700/50" style={{ borderColor: event.scheduleColor }}>
+                                        className="p-3 rounded-none border-l-4 bg-gray-50 dark:bg-gray-700/50" style={{ borderColor: event.scheduleColor }}>
                                         <p className="font-medium text-sm">{event.name}</p>
                                         <p className="text-xs text-gray-500">{event.scheduleName}</p>
                                         <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">

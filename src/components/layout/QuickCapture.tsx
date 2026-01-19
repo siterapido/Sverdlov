@@ -32,16 +32,16 @@ export function QuickCapture() {
                 size="icon"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "h-8 w-8 rounded-full shadow-sm transition-all duration-200",
+                    "h-10 w-10 rounded-none shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all",
                     isOpen && "rotate-45"
                 )}
             >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-6 w-6" />
             </Button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-md bg-bg-primary border border-border-subtle shadow-lg py-1 z-50 animate-in fade-in zoom-in duration-200">
-                    <div className="px-3 py-2 text-xs font-semibold text-fg-secondary uppercase tracking-wider">
+                <div className="absolute right-0 mt-3 w-64 rounded-none bg-white border-2 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-3 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] border-b border-zinc-50 mb-1">
                         Captura Rápida
                     </div>
                     {actions.map((action) => (
@@ -49,10 +49,12 @@ export function QuickCapture() {
                             key={action.name}
                             href={action.href}
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-fg-primary hover:bg-bg-hover transition-colors"
+                            className="flex items-center gap-4 px-4 py-3 text-[13px] font-bold text-zinc-900 hover:bg-zinc-50 transition-all group"
                         >
-                            <action.icon className={cn("h-4 w-4", action.color)} />
-                            <span>{action.name}</span>
+                            <div className={cn("flex h-8 w-8 items-center justify-center border-2 border-zinc-100 group-hover:border-primary transition-colors", action.color)}>
+                                <action.icon className="h-4 w-4" />
+                            </div>
+                            <span className="uppercase tracking-tight">{action.name}</span>
                         </Link>
                     ))}
                 </div>

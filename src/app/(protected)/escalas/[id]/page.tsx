@@ -82,7 +82,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
                 <div className="max-w-5xl mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <Link href="/escalas" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                            <Link href="/escalas" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none">
                                 <ArrowLeft className="w-5 h-5" />
                             </Link>
                             <div className="flex items-center gap-3">
@@ -93,13 +93,13 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
                         </div>
                         <div className="flex items-center gap-2">
                             <button onClick={handleActivate} disabled={actionLoading}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-700">
+                                className="flex items-center gap-2 px-4 py-2 rounded-none border hover:bg-gray-50 dark:hover:bg-gray-700">
                                 {schedule.status === 'active' ? <><Check className="w-4 h-4" />Pausar</> : <><Play className="w-4 h-4" />Ativar</>}
                             </button>
-                            <Link href={`/escalas/${id}/editar`} className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <Link href={`/escalas/${id}/editar`} className="flex items-center gap-2 px-4 py-2 rounded-none border hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <Edit className="w-4 h-4" />Editar
                             </Link>
-                            <button onClick={handleDelete} disabled={actionLoading} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                            <button onClick={handleDelete} disabled={actionLoading} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-none">
                                 <Trash2 className="w-5 h-5" />
                             </button>
                         </div>
@@ -110,36 +110,36 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
             <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
                 {/* Info Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-none p-4 border">
                         <div className="flex items-center gap-2 text-gray-500 mb-1"><Calendar className="w-4 h-4" />Início</div>
                         <p className="font-semibold">{new Date(schedule.startDate).toLocaleDateString('pt-BR')}</p>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-none p-4 border">
                         <div className="flex items-center gap-2 text-gray-500 mb-1"><Clock className="w-4 h-4" />Tipo</div>
                         <p className="font-semibold capitalize">{schedule.type}</p>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-none p-4 border">
                         <div className="flex items-center gap-2 text-gray-500 mb-1"><MapPin className="w-4 h-4" />Território</div>
                         <p className="font-semibold">{schedule.territoryScope || 'Nacional'}</p>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-none p-4 border">
                         <div className="flex items-center gap-2 text-gray-500 mb-1"><Users className="w-4 h-4" />Turnos</div>
                         <p className="font-semibold">{schedule.slotsCount} turnos</p>
                     </div>
                 </div>
 
                 {schedule.description && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-none p-6 border">
                         <h3 className="font-medium mb-2">Descrição</h3>
                         <p className="text-gray-600 dark:text-gray-400">{schedule.description}</p>
                     </div>
                 )}
 
                 {/* Slots */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-none border overflow-hidden">
                     <div className="flex items-center justify-between p-6 border-b">
                         <h3 className="font-semibold flex items-center gap-2"><Clock className="w-5 h-5 text-red-500" />Turnos da Escala</h3>
-                        <Link href={`/escalas/${id}/turnos`} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        <Link href={`/escalas/${id}/turnos`} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-none hover:bg-red-600">
                             <Plus className="w-4 h-4" />Adicionar Turno
                         </Link>
                     </div>
@@ -175,7 +175,7 @@ function SlotRow({ slot }: { slot: ScheduleSlot }) {
             <div className="flex items-center gap-4">
                 {slot.location && <span className="text-sm text-gray-500 flex items-center gap-1"><MapPin className="w-4 h-4" />{slot.location}</span>}
                 <span className="text-sm"><Users className="w-4 h-4 inline mr-1" />0/{slot.maxParticipants}</span>
-                <Link href={`/escalas/${slot.scheduleId}/turnos?slot=${slot.id}`} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg">
+                <Link href={`/escalas/${slot.scheduleId}/turnos?slot=${slot.id}`} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-none">
                     <UserPlus className="w-4 h-4" />
                 </Link>
             </div>

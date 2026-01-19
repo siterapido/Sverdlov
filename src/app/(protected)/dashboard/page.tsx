@@ -16,30 +16,30 @@ export default async function DashboardPage() {
 
 function DashboardSkeleton() {
     return (
-        <div className="container mx-auto py-8 px-4 md:px-8 max-w-7xl">
-            <div className="mb-8 space-y-2">
-                <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-md" />
-                <div className="h-4 w-64 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-md" />
+        <div className="max-w-6xl">
+            <div className="mb-10 space-y-3 border-b border-zinc-100 pb-8">
+                <div className="h-10 w-48 bg-zinc-100 animate-pulse rounded-none" />
+                <div className="h-4 w-64 bg-zinc-100 animate-pulse rounded-none" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-0 border-2 border-zinc-100 mb-10">
                 {[...Array(5)].map((_, i) => (
-                    <SkeletonStatCard key={i} />
+                    <div key={i} className="h-32 bg-zinc-50 border-r last:border-r-0 border-zinc-100 animate-pulse" />
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                    <SkeletonCard className="h-64 rounded-lg" />
+                    <div className="h-64 bg-zinc-50 border-2 border-zinc-100 animate-pulse rounded-none" />
                 </div>
                 <div>
-                    <SkeletonCard className="h-64 rounded-lg" />
+                    <div className="h-64 bg-zinc-50 border-2 border-zinc-100 animate-pulse rounded-none" />
                 </div>
                 <div className="lg:col-span-2">
-                    <SkeletonCard className="h-64 rounded-lg" />
+                    <div className="h-64 bg-zinc-50 border-2 border-zinc-100 animate-pulse rounded-none" />
                 </div>
                 <div>
-                    <SkeletonCard className="h-64 rounded-lg" />
+                    <div className="h-64 bg-zinc-50 border-2 border-zinc-100 animate-pulse rounded-none" />
                 </div>
             </div>
         </div>

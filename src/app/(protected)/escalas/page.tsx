@@ -12,6 +12,7 @@ import {
     X
 } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import { getSchedules, ScheduleFilters } from '@/app/actions/schedules';
 import { Schedule } from '@/lib/db/schema';
 import { ScheduleCard, CATEGORY_LABELS } from '@/components/schedules/ScheduleCard';
@@ -55,62 +56,69 @@ export default function EscalasPage() {
 
     return (
         <PageTransition>
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-6xl">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <Calendar className="w-5 h-5 text-fg-secondary" />
-                            <h1 className="text-2xl font-semibold text-fg-primary">
-                                Escalas
-                            </h1>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-100 pb-8">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <div className="h-5 w-5 bg-primary flex items-center justify-center">
+                                <Calendar className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Execução e Planejamento</span>
                         </div>
-                        <p className="text-sm text-fg-secondary ml-7">
-                            Gerencie turnos e atribuições
+                        <h1 className="text-4xl font-black tracking-tighter text-zinc-900 uppercase leading-none">
+                            Escalas
+                        </h1>
+                        <p className="text-zinc-500 font-medium text-sm">
+                            Gestão técnica de turnos, atribuições de militantes e prontidão operacional.
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2">
                         <Link href="/escalas/calendario">
-                            <Button variant="ghost" size="sm" leftIcon={<CalendarDays className="w-4 h-4" />}>
-                                Calendário
+                            <Button variant="ghost" size="sm" className="font-black uppercase tracking-widest text-[10px] text-zinc-400 hover:text-zinc-900" leftIcon={<CalendarDays className="w-4 h-4" />}>
+                                CALENDÁRIO
                             </Button>
                         </Link>
                         <Link href="/escalas/minha-agenda">
-                            <Button variant="ghost" size="sm" leftIcon={<Clock className="w-4 h-4" />}>
-                                Minha Agenda
+                            <Button variant="ghost" size="sm" className="font-black uppercase tracking-widest text-[10px] text-zinc-400 hover:text-zinc-900" leftIcon={<Clock className="w-4 h-4" />}>
+                                MINHA AGENDA
                             </Button>
                         </Link>
                         <Link href="/escalas/nova">
-                            <Button variant="default" size="sm" leftIcon={<Plus className="w-4 h-4" />}>
-                                Nova Escala
+                            <Button variant="default" size="sm" className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all" leftIcon={<Plus className="w-4 h-4" />}>
+                                NOVA ESCALA
                             </Button>
                         </Link>
                     </div>
                 </div>
 
                 {/* Search and Filters */}
-                <div className="flex flex-col gap-4 mb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="flex-1 max-w-md">
+                <div className="flex flex-col gap-4 mb-10">
+                    <div className="flex items-center gap-4">
+                        <div className="flex-1 max-w-xl">
                             <SearchInput
-                                placeholder="Buscar escalas..."
+                                placeholder="BUSCAR ESCALAS POR NOME OU DESCRIÇÃO..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onSearch={handleSearch}
                                 onClear={() => { setSearchTerm(''); loadSchedules(); }}
+                                className="rounded-none border-zinc-900 border-2"
                             />
                         </div>
                         <Button
-                            variant={showFilters ? "secondary" : "ghost"}
-                            size="sm"
+                            variant={showFilters ? "secondary" : "outline"}
+                            size="lg"
                             onClick={() => setShowFilters(!showFilters)}
                             leftIcon={<Filter className="w-4 h-4" />}
-                            className={activeFiltersCount > 0 ? "text-accent" : ""}
+                            className={cn(
+                                "rounded-none border-2 border-zinc-900 font-black uppercase tracking-widest text-[10px]",
+                                activeFiltersCount > 0 ? "bg-primary text-white border-primary" : ""
+                            )}
                         >
-                            Filtros
+                            FILTROS
                             {activeFiltersCount > 0 && (
-                                <Badge variant="blue" className="ml-2 h-5 min-w-5 px-1">{activeFiltersCount}</Badge>
+                                <Badge variant="blue" className="ml-2 h-4 min-w-4 px-1 border-white">{activeFiltersCount}</Badge>
                             )}
                         </Button>
                     </div>
@@ -124,9 +132,9 @@ export default function EscalasPage() {
                                 exit={{ height: 0, opacity: 0 }}
                                 className="overflow-hidden"
                             >
-                                <div className="p-4 border border-border-default rounded-lg bg-bg-secondary grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div>
-                                        <Label className="mb-1.5">Status</Label>
+                                <div className="p-8 border-2 border-zinc-900 bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <div className="space-y-3">
+                                        <Label>STATUS</Label>
                                         <select
                                             value={filters.status || ''}
                                             onChange={(e) =>
@@ -135,17 +143,17 @@ export default function EscalasPage() {
                                                     status: e.target.value as Schedule['status'] || undefined,
                                                 })
                                             }
-                                            className="w-full h-8 px-2 text-sm bg-bg-primary border border-border-default rounded-[4px] focus:outline-none focus:border-accent"
+                                            className="w-full h-11 px-3 text-[13px] font-bold bg-zinc-50 border-2 border-zinc-200 focus:border-primary outline-none transition-all"
                                         >
-                                            <option value="">Todos</option>
-                                            <option value="active">Ativas</option>
-                                            <option value="draft">Rascunhos</option>
-                                            <option value="completed">Concluídas</option>
-                                            <option value="cancelled">Canceladas</option>
+                                            <option value="">TODOS</option>
+                                            <option value="active">ATIVAS</option>
+                                            <option value="draft">RASCUNHOS</option>
+                                            <option value="completed">CONCLUÍDAS</option>
+                                            <option value="cancelled">CANCELADAS</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <Label className="mb-1.5">Categoria</Label>
+                                    <div className="space-y-3">
+                                        <Label>CATEGORIA</Label>
                                         <select
                                             value={filters.category || ''}
                                             onChange={(e) =>
@@ -154,18 +162,18 @@ export default function EscalasPage() {
                                                     category: e.target.value as Schedule['category'] || undefined,
                                                 })
                                             }
-                                            className="w-full h-8 px-2 text-sm bg-bg-primary border border-border-default rounded-[4px] focus:outline-none focus:border-accent"
+                                            className="w-full h-11 px-3 text-[13px] font-bold bg-zinc-50 border-2 border-zinc-200 focus:border-primary outline-none transition-all"
                                         >
-                                            <option value="">Todas</option>
+                                            <option value="">TODAS</option>
                                             {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
                                                 <option key={value} value={value}>
-                                                    {label}
+                                                    {label.toUpperCase()}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
-                                    <div>
-                                        <Label className="mb-1.5">Tipo</Label>
+                                    <div className="space-y-3">
+                                        <Label>TIPO</Label>
                                         <select
                                             value={filters.type || ''}
                                             onChange={(e) =>
@@ -174,25 +182,25 @@ export default function EscalasPage() {
                                                     type: e.target.value as Schedule['type'] || undefined,
                                                 })
                                             }
-                                            className="w-full h-8 px-2 text-sm bg-bg-primary border border-border-default rounded-[4px] focus:outline-none focus:border-accent"
+                                            className="w-full h-11 px-3 text-[13px] font-bold bg-zinc-50 border-2 border-zinc-200 focus:border-primary outline-none transition-all"
                                         >
-                                            <option value="">Todos</option>
-                                            <option value="weekly">Semanal</option>
-                                            <option value="monthly">Mensal</option>
-                                            <option value="event">Evento</option>
-                                            <option value="permanent">Permanente</option>
+                                            <option value="">TODOS</option>
+                                            <option value="weekly">SEMANAL</option>
+                                            <option value="monthly">MENSAL</option>
+                                            <option value="event">EVENTO</option>
+                                            <option value="permanent">PERMANENTE</option>
                                         </select>
                                     </div>
                                     <div className="flex items-end">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="lg"
                                             onClick={() => setFilters({})}
-                                            className="w-full justify-center text-fg-secondary"
+                                            className="w-full justify-center text-zinc-400 font-black uppercase tracking-widest text-[10px] hover:bg-red-50 hover:text-red-600"
                                             disabled={activeFiltersCount === 0}
                                         >
-                                            <X className="w-3.5 h-3.5 mr-2" />
-                                            Limpar
+                                            <X className="w-4 h-4 mr-2" />
+                                            LIMPAR FILTROS
                                         </Button>
                                     </div>
                                 </div>
@@ -203,35 +211,35 @@ export default function EscalasPage() {
 
                 {/* Content */}
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <div
                                 key={i}
-                                className="h-40 bg-bg-secondary rounded-lg animate-pulse"
+                                className="h-56 bg-zinc-50 border-2 border-zinc-100 animate-pulse"
                             />
                         ))}
                     </div>
                 ) : filteredSchedules.length === 0 ? (
-                    <div className="text-center py-16 border border-dashed border-border-default rounded-xl bg-bg-secondary/30">
-                        <div className="w-12 h-12 mx-auto mb-3 bg-bg-secondary rounded-full flex items-center justify-center">
-                            <Calendar className="w-6 h-6 text-fg-tertiary" />
+                    <div className="text-center py-24 border-2 border-dashed border-zinc-200 bg-zinc-50/50">
+                        <div className="w-16 h-16 mx-auto mb-6 bg-white border-2 border-zinc-100 flex items-center justify-center">
+                            <Calendar className="w-8 h-8 text-zinc-300" />
                         </div>
-                        <h3 className="text-sm font-medium text-fg-primary mb-1">
+                        <h3 className="text-xl font-black uppercase tracking-tight text-zinc-900 mb-2">
                             Nenhuma escala encontrada
                         </h3>
-                        <p className="text-xs text-fg-secondary mb-4">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-8 max-w-[300px] mx-auto">
                             {searchTerm || Object.keys(filters).length > 0
-                                ? 'Tente ajustar os filtros de busca'
-                                : 'Comece criando sua primeira escala'}
+                                ? 'Ajuste os critérios de filtragem técnica para localizar registros.'
+                                : 'Inicie o planejamento operacional criando sua primeira escala.'}
                         </p>
                         <Link href="/escalas/nova">
-                            <Button variant="outline" size="sm" leftIcon={<Plus className="w-4 h-4" />}>
-                                Criar Nova Escala
+                            <Button variant="outline" size="lg" className="rounded-none border-2 border-zinc-900 font-black uppercase tracking-widest text-[10px]" leftIcon={<Plus className="w-4 h-4" />}>
+                                CRIAR NOVA ESCALA
                             </Button>
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredSchedules.map((schedule, index) => (
                             <ScheduleCard key={schedule.id} schedule={schedule} index={index} />
                         ))}
