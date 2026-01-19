@@ -54,7 +54,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
             className={cn(
                 "sticky top-0 z-30",
                 "flex h-14 items-center justify-between gap-4 px-6",
-                "bg-white/80 backdrop-blur-md dark:bg-black/80",
+                "bg-white dark:bg-zinc-950",
                 "border-b border-zinc-200 dark:border-zinc-800"
             )}
         >
@@ -82,8 +82,8 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                 className={cn(
                                     "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
                                     crumb.isLast
-                                        ? "text-zinc-900 font-medium dark:text-zinc-50"
-                                        : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800"
+                                        ? "text-sverdlov-blue font-bold dark:text-zinc-50"
+                                        : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800"
                                 )}
                             >
                                 {crumb.icon}
@@ -206,7 +206,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
 
                 {/* User Avatar (mobile only) */}
                 {isMobile && (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-white text-xs font-bold dark:bg-zinc-100 dark:text-zinc-900">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-bold border border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900">
                         UP
                     </div>
                 )}

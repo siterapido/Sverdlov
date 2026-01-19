@@ -101,7 +101,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
             <aside
                 className={cn(
                     "fixed left-0 top-0 z-40 h-screen",
-                    "bg-zinc-50 dark:bg-zinc-950",
+                    "bg-white dark:bg-zinc-950",
                     "border-r border-zinc-200 dark:border-zinc-800",
                     "transition-all duration-200 ease-out",
                     isCollapsed ? "w-[60px]" : "w-60",
@@ -117,11 +117,11 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                     )}>
                         {!isCollapsed && (
                             <Link href="/dashboard" className="flex items-center gap-2 group">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-white font-bold text-sm dark:bg-white dark:text-zinc-950">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-sverdlov-blue text-white font-bold text-sm">
                                     S
                                 </div>
-                                <div className="overflow-hidden">
-                                    <span className="text-zinc-900 font-semibold text-sm tracking-tight dark:text-zinc-100">
+                                <div className="flex-1 overflow-hidden">
+                                    <span className="text-zinc-900 font-bold text-sm tracking-tighter uppercase dark:text-zinc-100">
                                         Sverdlov
                                     </span>
                                 </div>
@@ -191,8 +191,8 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                                             "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
                                                             isCollapsed && "justify-center px-2",
                                                             isActive
-                                                                ? "bg-white text-zinc-900 shadow-sm font-medium dark:bg-zinc-800 dark:text-white"
-                                                                : "text-zinc-500 hover:bg-zinc-200/50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100"
+                                                                ? "bg-zinc-100 text-sverdlov-blue font-semibold dark:bg-zinc-800 dark:text-white"
+                                                                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100"
                                                         )}
                                                         title={isCollapsed ? item.name : undefined}
                                                     >
@@ -238,12 +238,12 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                         <div
                             className={cn(
                                 "mt-1 flex items-center gap-2 rounded-md px-2 py-2 cursor-pointer transition-colors",
-                                "hover:bg-zinc-200/50 dark:hover:bg-zinc-800",
+                                "hover:bg-zinc-50 dark:hover:bg-zinc-800",
                                 isCollapsed && "justify-center px-2"
                             )}
                             onClick={() => setShowUserMenu(!showUserMenu)}
                         >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-white text-xs font-bold dark:bg-white dark:text-zinc-950">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-bold border border-zinc-200 dark:bg-zinc-800 dark:text-white dark:border-zinc-700">
                                 UP
                             </div>
                             {!isCollapsed && (

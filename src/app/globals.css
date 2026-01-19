@@ -12,22 +12,25 @@
   --color-white: #FFFFFF;
   --color-black: #000000;
   
-  /* ZINC SCALE (Cool Neutrals for UI) */
-  --color-zinc-50: #FAFAFA;
-  --color-zinc-100: #F4F4F5;
-  --color-zinc-200: #E4E4E7;
-  --color-zinc-300: #D4D4D8;
-  --color-zinc-400: #A1A1AA;
-  --color-zinc-500: #71717A;
-  --color-zinc-600: #52525B;
-  --color-zinc-700: #3F3F46;
-  --color-zinc-800: #27272A;
-  --color-zinc-900: #18181B;
-  --color-zinc-950: #09090B;
+  /* SVERDLOV ROYAL BLUE (Brand Highlight) */
+  --color-sverdlov-blue: #0052FF;
+  
+  /* ZINC SCALE (Cool Neutrals for UI - Architectural Gray) */
+  --color-zinc-50: #F8F9FA;
+  --color-zinc-100: #F1F3F5;
+  --color-zinc-200: #E9ECEF;
+  --color-zinc-300: #DEE2E6;
+  --color-zinc-400: #ADB5BD;
+  --color-zinc-500: #6C757D;
+  --color-zinc-600: #495057;
+  --color-zinc-700: #343A40;
+  --color-zinc-800: #212529;
+  --color-zinc-900: #1A1D20;
+  --color-zinc-950: #121416;
 
   /* SEMANTIC COLORS */
   --color-background: var(--color-white);
-  --color-foreground: var(--color-zinc-950);
+  --color-foreground: var(--color-zinc-900);
   
   --color-surface: var(--color-white);
   --color-surface-hover: var(--color-zinc-50);
@@ -36,48 +39,48 @@
   --color-border: var(--color-zinc-200);
   --color-border-hover: var(--color-zinc-300);
   
-  --color-primary: var(--color-black);
+  --color-primary: var(--color-sverdlov-blue);
   --color-primary-foreground: var(--color-white);
   
   --color-muted: var(--color-zinc-500);
   --color-muted-foreground: var(--color-zinc-400);
 
   /* STATUS COLORS */
-  --color-success: #10B981;  /* Emerald 500 */
-  --color-warning: #F59E0B;  /* Amber 500 */
-  --color-danger: #EF4444;   /* Red 500 */
-  --color-info: #3B82F6;     /* Blue 500 */
+  --color-success: #00A86B;  /* Solid Green */
+  --color-warning: #FFBF00;  /* Solid Amber */
+  --color-danger: #D90429;   /* Solid Red */
+  --color-info: var(--color-sverdlov-blue);
 
-  /* RADIUS */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  /* RADIUS (Architectural / Sharp) */
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-xl: 4px;
   --radius-full: 9999px;
 
   /* TRANSITIONS */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 100ms ease;
+  --transition-normal: 200ms ease;
 }
 
-/* === DARK MODE OVERRIDES (Deep Dark Project) === */
+/* === DARK MODE OVERRIDES (Minimalist Dark) === */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: #000000; /* Pure Black */
-    --color-foreground: #FFFFFF; /* Pure White */
+    --color-background: var(--color-zinc-950);
+    --color-foreground: #F8F9FA;
     
-    --color-surface: #09090B; /* Zinc 950 - Very subtle */
-    --color-surface-hover: #18181B; /* Zinc 900 */
-    --color-surface-active: #27272A; /* Zinc 800 */
+    --color-surface: var(--color-zinc-900);
+    --color-surface-hover: var(--color-zinc-800);
+    --color-surface-active: var(--color-zinc-700);
     
-    --color-border: #27272A; /* Zinc 800 */
-    --color-border-hover: #3F3F46; /* Zinc 700 */
+    --color-border: var(--color-zinc-800);
+    --color-border-hover: var(--color-zinc-700);
     
-    --color-primary: #FFFFFF;
-    --color-primary-foreground: #000000;
+    --color-primary: var(--color-sverdlov-blue);
+    --color-primary-foreground: #FFFFFF;
     
-    --color-muted: #A1A1AA; /* Zinc 400 */
-    --color-muted-foreground: #71717A; /* Zinc 500 */
+    --color-muted: var(--color-zinc-400);
+    --color-muted-foreground: var(--color-zinc-500);
   }
 }
 
