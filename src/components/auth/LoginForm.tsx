@@ -46,21 +46,21 @@ export function LoginForm() {
     }
 
     return (
-        <Card className="w-full max-w-[400px] shadow-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-            <CardHeader className="space-y-1 text-center pb-8 pt-8">
-                <CardTitle className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <Card className="w-full max-w-[420px] shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] border-zinc-200 bg-white">
+            <CardHeader className="space-y-2 text-center pb-8 pt-10 border-b border-zinc-50">
+                <CardTitle className="text-2xl font-black uppercase tracking-tight text-foreground">
                     Bem-vindo de volta
                 </CardTitle>
-                <CardDescription className="text-zinc-500 dark:text-zinc-400">
+                <CardDescription className="text-muted font-bold uppercase text-[10px] tracking-widest">
                     Digite suas credenciais para acessar sua conta
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <form onSubmit={onSubmit} className="space-y-4">
+            <CardContent className="pt-8">
+                <form onSubmit={onSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="email" className="text-zinc-700 dark:text-zinc-300">Email</Label>
+                        <Label htmlFor="email" className="font-black uppercase text-[10px] tracking-widest text-muted">Email</Label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-300" />
                             <Input
                                 id="email"
                                 name="email"
@@ -70,58 +70,58 @@ export function LoginForm() {
                                 autoComplete="email"
                                 autoCorrect="off"
                                 disabled={isLoading}
-                                className="pl-9 bg-zinc-50 border-zinc-200 focus:bg-white transition-all dark:bg-zinc-950 dark:border-zinc-800"
+                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-sm"
                                 required
                             />
                         </div>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300">Senha</Label>
+                            <Label htmlFor="password" className="font-black uppercase text-[10px] tracking-widest text-muted">Senha</Label>
                             <a
                                 href="#"
-                                className="text-xs font-medium text-blue-600 hover:text-blue-500 underline-offset-4 hover:underline dark:text-blue-400"
+                                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline underline-offset-4"
                                 onClick={(e) => e.preventDefault()}
                             >
                                 Esqueceu a senha?
                             </a>
                         </div>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                            <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-300" />
                             <Input
                                 id="password"
                                 name="password"
                                 type="password"
                                 disabled={isLoading}
-                                className="pl-9 bg-zinc-50 border-zinc-200 focus:bg-white transition-all dark:bg-zinc-950 dark:border-zinc-800"
+                                className="pl-10 h-11 bg-zinc-50 border-zinc-200 focus:bg-white transition-all font-medium rounded-sm"
                                 required
                             />
                         </div>
                     </div>
 
                     {error && (
-                        <div className="p-3 bg-red-50 border border-red-100 rounded-md text-sm text-red-600 dark:bg-red-900/10 dark:border-red-900/20 dark:text-red-400 animate-in fade-in-50">
+                        <div className="p-4 bg-red-50 border border-red-100 rounded-sm text-xs font-bold text-red-600 uppercase tracking-tight animate-in fade-in-50">
                             {error}
                         </div>
                     )}
 
                     <Button
-                        className="w-full h-10 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-zinc-200 dark:text-zinc-900 font-medium tracking-wide transition-all"
+                        className="w-full h-12 bg-primary hover:brightness-110 text-white font-black uppercase tracking-widest text-xs transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] active:translate-y-0.5 active:shadow-none"
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="h-5 w-5 animate-spin" />
                         ) : (
                             <span className="flex items-center gap-2">
-                                Entrar
-                                <ArrowRight className="h-4 w-4 opacity-50" />
+                                Entrar no sistema
+                                <ArrowRight className="h-4 w-4" />
                             </span>
                         )}
                     </Button>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4 pb-8 text-center text-sm text-zinc-500">
-                <div className="text-xs dark:text-zinc-500">
+            <CardFooter className="flex flex-col gap-4 pb-10 pt-4 text-center">
+                <div className="text-[10px] font-medium text-zinc-400 max-w-[280px] mx-auto leading-relaxed">
                     Protegido por reCAPTCHA e sujeito à Política de Privacidade e Termos de Serviço do Google.
                 </div>
             </CardFooter>

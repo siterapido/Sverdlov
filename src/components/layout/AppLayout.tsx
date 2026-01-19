@@ -20,7 +20,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground">
+        <div className="flex min-h-screen bg-white text-zinc-900">
             <Sidebar
                 isOpen={isMobile ? isSidebarOpen : true}
                 isCollapsed={!isMobile && isCollapsed}
@@ -31,12 +31,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div
                 className={cn(
                     "flex-1 flex flex-col transition-[margin] duration-200 ease-out",
-                    isMobile ? "ml-0" : (isCollapsed ? "ml-[60px]" : "ml-60")
+                    isMobile ? "ml-0" : (isCollapsed ? "ml-[60px]" : "ml-64")
                 )}
             >
                 <AppHeader toggleSidebar={toggleSidebar} isMobile={isMobile} />
 
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-auto p-10">
                     {children}
                 </main>
             </div>

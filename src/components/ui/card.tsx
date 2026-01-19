@@ -16,9 +16,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "rounded-sm bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50",
-                    bordered && "border border-zinc-200 dark:border-zinc-800",
-                    hover && "cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50",
+                    "rounded-sm bg-white text-zinc-900",
+                    bordered && "border border-zinc-200",
+                    hover && "cursor-pointer transition-colors hover:bg-zinc-50",
                     className
                 )}
                 {...props}
@@ -121,31 +121,31 @@ function StatCard({ title, value, subtitle, icon, trend, variant = "default", cl
     return (
         <div
             className={cn(
-                "relative rounded-sm border border-zinc-200 bg-white p-6 overflow-hidden dark:border-zinc-800 dark:bg-zinc-950",
+                "relative rounded-sm border border-zinc-200 bg-white p-6 overflow-hidden",
                 className
             )}
         >
-            <div className="flex items-center justify-between space-y-0 pb-2 border-b border-zinc-50 mb-4 dark:border-zinc-900">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest dark:text-zinc-500">
+            <div className="flex items-center justify-between space-y-0 pb-2 border-b border-zinc-50 mb-4">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                     {title}
                 </p>
                 {icon && (
-                    <div className="text-zinc-400 dark:text-zinc-500">
+                    <div className="text-zinc-400">
                         {icon}
                     </div>
                 )}
             </div>
 
             <div className="flex items-baseline justify-between">
-                <div className="text-3xl font-bold text-zinc-900 tracking-tighter dark:text-zinc-50">
+                <div className="text-3xl font-bold text-zinc-900 tracking-tighter">
                     {value}
                 </div>
                 {trend && (
                     <span className={cn(
                         "text-[10px] font-bold px-2 py-0.5 rounded-sm border",
                         trend.isPositive
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
-                            : "bg-red-50 text-red-700 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                            : "bg-red-50 text-red-700 border-red-100"
                     )}>
                         {trend.isPositive ? "+" : ""}{trend.value}%
                     </span>
@@ -153,7 +153,7 @@ function StatCard({ title, value, subtitle, icon, trend, variant = "default", cl
             </div>
 
             {subtitle && (
-                <p className="text-[11px] text-zinc-400 mt-2 font-medium dark:text-zinc-500">
+                <p className="text-[11px] text-zinc-400 mt-2 font-medium">
                     {subtitle}
                 </p>
             )}

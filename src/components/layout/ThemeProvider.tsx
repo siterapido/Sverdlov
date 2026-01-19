@@ -61,9 +61,9 @@ export function ThemeProvider({
         const resolved = resolveTheme();
         setResolvedTheme(resolved);
 
-        root.setAttribute("data-theme", resolved);
-        root.classList.remove("light", "dark");
-        root.classList.add(resolved);
+        root.classList.add("light");
+        root.classList.remove("dark");
+        root.style.colorScheme = "light";
 
         if (theme !== "system") {
             localStorage.setItem(storageKey, theme);

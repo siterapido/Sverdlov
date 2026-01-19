@@ -53,7 +53,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
             <div className="max-w-6xl">
                 {/* Header */}
                 <div className="mb-10 border-b border-border pb-6">
-                    <h1 className="text-4xl font-black tracking-tighter uppercase text-foreground leading-none">
+                    <h1 className="text-4xl font-black tracking-tighter uppercase text-zinc-900 leading-none">
                         Dashboard
                     </h1>
                     <p className="text-muted font-medium mt-2">
@@ -144,7 +144,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Próximos Eventos</span>
                                     <Link href="/calendar">
-                                        <Button variant="ghost" size="sm" className="h-8">
+                                        <Button variant="ghost" size="sm" className="h-8 text-zinc-400 hover:text-zinc-900 font-bold uppercase text-[10px] tracking-widest">
                                             Ver todos
                                         </Button>
                                     </Link>
@@ -161,7 +161,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                                     <Calendar className="h-5 w-5" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-foreground truncate">
+                                                    <p className="text-sm font-bold text-zinc-900 truncate">
                                                         {event.title}
                                                     </p>
                                                     <p className="text-[11px] font-medium text-muted uppercase tracking-wider">
@@ -183,13 +183,8 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Membros Recentes</span>
                                     <div className="flex items-center gap-3">
-                                        <AvatarGroup max={3}>
-                                            {recentMembers.map((member, i) => (
-                                                <Avatar key={i} fallback={member.name} size="sm" />
-                                            ))}
-                                        </AvatarGroup>
                                         <Link href="/members">
-                                            <Button variant="ghost" size="sm" className="h-8">
+                                            <Button variant="ghost" size="sm" className="h-8 text-zinc-400 hover:text-zinc-900 font-bold uppercase text-[10px] tracking-widest">
                                                 Ver todos
                                             </Button>
                                         </Link>
@@ -206,7 +201,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                             >
                                                 <Avatar fallback={member.name} size="md" className="bg-zinc-100 text-zinc-900 rounded-sm border border-border group-hover:border-primary transition-colors" />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-foreground dark:text-zinc-50">
+                                                    <p className="text-sm font-bold text-zinc-900">
                                                         {member.name}
                                                     </p>
                                                     <p className="text-[11px] font-medium text-muted uppercase tracking-wider mt-0.5">
@@ -273,11 +268,11 @@ function ActionCard({
 }) {
     return (
         <Link href={href}>
-            <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer dark:bg-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-sm bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner dark:bg-zinc-900">
+            <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-sm bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
                     {icon}
                 </div>
-                <h3 className="text-sm font-black text-foreground mb-1 uppercase tracking-tight">
+                <h3 className="text-sm font-black text-zinc-900 mb-1 uppercase tracking-tight">
                     {label}
                 </h3>
                 <p className="text-[11px] font-medium text-muted leading-relaxed">

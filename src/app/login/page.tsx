@@ -8,16 +8,16 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-zinc-50 dark:bg-black selection:bg-zinc-200 dark:selection:bg-zinc-800">
-            <div className="w-full flex flex-col items-center max-w-sm mb-8 space-y-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-xl">
-                    <span className="text-lg font-bold">UP</span>
+        <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white selection:bg-primary/20">
+            <div className="w-full flex flex-col items-center max-w-sm mb-12 space-y-6">
+                <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                    <span className="text-xl font-black">UP</span>
                 </div>
-                <div className="text-center space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50">
+                <div className="text-center space-y-2">
+                    <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase">
                         Sverdlov
                     </h1>
-                    <p className="text-zinc-500 dark:text-zinc-400">
+                    <p className="text-muted font-bold uppercase text-[11px] tracking-widest">
                         Gestão unificada para militantes
                     </p>
                 </div>
@@ -25,11 +25,11 @@ export default function LoginPage() {
 
             <LoginForm />
 
-            <div className="mt-8 text-center text-sm text-zinc-400 dark:text-zinc-600">
-                <p>Ainda não tem acesso?</p>
+            <div className="mt-12 text-center text-sm">
+                <p className="text-muted font-medium">Ainda não tem acesso?</p>
                 <a
                     href="/filie-se"
-                    className="font-medium text-zinc-900 hover:underline underline-offset-4 dark:text-zinc-300"
+                    className="mt-2 inline-block font-black text-primary uppercase text-xs tracking-wider hover:underline underline-offset-4"
                 >
                     Preencher formulário de filiação
                 </a>

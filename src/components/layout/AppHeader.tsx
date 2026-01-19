@@ -54,7 +54,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
             className={cn(
                 "sticky top-0 z-30",
                 "flex h-16 items-center justify-between gap-4 px-8",
-                "bg-white dark:bg-zinc-950",
+                "bg-white",
                 "border-b border-border"
             )}
         >
@@ -168,13 +168,13 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                 className={cn(
                                     "absolute right-0 top-full mt-2 z-50",
                                     "w-80 rounded-sm border border-border",
-                                    "bg-white shadow-2xl dark:bg-zinc-950"
+                                    "bg-white shadow-2xl"
                                 )}
                             >
                                 <div className="px-5 py-4 border-b border-border">
-                                    <h3 className="font-black text-xs uppercase tracking-widest text-foreground">Notificações</h3>
+                                    <h3 className="font-black text-xs uppercase tracking-widest text-zinc-900">Notificações</h3>
                                 </div>
-                                <div className="max-h-80 overflow-y-auto divide-y divide-zinc-50 dark:divide-zinc-900">
+                                <div className="max-h-80 overflow-y-auto divide-y divide-zinc-50">
                                     <NotificationItem
                                         title="Novo membro cadastrado"
                                         description="João Silva foi adicionado ao sistema"
@@ -229,19 +229,19 @@ function NotificationItem({
     return (
         <div
             className={cn(
-                "flex gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800",
-                unread && "bg-zinc-50 dark:bg-zinc-900"
+                "flex gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-zinc-50",
+                unread && "bg-zinc-50"
             )}
         >
             <div className="shrink-0 mt-1.5">
                 {unread && (
-                    <span className="block h-2 w-2 rounded-full bg-blue-500" />
+                    <span className="block h-2 w-2 rounded-full bg-primary" />
                 )}
             </div>
             <div className="flex-1 min-w-0">
-                <p className={cn("text-sm font-medium text-zinc-900 dark:text-zinc-50", unread && "font-semibold")}>{title}</p>
-                <p className="text-xs text-zinc-500 truncate dark:text-zinc-400">{description}</p>
-                <p className="text-[10px] text-zinc-400 mt-1 dark:text-zinc-500">{time}</p>
+                <p className={cn("text-sm font-medium text-zinc-900", unread && "font-bold")}>{title}</p>
+                <p className="text-xs text-zinc-500 truncate">{description}</p>
+                <p className="text-[10px] text-zinc-400 mt-1 uppercase font-bold tracking-tight">{time}</p>
             </div>
         </div>
     );

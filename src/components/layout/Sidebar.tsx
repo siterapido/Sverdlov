@@ -40,7 +40,7 @@ function QuickAction({
 }) {
     return (
         <button
-            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-foreground transition-all active:scale-[0.98]"
+            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-zinc-900 transition-all active:scale-[0.98]"
         >
             <div className="text-muted">
                 {icon}
@@ -123,7 +123,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                     S
                                 </div>
                                 <div className="overflow-hidden">
-                                    <span className="text-foreground font-black text-base tracking-tighter uppercase leading-none">
+                                    <span className="text-zinc-900 font-black text-base tracking-tighter uppercase leading-none">
                                         Sverdlov
                                     </span>
                                 </div>
@@ -132,7 +132,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                         <button
                             onClick={toggleSidebar}
                             className={cn(
-                                "rounded-sm p-2 text-muted hover:bg-surface-hover hover:text-foreground transition-all",
+                                "rounded-sm p-2 text-muted hover:bg-surface-hover hover:text-zinc-900 transition-all",
                                 isCollapsed && "mx-auto"
                             )}
                         >
@@ -169,7 +169,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                 {!isCollapsed ? (
                                     <button
                                         onClick={() => toggleSection(section.title)}
-                                        className="flex items-center gap-1 w-full px-2 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-[0.2em] transition-colors"
+                                        className="flex items-center gap-1 w-full px-2 py-1 text-[10px] font-bold text-muted hover:text-zinc-900 uppercase tracking-[0.2em] transition-colors"
                                     >
                                         <ChevronRight className={cn(
                                             "h-3 w-3 transition-transform",
@@ -193,8 +193,8 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                                             "flex items-center gap-3 rounded-sm px-3 py-2 text-[13px] transition-all",
                                                             isCollapsed && "justify-center px-2",
                                                             isActive
-                                                                ? "bg-primary text-primary-foreground font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
-                                                                : "text-muted hover:bg-surface-hover hover:text-foreground"
+                                                                ? "bg-primary text-white font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
+                                                                : "text-muted hover:bg-surface-hover hover:text-zinc-900"
                                                         )}
                                                         title={isCollapsed ? item.name : undefined}
                                                     >
@@ -246,13 +246,13 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                             )}
                             onClick={() => setShowUserMenu(!showUserMenu)}
                         >
-                            <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-black border border-border dark:bg-zinc-800 dark:text-white dark:border-zinc-700">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-black border border-border">
                                 UP
                             </div>
                             {!isCollapsed && (
                                 <>
                                     <div className="flex-1 overflow-hidden">
-                                        <p className="text-[13px] font-bold text-foreground truncate">
+                                        <p className="text-[13px] font-bold text-zinc-900 truncate">
                                             Usuário
                                         </p>
                                     </div>
@@ -266,7 +266,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
 
                         {/* User Menu Dropdown */}
                         {showUserMenu && !isCollapsed && (
-                            <div className="mt-2 rounded-sm bg-surface border border-border shadow-xl overflow-hidden">
+                            <div className="mt-2 rounded-sm bg-white border border-border shadow-xl overflow-hidden">
                                 <button className="flex w-full items-center gap-2 px-3 py-2.5 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-danger transition-colors">
                                     <LogOut className="h-4 w-4" />
                                     Sair
