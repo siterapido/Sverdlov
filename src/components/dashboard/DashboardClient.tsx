@@ -52,17 +52,17 @@ export function DashboardClient({ data }: DashboardClientProps) {
         <PageTransition>
             <div className="max-w-5xl">
                 {/* Header */}
-                <div className="mb-6">
-                    <h1 className="text-2xl font-semibold text-fg-primary">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                         Dashboard
                     </h1>
-                    <p className="text-sm text-fg-secondary mt-0.5">
-                        Visão geral da organização
+                    <p className="text-zinc-500 mt-1 dark:text-zinc-400">
+                        Visão geral da organização em tempo real
                     </p>
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                     <StatCard
                         title="Membros Ativos"
                         value={<AnimatedCounter value={stats.totalMembers} />}
@@ -101,7 +101,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Quick Actions */}
                     <div className="lg:col-span-2">
                         <Card bordered className="h-full">
@@ -111,7 +111,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <ActionCard
                                         href="/members?action=new"
                                         icon={<UserPlus className="h-4 w-4" />}
@@ -142,31 +142,31 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Próximos Eventos</span>
                                     <Link href="/calendar">
-                                        <Button variant="ghost" size="sm">
+                                        <Button variant="ghost" size="sm" className="h-8">
                                             Ver todos
                                         </Button>
                                     </Link>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-1">
+                                <div className="space-y-2">
                                     {upcomingEvents.map((event, index) => (
                                         <div
                                             key={index}
-                                            className="flex items-center gap-3 p-2 rounded-[4px] hover:bg-bg-hover transition-colors cursor-pointer"
+                                            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:bg-zinc-800 dark:hover:border-zinc-700"
                                         >
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-accent-light">
-                                                <Calendar className="h-4 w-4 text-accent" />
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-100 dark:bg-blue-900/30">
+                                                <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-fg-primary truncate">
+                                                <p className="text-sm font-semibold text-zinc-900 truncate dark:text-zinc-50">
                                                     {event.title}
                                                 </p>
-                                                <p className="text-xs text-fg-muted">
+                                                <p className="text-xs text-zinc-500 dark:text-zinc-400">
                                                     {event.date}
                                                 </p>
                                             </div>
-                                            <ArrowUpRight className="h-3.5 w-3.5 text-fg-muted" />
+                                            <ArrowUpRight className="h-4 w-4 text-zinc-400" />
                                         </div>
                                     ))}
                                 </div>
@@ -180,14 +180,14 @@ export function DashboardClient({ data }: DashboardClientProps) {
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span>Membros Recentes</span>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3">
                                         <AvatarGroup max={3}>
                                             {recentMembers.map((member, i) => (
                                                 <Avatar key={i} fallback={member.name} size="sm" />
                                             ))}
                                         </AvatarGroup>
                                         <Link href="/members">
-                                            <Button variant="ghost" size="sm">
+                                            <Button variant="ghost" size="sm" className="h-8">
                                                 Ver todos
                                             </Button>
                                         </Link>
@@ -200,25 +200,29 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                         recentMembers.map((member) => (
                                             <div
                                                 key={member.id}
-                                                className="flex items-center gap-3 p-2 rounded-[4px] hover:bg-bg-hover transition-colors cursor-pointer"
+                                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:bg-zinc-800 dark:hover:border-zinc-700"
                                             >
-                                                <Avatar fallback={member.name} size="sm" />
+                                                <Avatar fallback={member.name} size="md" className="bg-zinc-200 text-zinc-600" />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-fg-primary">
+                                                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
                                                         {member.name}
+                                                    </p>
+                                                    <p className="text-xs text-zinc-500 truncate mt-0.5">
+                                                        Cadastrado recentemente
                                                     </p>
                                                 </div>
                                                 <Badge
                                                     variant={member.status === "active" ? "green" : "yellow"}
                                                     dot
                                                     dotColor={member.status === "active" ? "green" : "yellow"}
+                                                    className="shadow-none border-0"
                                                 >
                                                     {getStatusLabel(member.status)}
                                                 </Badge>
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-fg-muted text-center py-4">Nenhum membro recente</p>
+                                        <p className="text-sm text-zinc-500 text-center py-6">Nenhum membro recente</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -232,9 +236,9 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 <CardTitle>Atividade</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex flex-col items-center justify-center h-32 text-fg-muted">
-                                    <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
-                                    <p className="text-xs">Gráfico em breve</p>
+                                <div className="flex flex-col items-center justify-center h-48 text-zinc-300 dark:text-zinc-700">
+                                    <TrendingUp className="h-10 w-10 mb-3 opacity-50" />
+                                    <p className="text-sm font-medium">Gráfico em breve</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -269,17 +273,17 @@ function ActionCard({
 }) {
     return (
         <Link href={href}>
-            <div className="group relative rounded-[4px] p-3 border border-border-default hover:bg-bg-hover transition-colors cursor-pointer">
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-[4px] bg-accent-light text-accent mb-2">
+            <div className="group relative rounded-lg p-5 border border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-zinc-100 text-zinc-900 mb-3 group-hover:bg-zinc-900 group-hover:text-white transition-colors dark:bg-zinc-800 dark:text-zinc-100 dark:group-hover:bg-zinc-100 dark:group-hover:text-zinc-900">
                     {icon}
                 </div>
-                <h3 className="text-sm font-medium text-fg-primary mb-0.5">
+                <h3 className="text-sm font-semibold text-zinc-900 mb-1 dark:text-zinc-50">
                     {label}
                 </h3>
-                <p className="text-xs text-fg-muted">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     {description}
                 </p>
-                <ArrowUpRight className="absolute top-3 right-3 h-3.5 w-3.5 text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowUpRight className="absolute top-4 right-4 h-4 w-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 group-hover:translate-x-1" />
             </div>
         </Link>
     );

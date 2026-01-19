@@ -20,7 +20,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <div className="flex min-h-screen bg-bg-primary text-fg-primary">
+        <div className="flex min-h-screen bg-background text-foreground">
             <Sidebar
                 isOpen={isMobile ? isSidebarOpen : true}
                 isCollapsed={!isMobile && isCollapsed}

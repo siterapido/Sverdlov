@@ -161,7 +161,7 @@ export function CounterWithTrend({
             <span
                 className={cn(
                     "flex items-center text-sm font-medium",
-                    isPositive ? "text-success-500" : "text-danger-500"
+                    isPositive ? "text-emerald-500" : "text-red-500"
                 )}
             >
                 <span className="mr-0.5">{isPositive ? "↑" : "↓"}</span>

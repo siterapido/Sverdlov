@@ -53,9 +53,9 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
         <header
             className={cn(
                 "sticky top-0 z-30",
-                "flex h-11 items-center justify-between gap-4 px-4",
-                "bg-bg-primary",
-                "border-b border-border-default"
+                "flex h-14 items-center justify-between gap-4 px-6",
+                "bg-white/80 backdrop-blur-md dark:bg-black/80",
+                "border-b border-zinc-200 dark:border-zinc-800"
             )}
         >
             {/* Left Side */}
@@ -75,15 +75,15 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                     {breadcrumbs.map((crumb, index) => (
                         <React.Fragment key={crumb.path}>
                             {index > 0 && (
-                                <ChevronRight className="h-3 w-3 text-fg-muted" />
+                                <ChevronRight className="h-3 w-3 text-zinc-400" />
                             )}
                             <a
                                 href={crumb.path}
                                 className={cn(
-                                    "flex items-center gap-1.5 px-1.5 py-0.5 rounded-[4px] transition-colors",
+                                    "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
                                     crumb.isLast
-                                        ? "text-fg-primary font-medium"
-                                        : "text-fg-secondary hover:text-fg-primary hover:bg-bg-hover"
+                                        ? "text-zinc-900 font-medium dark:text-zinc-50"
+                                        : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800"
                                 )}
                             >
                                 {crumb.icon}
@@ -95,14 +95,14 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
 
                 {/* Mobile: Page title */}
                 {isMobile && breadcrumbs.length > 0 && (
-                    <h1 className="text-sm font-medium text-fg-primary">
+                    <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                         {breadcrumbs[breadcrumbs.length - 1]?.label}
                     </h1>
                 )}
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
                 {/* Search */}
                 <div className="hidden md:block relative">
                     {searchOpen ? (
@@ -112,7 +112,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 onClear={() => setSearchValue("")}
-                                inputSize="sm"
+                                inputSize="default"
                                 autoFocus
                                 onBlur={() => {
                                     if (!searchValue) setSearchOpen(false);
@@ -124,11 +124,11 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => setSearchOpen(true)}
-                            leftIcon={<Search className="h-3.5 w-3.5" />}
-                            className="text-fg-secondary"
+                            leftIcon={<Search className="h-4 w-4" />}
+                            className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
                         >
                             Buscar
-                            <kbd className="ml-2 hidden lg:inline-flex h-5 items-center rounded-[3px] border border-border-default bg-bg-secondary px-1.5 text-[10px] font-medium text-fg-muted">
+                            <kbd className="ml-2 hidden lg:inline-flex h-5 items-center rounded border border-zinc-200 bg-zinc-50 px-1.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400">
                                 ⌘K
                             </kbd>
                         </Button>
@@ -156,7 +156,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                         onClick={() => setNotificationsOpen(!notificationsOpen)}
                     />
                     {/* Notification dot */}
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-danger" />
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full ring-2 ring-white dark:ring-black bg-red-500" />
 
                     {/* Notification dropdown */}
                     {notificationsOpen && (
@@ -167,13 +167,13 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                             />
                             <div
                                 className={cn(
-                                    "absolute right-0 top-full mt-1 z-50",
-                                    "w-80 rounded-lg border border-border-default",
-                                    "bg-bg-primary shadow-popup"
+                                    "absolute right-0 top-full mt-2 z-50",
+                                    "w-80 rounded-lg border border-zinc-200",
+                                    "bg-white shadow-lg dark:bg-zinc-900 dark:border-zinc-800"
                                 )}
                             >
-                                <div className="px-3 py-2 border-b border-border-default">
-                                    <h3 className="font-medium text-sm text-fg-primary">Notificações</h3>
+                                <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+                                    <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">Notificações</h3>
                                 </div>
                                 <div className="max-h-80 overflow-y-auto">
                                     <NotificationItem
@@ -194,8 +194,8 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                         time="Há 2 horas"
                                     />
                                 </div>
-                                <div className="px-3 py-2 border-t border-border-default">
-                                    <Button variant="ghost" size="sm" className="w-full text-fg-secondary">
+                                <div className="px-3 py-2 border-t border-zinc-200 dark:border-zinc-800">
+                                    <Button variant="ghost" size="sm" className="w-full text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
                                         Ver todas
                                     </Button>
                                 </div>
@@ -206,7 +206,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
 
                 {/* User Avatar (mobile only) */}
                 {isMobile && (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent-light text-accent text-xs font-medium">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-white text-xs font-bold dark:bg-zinc-100 dark:text-zinc-900">
                         UP
                     </div>
                 )}
@@ -230,19 +230,19 @@ function NotificationItem({
     return (
         <div
             className={cn(
-                "flex gap-3 px-3 py-2 cursor-pointer transition-colors hover:bg-bg-hover",
-                unread && "bg-accent-light/30"
+                "flex gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800",
+                unread && "bg-zinc-50 dark:bg-zinc-900"
             )}
         >
             <div className="shrink-0 mt-1.5">
                 {unread && (
-                    <span className="block h-2 w-2 rounded-full bg-accent" />
+                    <span className="block h-2 w-2 rounded-full bg-blue-500" />
                 )}
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-fg-primary truncate">{title}</p>
-                <p className="text-xs text-fg-secondary truncate">{description}</p>
-                <p className="text-[10px] text-fg-muted mt-0.5">{time}</p>
+                <p className={cn("text-sm font-medium text-zinc-900 dark:text-zinc-50", unread && "font-semibold")}>{title}</p>
+                <p className="text-xs text-zinc-500 truncate dark:text-zinc-400">{description}</p>
+                <p className="text-[10px] text-zinc-400 mt-1 dark:text-zinc-500">{time}</p>
             </div>
         </div>
     );

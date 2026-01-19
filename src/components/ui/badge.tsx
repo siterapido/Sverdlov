@@ -5,22 +5,27 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-    "inline-flex items-center rounded-[3px] text-xs font-medium transition-colors",
+    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 dark:focus:ring-zinc-300",
     {
         variants: {
             variant: {
-                default: "bg-bg-tertiary text-fg-secondary",
-                blue: "bg-accent-light text-accent",
-                green: "bg-success-light text-success",
-                yellow: "bg-warning-light text-warning",
-                red: "bg-danger-light text-danger",
-                gray: "bg-bg-active text-fg-secondary",
-                outline: "border border-border-default text-fg-secondary bg-transparent",
+                default:
+                    "border-transparent bg-zinc-900 text-zinc-50 hover:bg-zinc-900/80 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/80",
+                secondary:
+                    "border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80",
+                destructive:
+                    "border-transparent bg-red-500 text-zinc-50 hover:bg-red-500/80 dark:bg-red-900 dark:text-zinc-50 dark:hover:bg-red-900/80",
+                outline: "text-zinc-950 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800",
+                blue: "border-transparent bg-blue-100 text-blue-700 hover:bg-blue-100/80 dark:bg-blue-900/30 dark:text-blue-300",
+                green: "border-transparent bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 dark:bg-emerald-900/30 dark:text-emerald-300",
+                yellow: "border-transparent bg-amber-100 text-amber-700 hover:bg-amber-100/80 dark:bg-amber-900/30 dark:text-amber-300",
+                red: "border-transparent bg-red-100 text-red-700 hover:bg-red-100/80 dark:bg-red-900/30 dark:text-red-300",
+                gray: "border-transparent bg-zinc-100 text-zinc-700 hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-300",
             },
             size: {
-                sm: "px-1.5 py-0.5 text-[10px]",
-                default: "px-2 py-0.5",
-                lg: "px-2.5 py-1 text-sm",
+                sm: "px-2 py-0.5 text-[10px]",
+                default: "px-2.5 py-0.5",
+                lg: "px-3 py-1 text-sm",
             },
         },
         defaultVariants: {

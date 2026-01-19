@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 // === CARD ===
+// === CARD ===
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     hover?: boolean;
     bordered?: boolean;
@@ -15,9 +16,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "rounded-lg bg-bg-primary",
-                    bordered && "border border-border-default",
-                    hover && "cursor-pointer transition-colors duration-100 hover:bg-bg-hover",
+                    "rounded-lg bg-white text-zinc-950 shadow-sm dark:bg-zinc-900 dark:text-zinc-50",
+                    bordered && "border border-zinc-200 dark:border-zinc-800",
+                    hover && "cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
                     className
                 )}
                 {...props}
@@ -36,7 +37,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     ({ className, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn("flex flex-col space-y-1 p-4 pb-2", className)}
+            className={cn("flex flex-col space-y-1.5 p-6", className)}
             {...props}
         />
     )
@@ -50,7 +51,7 @@ const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
     ({ className, ...props }, ref) => (
         <h3
             ref={ref}
-            className={cn("text-sm font-medium text-fg-primary", className)}
+            className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
             {...props}
         />
     )
@@ -64,7 +65,7 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionPr
     ({ className, ...props }, ref) => (
         <p
             ref={ref}
-            className={cn("text-sm text-fg-secondary", className)}
+            className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)}
             {...props}
         />
     )
@@ -76,7 +77,7 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("p-4 pt-0", className)} {...props} />
+        <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
     )
 );
 CardContent.displayName = "CardContent";
@@ -88,14 +89,14 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
     ({ className, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn("flex items-center p-4 pt-0", className)}
+            className={cn("flex items-center p-6 pt-0", className)}
             {...props}
         />
     )
 );
 CardFooter.displayName = "CardFooter";
 
-// === STAT CARD (Notion Style) ===
+// === STAT CARD (Modern Style) ===
 type StatCardVariant = "default" | "blue" | "green" | "yellow" | "red";
 
 interface StatCardProps {
@@ -108,55 +109,51 @@ interface StatCardProps {
     className?: string;
 }
 
-const statCardVariants: Record<StatCardVariant, { bg: string; icon: string }> = {
-    default: { bg: "bg-bg-tertiary", icon: "text-fg-secondary" },
-    blue: { bg: "bg-accent-light", icon: "text-accent" },
-    green: { bg: "bg-success-light", icon: "text-success" },
-    yellow: { bg: "bg-warning-light", icon: "text-warning" },
-    red: { bg: "bg-danger-light", icon: "text-danger" },
+const statCardVariants: Record<StatCardVariant, { indicator: string }> = {
+    default: { indicator: "bg-zinc-900" },
+    blue: { indicator: "bg-blue-500" },
+    green: { indicator: "bg-emerald-500" },
+    yellow: { indicator: "bg-amber-500" },
+    red: { indicator: "bg-red-500" },
 };
 
 function StatCard({ title, value, subtitle, icon, trend, variant = "default", className }: StatCardProps) {
-    const styles = statCardVariants[variant];
-
     return (
         <div
             className={cn(
-                "rounded-lg border border-border-default bg-bg-primary p-4",
+                "relative rounded-lg border border-zinc-200 bg-white p-6 shadow-sm overflow-hidden dark:border-zinc-800 dark:bg-zinc-900",
                 className
             )}
         >
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    {title}
+                </p>
                 {icon && (
-                    <div className={cn(
-                        "flex items-center justify-center h-8 w-8 rounded-md",
-                        styles.bg
-                    )}>
-                        <span className={styles.icon}>{icon}</span>
+                    <div className="text-zinc-500 dark:text-zinc-400">
+                        {icon}
                     </div>
                 )}
+            </div>
+
+            <div className="flex items-baseline space-x-3">
+                <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                    {value}
+                </div>
                 {trend && (
                     <span className={cn(
-                        "text-xs font-medium px-2 py-0.5 rounded-sm",
+                        "text-xs font-medium px-2 py-0.5 rounded-full",
                         trend.isPositive
-                            ? "bg-success-light text-success"
-                            : "bg-danger-light text-danger"
+                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                            : "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400"
                     )}>
                         {trend.isPositive ? "+" : ""}{trend.value}%
                     </span>
                 )}
             </div>
 
-            <p className="text-xs font-medium text-fg-muted uppercase tracking-wide mb-1">
-                {title}
-            </p>
-
-            <p className="text-2xl font-semibold text-fg-primary">
-                {value}
-            </p>
-
             {subtitle && (
-                <p className="text-xs text-fg-muted mt-1">
+                <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
                     {subtitle}
                 </p>
             )}

@@ -91,26 +91,22 @@ interface ToastItemProps {
     onClose: () => void;
 }
 
-const toastStyles: Record<ToastType, { bg: string; icon: React.ReactNode; iconColor: string }> = {
+const toastStyles: Record<ToastType, { icon: React.ReactNode; colorClass: string }> = {
     success: {
-        bg: "bg-success-500",
         icon: <CheckCircle className="h-5 w-5" />,
-        iconColor: "text-white",
+        colorClass: "text-emerald-500 dark:text-emerald-400",
     },
     error: {
-        bg: "bg-danger-500",
         icon: <AlertCircle className="h-5 w-5" />,
-        iconColor: "text-white",
+        colorClass: "text-red-500 dark:text-red-400",
     },
     warning: {
-        bg: "bg-warning-500",
         icon: <AlertTriangle className="h-5 w-5" />,
-        iconColor: "text-white",
+        colorClass: "text-amber-500 dark:text-amber-400",
     },
     info: {
-        bg: "bg-primary-500",
         icon: <Info className="h-5 w-5" />,
-        iconColor: "text-white",
+        colorClass: "text-blue-500 dark:text-blue-400",
     },
 };
 
@@ -125,21 +121,20 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
             exit={{ opacity: 0, x: 100, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className={cn(
-                "pointer-events-auto flex items-start gap-3 rounded-xl p-4 shadow-xl min-w-[300px] max-w-[400px]",
-                style.bg,
-                "text-white"
+                "pointer-events-auto flex items-start gap-3 rounded-lg p-4 shadow-lg min-w-[300px] max-w-[400px] border",
+                "bg-white border-zinc-200 dark:bg-zinc-950 dark:border-zinc-800"
             )}
         >
-            <span className={cn("shrink-0 mt-0.5", style.iconColor)}>{style.icon}</span>
+            <span className={cn("shrink-0 mt-0.5", style.colorClass)}>{style.icon}</span>
             <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm">{toast.title}</p>
+                <p className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">{toast.title}</p>
                 {toast.description && (
-                    <p className="text-sm opacity-90 mt-0.5">{toast.description}</p>
+                    <p className="text-sm text-zinc-500 mt-0.5 dark:text-zinc-400">{toast.description}</p>
                 )}
             </div>
             <button
                 onClick={onClose}
-                className="shrink-0 rounded-lg p-1 hover:bg-white/20 transition-colors"
+                className="shrink-0 rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 absolute right-2 top-2 transition-colors dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
             >
                 <X className="h-4 w-4" />
             </button>

@@ -8,7 +8,7 @@ function Skeleton({ className, variant = "default", ...props }: SkeletonProps) {
     return (
         <div
             className={cn(
-                "animate-pulse bg-bg-tertiary",
+                "animate-pulse bg-zinc-200 dark:bg-zinc-800",
                 variant === "default" && "rounded-md",
                 variant === "circle" && "rounded-full",
                 variant === "text" && "rounded h-4",
@@ -22,7 +22,7 @@ function Skeleton({ className, variant = "default", ...props }: SkeletonProps) {
 // === SKELETON CARD ===
 function SkeletonCard({ className }: { className?: string }) {
     return (
-        <div className={cn("rounded-xl border border-border-subtle p-6 space-y-4", className)}>
+        <div className={cn("rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-4", className)}>
             <div className="flex items-center gap-4">
                 <Skeleton variant="circle" className="h-12 w-12" />
                 <div className="space-y-2 flex-1">
@@ -42,7 +42,7 @@ function SkeletonCard({ className }: { className?: string }) {
 // === SKELETON STAT CARD ===
 function SkeletonStatCard({ className }: { className?: string }) {
     return (
-        <div className={cn("rounded-2xl border border-border-subtle p-6 space-y-3", className)}>
+        <div className={cn("rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-3", className)}>
             <div className="flex items-center justify-between">
                 <Skeleton variant="circle" className="h-10 w-10" />
                 <Skeleton className="h-5 w-16" />
@@ -57,7 +57,7 @@ function SkeletonStatCard({ className }: { className?: string }) {
 // === SKELETON TABLE ROW ===
 function SkeletonTableRow({ columns = 4, className }: { columns?: number; className?: string }) {
     return (
-        <div className={cn("flex items-center gap-4 p-4 border-b border-border-subtle", className)}>
+        <div className={cn("flex items-center gap-4 p-4 border-b border-zinc-200 dark:border-zinc-800", className)}>
             {Array.from({ length: columns }).map((_, i) => (
                 <Skeleton
                     key={i}

@@ -33,13 +33,13 @@ export function Modal({ open, onOpenChange, children }: ModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/20 animate-fade-in"
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
                 onClick={() => onOpenChange(false)}
             />
 
             {/* Content */}
             <div
-                className="relative z-10 w-full animate-slide-up"
+                className="relative z-50 w-full animate-slide-up"
                 onClick={(e) => e.stopPropagation()}
             >
                 {children}
@@ -59,15 +59,14 @@ const sizeClasses = {
     md: "max-w-md",
     lg: "max-w-lg",
     xl: "max-w-xl",
-    full: "max-w-4xl",
+    full: "max-w-5xl",
 };
 
 export function ModalContent({ children, className, size = "md" }: ModalContentProps) {
     return (
         <div
             className={cn(
-                "mx-auto w-full rounded-lg border border-border-default",
-                "bg-bg-primary shadow-popup",
+                "mx-auto w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900",
                 sizeClasses[size],
                 className
             )}
@@ -87,18 +86,19 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
     return (
         <div
             className={cn(
-                "flex items-center justify-between px-4 py-3 border-b border-border-default",
+                "flex items-center justify-between p-6 pb-2",
                 className
             )}
         >
-            <div className="flex-1">{children}</div>
+            <div className="flex-1 space-y-1.5 text-center sm:text-left">{children}</div>
             {onClose && (
                 <IconButton
                     icon={<X className="h-4 w-4" />}
                     aria-label="Close"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
                     onClick={onClose}
+                    className="absolute right-4 top-4"
                 />
             )}
         </div>
@@ -112,7 +112,7 @@ interface ModalTitleProps {
 
 export function ModalTitle({ children, className }: ModalTitleProps) {
     return (
-        <h2 className={cn("text-sm font-medium text-fg-primary", className)}>
+        <h2 className={cn("text-lg font-semibold leading-none tracking-tight text-zinc-900 dark:text-zinc-50", className)}>
             {children}
         </h2>
     );
@@ -125,7 +125,7 @@ interface ModalDescriptionProps {
 
 export function ModalDescription({ children, className }: ModalDescriptionProps) {
     return (
-        <p className={cn("text-sm text-fg-secondary mt-0.5", className)}>
+        <p className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)}>
             {children}
         </p>
     );
@@ -137,7 +137,7 @@ interface ModalBodyProps {
 }
 
 export function ModalBody({ children, className }: ModalBodyProps) {
-    return <div className={cn("p-4", className)}>{children}</div>;
+    return <div className={cn("p-6 pt-2", className)}>{children}</div>;
 }
 
 interface ModalFooterProps {
@@ -149,7 +149,7 @@ export function ModalFooter({ children, className }: ModalFooterProps) {
     return (
         <div
             className={cn(
-                "flex items-center justify-end gap-2 px-4 py-3 border-t border-border-default bg-bg-secondary",
+                "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 pt-0",
                 className
             )}
         >
@@ -192,14 +192,11 @@ export function ConfirmDialog({
             <ModalContent size="sm">
                 <ModalHeader onClose={() => onOpenChange(false)}>
                     <ModalTitle>{title}</ModalTitle>
+                    <ModalDescription>{description}</ModalDescription>
                 </ModalHeader>
-                <ModalBody>
-                    <p className="text-sm text-fg-secondary">{description}</p>
-                </ModalBody>
                 <ModalFooter>
                     <Button
                         variant="ghost"
-                        size="sm"
                         onClick={() => onOpenChange(false)}
                         disabled={loading}
                     >
@@ -207,7 +204,6 @@ export function ConfirmDialog({
                     </Button>
                     <Button
                         variant={variant === "danger" ? "destructive" : "default"}
-                        size="sm"
                         onClick={handleConfirm}
                         loading={loading}
                     >

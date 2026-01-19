@@ -119,8 +119,8 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                 onClick={handleClick}
                 className={cn(
                     "relative flex h-10 w-10 items-center justify-center rounded-lg",
-                    "bg-bg-tertiary hover:bg-bg-hover transition-colors",
-                    "focus:outline-none focus:ring-2 focus:ring-primary-500",
+                    "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors",
+                    "focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100",
                     className
                 )}
                 whileHover={{ scale: 1.05 }}
@@ -136,9 +136,9 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                     transition={{ type: "spring", stiffness: 200, damping: 10 }}
                 >
                     {resolvedTheme === "dark" ? (
-                        <Moon className="h-5 w-5 text-fg-primary" />
+                        <Moon className="h-5 w-5 text-zinc-100" />
                     ) : (
-                        <Sun className="h-5 w-5 text-fg-primary" />
+                        <Sun className="h-5 w-5 text-zinc-900" />
                     )}
                 </motion.div>
             </motion.button>
@@ -158,16 +158,16 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "flex h-10 items-center gap-2 rounded-lg px-3",
-                    "bg-bg-tertiary hover:bg-bg-hover transition-colors",
-                    "focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors",
+                    "focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
                 )}
             >
                 {resolvedTheme === "dark" ? (
-                    <Moon className="h-4 w-4" />
+                    <Moon className="h-4 w-4 text-zinc-100" />
                 ) : (
-                    <Sun className="h-4 w-4" />
+                    <Sun className="h-4 w-4 text-zinc-900" />
                 )}
-                <span className="text-sm">
+                <span className="text-sm font-medium">
                     {options.find((o) => o.value === theme)?.label}
                 </span>
             </button>
@@ -184,8 +184,8 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                         exit={{ opacity: 0, y: -8 }}
                         className={cn(
                             "absolute right-0 top-full mt-2 z-50",
-                            "min-w-[140px] rounded-xl border border-border-subtle",
-                            "bg-bg-secondary shadow-xl overflow-hidden"
+                            "min-w-[140px] rounded-xl border border-zinc-200 dark:border-zinc-800",
+                            "bg-white dark:bg-zinc-900 shadow-xl overflow-hidden"
                         )}
                     >
                         {options.map((option) => (
@@ -197,8 +197,8 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
                                 }}
                                 className={cn(
                                     "flex w-full items-center gap-2 px-3 py-2 text-sm",
-                                    "hover:bg-bg-hover transition-colors",
-                                    theme === option.value && "bg-primary-500/10 text-primary-500"
+                                    "hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors",
+                                    theme === option.value && "bg-zinc-100 dark:bg-zinc-800 font-medium"
                                 )}
                             >
                                 {option.icon}

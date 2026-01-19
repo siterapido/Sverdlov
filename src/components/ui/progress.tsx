@@ -9,11 +9,10 @@ const progressVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-primary-500",
-                gradient: "bg-gradient-to-r from-primary-500 to-secondary-500",
-                success: "bg-success-500",
-                warning: "bg-warning-500",
-                danger: "bg-danger-500",
+                default: "bg-zinc-900 dark:bg-zinc-50",
+                success: "bg-emerald-500",
+                warning: "bg-amber-500",
+                danger: "bg-red-500",
             },
         },
         defaultVariants: {
@@ -53,14 +52,14 @@ export function Progress({
     return (
         <div className={cn("relative w-full", className)} {...props}>
             {showLabel && (
-                <div className="flex justify-between text-xs text-fg-secondary mb-1">
+                <div className="flex justify-between text-xs text-zinc-500 mb-1 dark:text-zinc-400">
                     <span>Progresso</span>
                     <span>{Math.round(percentage)}%</span>
                 </div>
             )}
             <div
                 className={cn(
-                    "w-full rounded-full bg-bg-tertiary overflow-hidden",
+                    "w-full rounded-full bg-zinc-100 overflow-hidden dark:bg-zinc-800",
                     sizeClasses[size]
                 )}
             >
@@ -83,16 +82,15 @@ interface CircularProgressProps {
     size?: number;
     strokeWidth?: number;
     showLabel?: boolean;
-    variant?: "default" | "gradient" | "success" | "warning" | "danger";
+    variant?: "default" | "success" | "warning" | "danger";
     className?: string;
 }
 
 const variantColors = {
-    default: "#6366F1",
-    gradient: "url(#gradient)",
-    success: "#10B981",
-    warning: "#F59E0B",
-    danger: "#EF4444",
+    default: "#18181b", // zinc-900
+    success: "#10B981", // emerald-500
+    warning: "#F59E0B", // amber-500
+    danger: "#EF4444",  // red-500
 };
 
 export function CircularProgress({
@@ -112,14 +110,6 @@ export function CircularProgress({
     return (
         <div className={cn("relative inline-flex items-center justify-center", className)}>
             <svg width={size} height={size} className="transform -rotate-90">
-                {variant === "gradient" && (
-                    <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#6366F1" />
-                            <stop offset="100%" stopColor="#8B5CF6" />
-                        </linearGradient>
-                    </defs>
-                )}
                 {/* Background circle */}
                 <circle
                     cx={size / 2}
@@ -128,7 +118,7 @@ export function CircularProgress({
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={strokeWidth}
-                    className="text-bg-tertiary"
+                    className="text-zinc-200 dark:text-zinc-800"
                 />
                 {/* Progress circle */}
                 <circle
@@ -136,16 +126,16 @@ export function CircularProgress({
                     cy={size / 2}
                     r={radius}
                     fill="none"
-                    stroke={variantColors[variant]}
+                    stroke={variant === 'default' ? 'currentColor' : variantColors[variant]} // Use currentColor for default to support dark mode via css or hardcode if needed
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={offset}
-                    className="transition-all duration-500 ease-out"
+                    className={cn("transition-all duration-500 ease-out", variant === 'default' && "text-zinc-900 dark:text-zinc-50")}
                 />
             </svg>
             {showLabel && (
-                <span className="absolute text-sm font-semibold text-fg-primary">
+                <span className="absolute text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                     {Math.round(percentage)}%
                 </span>
             )}
@@ -179,9 +169,9 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
                             <div
                                 className={cn(
                                     "flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold transition-all duration-300",
-                                    isCompleted && "bg-primary-500 border-primary-500 text-white",
-                                    isCurrent && "border-primary-500 text-primary-500 bg-primary-500/10",
-                                    !isCompleted && !isCurrent && "border-border-default text-fg-tertiary"
+                                    isCompleted && "bg-zinc-900 border-zinc-900 text-white dark:bg-zinc-50 dark:border-zinc-50 dark:text-zinc-900",
+                                    isCurrent && "border-zinc-900 text-zinc-900 bg-zinc-100 dark:border-zinc-50 dark:text-zinc-50 dark:bg-zinc-900",
+                                    !isCompleted && !isCurrent && "border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
                                 )}
                             >
                                 {isCompleted ? (
@@ -195,12 +185,12 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
                             <div className="mt-2 text-center">
                                 <p className={cn(
                                     "text-sm font-medium",
-                                    isCurrent ? "text-fg-primary" : "text-fg-secondary"
+                                    isCurrent ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400"
                                 )}>
                                     {step.label}
                                 </p>
                                 {step.description && (
-                                    <p className="text-xs text-fg-tertiary mt-0.5">
+                                    <p className="text-xs text-zinc-400 mt-0.5 dark:text-zinc-500">
                                         {step.description}
                                     </p>
                                 )}
@@ -213,7 +203,7 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
                                 <div
                                     className={cn(
                                         "h-0.5 transition-all duration-300",
-                                        index < currentStep ? "bg-primary-500" : "bg-border-default"
+                                        index < currentStep ? "bg-zinc-900 dark:bg-zinc-50" : "bg-zinc-200 dark:bg-zinc-800"
                                     )}
                                 />
                             </div>

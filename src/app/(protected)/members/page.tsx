@@ -17,15 +17,15 @@ export default async function MembersPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 mb-1">
-                        <div className="h-8 w-8 rounded-lg bg-primary-500/10 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-primary-500" />
+                        <div className="h-6 w-6 rounded-md bg-blue-100 flex items-center justify-center dark:bg-blue-900/30">
+                            <Users className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <span className="text-xs font-bold text-primary-500 uppercase tracking-wider">Gestão</span>
+                        <span className="text-xs font-bold text-blue-600 uppercase tracking-wider dark:text-blue-400">Gestão</span>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-fg-primary">
+                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                         Filiados
                     </h1>
-                    <p className="text-fg-secondary">
+                    <p className="text-zinc-500 dark:text-zinc-400">
                         Gerencie todos os membros e interessados da organização.
                     </p>
                 </div>
@@ -34,7 +34,7 @@ export default async function MembersPage() {
                     <Button variant="outline" className="hidden sm:flex items-center gap-2">
                         Relatórios
                     </Button>
-                    <Button className="flex items-center gap-2 shadow-lg shadow-primary-500/20">
+                    <Button className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-zinc-200 dark:text-zinc-900">
                         <Plus className="h-4 w-4" />
                         Novo Filiado
                     </Button>
@@ -52,10 +52,10 @@ function MembersSkeleton() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between gap-4">
-                <div className="h-10 w-64 bg-bg-tertiary animate-pulse rounded-full" />
-                <div className="h-10 w-80 bg-bg-tertiary animate-pulse rounded-lg" />
+                <div className="h-10 w-64 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-full" />
+                <div className="h-10 w-80 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-md" />
             </div>
-            <SkeletonCard className="h-[500px]" />
+            <SkeletonCard className="h-[500px] rounded-lg" />
         </div>
     );
 }

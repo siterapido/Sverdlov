@@ -6,18 +6,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Eye, EyeOff, Search, X } from "lucide-react";
 
 const inputVariants = cva(
-    "flex w-full rounded-[4px] border bg-bg-primary text-sm text-fg-primary transition-colors duration-100 placeholder:text-fg-placeholder disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none",
+    "flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300",
     {
         variants: {
             variant: {
-                default: "border-border-default hover:border-border-strong focus:border-accent focus:shadow-[0_0_0_2px_var(--color-accent-light)]",
-                error: "border-danger focus:border-danger focus:shadow-[0_0_0_2px_var(--color-danger-light)]",
-                success: "border-success focus:border-success focus:shadow-[0_0_0_2px_var(--color-success-light)]",
+                default: "",
+                error: "border-red-500 focus-visible:ring-red-500 dark:border-red-900",
+                success: "border-emerald-500 focus-visible:ring-emerald-500 dark:border-emerald-900",
             },
             inputSize: {
-                sm: "h-7 px-2 text-xs",
-                default: "h-8 px-3",
-                lg: "h-9 px-4",
+                sm: "h-9 px-3 text-xs",
+                default: "h-10 px-3",
+                lg: "h-11 px-4",
             },
         },
         defaultVariants: {
@@ -64,7 +64,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <div className="relative w-full">
                 {/* Left Icon */}
                 {leftIcon && (
-                    <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 pointer-events-none">
                         {leftIcon}
                     </div>
                 )}
@@ -73,8 +73,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     type={isPassword && showPassword ? "text" : type}
                     className={cn(
                         inputVariants({ variant: computedVariant, inputSize }),
-                        leftIcon && "pl-8",
-                        (rightIcon || isPassword || (showClear && hasValue)) && "pr-8",
+                        leftIcon && "pl-10",
+                        (rightIcon || isPassword || (showClear && hasValue)) && "pr-10",
                         className
                     )}
                     ref={ref}
@@ -83,15 +83,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 />
 
                 {/* Right Side Icons */}
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {/* Clear Button */}
                     {showClear && hasValue && onClear && (
                         <button
                             type="button"
                             onClick={onClear}
-                            className="text-fg-muted hover:text-fg-secondary transition-colors"
+                            className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
                         >
-                            <X className="h-3.5 w-3.5" />
+                            <X className="h-4 w-4" />
                         </button>
                     )}
 
@@ -100,19 +100,19 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="text-fg-muted hover:text-fg-secondary transition-colors"
+                            className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
                         >
                             {showPassword ? (
-                                <EyeOff className="h-3.5 w-3.5" />
+                                <EyeOff className="h-4 w-4" />
                             ) : (
-                                <Eye className="h-3.5 w-3.5" />
+                                <Eye className="h-4 w-4" />
                             )}
                         </button>
                     )}
 
                     {/* Custom Right Icon */}
                     {rightIcon && !isPassword && (
-                        <span className="text-fg-muted pointer-events-none">
+                        <span className="text-zinc-500 dark:text-zinc-400 pointer-events-none">
                             {rightIcon}
                         </span>
                     )}
@@ -121,9 +121,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 {/* Error/Success Messages */}
                 {(error || success) && (
                     <p className={cn(
-                        "text-xs mt-1",
-                        error && "text-danger",
-                        success && "text-success"
+                        "text-xs mt-1.5 font-medium",
+                        error && "text-red-500 dark:text-red-400",
+                        success && "text-emerald-500 dark:text-emerald-400"
                     )}>
                         {error || success}
                     </p>
@@ -151,14 +151,14 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             <Input
                 ref={ref}
                 type="search"
-                leftIcon={<Search className="h-3.5 w-3.5" />}
+                leftIcon={<Search className="h-4 w-4" />}
                 showClear={true}
                 onClear={onClear}
                 onKeyDown={handleKeyDown}
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={cn("bg-bg-secondary", className)}
+                className={cn("bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800", className)}
                 {...props}
             />
         );
@@ -183,7 +183,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 <textarea
                     className={cn(
                         inputVariants({ variant: computedVariant }),
-                        "min-h-[80px] py-2 resize-none",
+                        "min-h-[80px] py-2 resize-none h-auto",
                         className
                     )}
                     ref={ref}
@@ -191,9 +191,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 />
                 {(error || success) && (
                     <p className={cn(
-                        "text-xs mt-1",
-                        error && "text-danger",
-                        success && "text-success"
+                        "text-xs mt-1.5 font-medium",
+                        error && "text-red-500 dark:text-red-400",
+                        success && "text-emerald-500 dark:text-emerald-400"
                     )}>
                         {error || success}
                     </p>
@@ -215,13 +215,13 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
             <label
                 ref={ref}
                 className={cn(
-                    "text-xs font-medium text-fg-secondary mb-1 block uppercase tracking-wide",
+                    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-900 dark:text-zinc-100 mb-2 block",
                     className
                 )}
                 {...props}
             >
                 {children}
-                {required && <span className="text-danger ml-0.5">*</span>}
+                {required && <span className="text-red-500 ml-0.5">*</span>}
             </label>
         );
     }
