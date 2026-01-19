@@ -29,33 +29,33 @@
   --color-zinc-950: #121416;
 
   /* SEMANTIC COLORS */
-  --color-background: var(--color-white);
-  --color-foreground: var(--color-zinc-900);
+  --color-background: #FFFFFF;
+  --color-foreground: #000000;
   
-  --color-surface: var(--color-white);
-  --color-surface-hover: var(--color-zinc-50);
-  --color-surface-active: var(--color-zinc-100);
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8F9FA;
+  --color-surface-active: #F1F3F5;
   
-  --color-border: var(--color-zinc-200);
-  --color-border-hover: var(--color-zinc-300);
+  --color-border: #E9ECEF;
+  --color-border-hover: #DEE2E6;
   
-  --color-primary: var(--color-sverdlov-blue);
-  --color-primary-foreground: var(--color-white);
+  --color-primary: #0052FF;
+  --color-primary-foreground: #FFFFFF;
   
-  --color-muted: var(--color-zinc-500);
-  --color-muted-foreground: var(--color-zinc-400);
+  --color-muted: #6C757D;
+  --color-muted-foreground: #ADB5BD;
 
   /* STATUS COLORS */
   --color-success: #00A86B;  /* Solid Green */
   --color-warning: #FFBF00;  /* Solid Amber */
   --color-danger: #D90429;   /* Solid Red */
-  --color-info: var(--color-sverdlov-blue);
+  --color-info: #0052FF;
 
   /* RADIUS (Architectural / Sharp) */
-  --radius-sm: 1px;
-  --radius-md: 2px;
-  --radius-lg: 3px;
-  --radius-xl: 4px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
   --radius-full: 9999px;
 
   /* TRANSITIONS */
@@ -64,24 +64,22 @@
 }
 
 /* === DARK MODE OVERRIDES (Minimalist Dark) === */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--color-zinc-950);
-    --color-foreground: #F8F9FA;
-    
-    --color-surface: var(--color-zinc-900);
-    --color-surface-hover: var(--color-zinc-800);
-    --color-surface-active: var(--color-zinc-700);
-    
-    --color-border: var(--color-zinc-800);
-    --color-border-hover: var(--color-zinc-700);
-    
-    --color-primary: var(--color-sverdlov-blue);
-    --color-primary-foreground: #FFFFFF;
-    
-    --color-muted: var(--color-zinc-400);
-    --color-muted-foreground: var(--color-zinc-500);
-  }
+.dark {
+  --color-background: #000000;
+  --color-foreground: #FFFFFF;
+  
+  --color-surface: #09090B;
+  --color-surface-hover: #18181B;
+  --color-surface-active: #27272A;
+  
+  --color-border: #27272A;
+  --color-border-hover: #3F3F46;
+  
+  --color-primary: #0052FF;
+  --color-primary-foreground: #FFFFFF;
+  
+  --color-muted: #ADB5BD;
+  --color-muted-foreground: #6C757D;
 }
 
 /* ============================================

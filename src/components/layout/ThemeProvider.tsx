@@ -118,9 +118,9 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
             <motion.button
                 onClick={handleClick}
                 className={cn(
-                    "relative flex h-10 w-10 items-center justify-center rounded-lg",
-                    "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors",
-                    "focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100",
+                    "relative flex h-10 w-10 items-center justify-center rounded-sm",
+                    "bg-zinc-50 hover:bg-zinc-100 border border-border transition-all",
+                    "focus:outline-none focus:ring-2 focus:ring-primary",
                     className
                 )}
                 whileHover={{ scale: 1.05 }}

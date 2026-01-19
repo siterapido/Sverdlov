@@ -53,17 +53,17 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
         <header
             className={cn(
                 "sticky top-0 z-30",
-                "flex h-14 items-center justify-between gap-4 px-6",
+                "flex h-16 items-center justify-between gap-4 px-8",
                 "bg-white dark:bg-zinc-950",
-                "border-b border-zinc-200 dark:border-zinc-800"
+                "border-b border-border"
             )}
         >
             {/* Left Side */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
                 {/* Mobile menu toggle */}
                 {isMobile && (
                     <IconButton
-                        icon={<Menu className="h-4 w-4" />}
+                        icon={<Menu className="h-5 w-5" />}
                         aria-label="Toggle menu"
                         variant="ghost"
                         onClick={toggleSidebar}
@@ -71,22 +71,21 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                 )}
 
                 {/* Breadcrumbs */}
-                <nav className="hidden md:flex items-center gap-1 text-sm">
+                <nav className="hidden md:flex items-center gap-0 text-[13px]">
                     {breadcrumbs.map((crumb, index) => (
                         <React.Fragment key={crumb.path}>
                             {index > 0 && (
-                                <ChevronRight className="h-3 w-3 text-zinc-400" />
+                                <span className="mx-2 text-zinc-300">/</span>
                             )}
                             <a
                                 href={crumb.path}
                                 className={cn(
-                                    "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
+                                    "px-1 py-1 transition-all",
                                     crumb.isLast
-                                        ? "text-sverdlov-blue font-bold dark:text-zinc-50"
-                                        : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800"
+                                        ? "text-primary font-black uppercase tracking-tight"
+                                        : "text-muted font-bold hover:text-foreground"
                                 )}
                             >
-                                {crumb.icon}
                                 {crumb.label}
                             </a>
                         </React.Fragment>
@@ -156,7 +155,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                         onClick={() => setNotificationsOpen(!notificationsOpen)}
                     />
                     {/* Notification dot */}
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full ring-2 ring-white dark:ring-black bg-red-500" />
+                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-600 shadow-sm" />
 
                     {/* Notification dropdown */}
                     {notificationsOpen && (
@@ -168,14 +167,14 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                             <div
                                 className={cn(
                                     "absolute right-0 top-full mt-2 z-50",
-                                    "w-80 rounded-lg border border-zinc-200",
-                                    "bg-white shadow-lg dark:bg-zinc-900 dark:border-zinc-800"
+                                    "w-80 rounded-sm border border-border",
+                                    "bg-white shadow-2xl dark:bg-zinc-950"
                                 )}
                             >
-                                <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
-                                    <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">Notificações</h3>
+                                <div className="px-5 py-4 border-b border-border">
+                                    <h3 className="font-black text-xs uppercase tracking-widest text-foreground">Notificações</h3>
                                 </div>
-                                <div className="max-h-80 overflow-y-auto">
+                                <div className="max-h-80 overflow-y-auto divide-y divide-zinc-50 dark:divide-zinc-900">
                                     <NotificationItem
                                         title="Novo membro cadastrado"
                                         description="João Silva foi adicionado ao sistema"
@@ -194,8 +193,8 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                         time="Há 2 horas"
                                     />
                                 </div>
-                                <div className="px-3 py-2 border-t border-zinc-200 dark:border-zinc-800">
-                                    <Button variant="ghost" size="sm" className="w-full text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
+                                <div className="px-3 py-2 border-t border-border">
+                                    <Button variant="ghost" size="sm" className="w-full text-muted font-bold uppercase text-[10px] tracking-widest">
                                         Ver todas
                                     </Button>
                                 </div>
@@ -206,7 +205,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
 
                 {/* User Avatar (mobile only) */}
                 {isMobile && (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-bold border border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-black border border-border">
                         UP
                     </div>
                 )}

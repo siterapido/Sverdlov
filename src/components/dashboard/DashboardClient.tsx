@@ -50,24 +50,24 @@ export function DashboardClient({ data }: DashboardClientProps) {
 
     return (
         <PageTransition>
-            <div className="max-w-5xl">
+            <div className="max-w-6xl">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                <div className="mb-10 border-b border-border pb-6">
+                    <h1 className="text-4xl font-black tracking-tighter uppercase text-foreground leading-none">
                         Dashboard
                     </h1>
-                    <p className="text-zinc-500 mt-1 dark:text-zinc-400">
+                    <p className="text-muted font-medium mt-2">
                         Visão geral da organização em tempo real
                     </p>
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-0 mb-10 border border-border divide-x divide-y md:divide-y-0 divide-border">
                     <StatCard
                         title="Membros Ativos"
                         value={<AnimatedCounter value={stats.totalMembers} />}
                         icon={<Users className="h-4 w-4" />}
-                        variant="blue"
+                        className="border-0"
                     />
 
                     <StatCard
@@ -76,14 +76,14 @@ export function DashboardClient({ data }: DashboardClientProps) {
                         subtitle="Novas filiações"
                         icon={<TrendingUp className="h-4 w-4" />}
                         trend={stats.memberTrend}
-                        variant="green"
+                        className="border-0"
                     />
 
                     <StatCard
                         title="Taxa Conversão"
                         value={`${stats.conversionRate}%`}
                         icon={<Target className="h-4 w-4" />}
-                        variant="yellow"
+                        className="border-0"
                     />
 
                     <StatCard
@@ -91,12 +91,14 @@ export function DashboardClient({ data }: DashboardClientProps) {
                         value={<AnimatedCurrency value={stats.monthlyRevenue} />}
                         icon={<DollarSign className="h-4 w-4" />}
                         trend={stats.revenueTrend}
+                        className="border-0"
                     />
 
                     <StatCard
                         title="Núcleos"
                         value={<AnimatedCounter value={stats.activeNuclei} />}
                         icon={<Building2 className="h-4 w-4" />}
+                        className="border-0"
                     />
                 </div>
 
@@ -149,27 +151,27 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-2">
-                                    {upcomingEvents.map((event, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:bg-zinc-800 dark:hover:border-zinc-700"
-                                        >
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-100 dark:bg-blue-900/30">
-                                                <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                    <div className="space-y-1">
+                                        {upcomingEvents.map((event, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex items-center gap-4 p-4 hover:bg-surface-hover transition-all cursor-pointer border-b border-zinc-50 last:border-0 dark:border-zinc-900"
+                                            >
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                                                    <Calendar className="h-5 w-5" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-foreground truncate">
+                                                        {event.title}
+                                                    </p>
+                                                    <p className="text-[11px] font-medium text-muted uppercase tracking-wider">
+                                                        {event.date}
+                                                    </p>
+                                                </div>
+                                                <ArrowUpRight className="h-4 w-4 text-muted group-hover:text-primary transition-colors" />
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-semibold text-zinc-900 truncate dark:text-zinc-50">
-                                                    {event.title}
-                                                </p>
-                                                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    {event.date}
-                                                </p>
-                                            </div>
-                                            <ArrowUpRight className="h-4 w-4 text-zinc-400" />
-                                        </div>
-                                    ))}
-                                </div>
+                                        ))}
+                                    </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -195,34 +197,32 @@ export function DashboardClient({ data }: DashboardClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-1">
+                                <div className="divide-y divide-zinc-50 dark:divide-zinc-900">
                                     {recentMembers.length > 0 ? (
                                         recentMembers.map((member) => (
                                             <div
                                                 key={member.id}
-                                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:bg-zinc-800 dark:hover:border-zinc-700"
+                                                className="flex items-center gap-4 p-4 hover:bg-surface-hover transition-all cursor-pointer group"
                                             >
-                                                <Avatar fallback={member.name} size="md" className="bg-zinc-200 text-zinc-600" />
+                                                <Avatar fallback={member.name} size="md" className="bg-zinc-100 text-zinc-900 rounded-sm border border-border group-hover:border-primary transition-colors" />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                                                    <p className="text-sm font-bold text-foreground dark:text-zinc-50">
                                                         {member.name}
                                                     </p>
-                                                    <p className="text-xs text-zinc-500 truncate mt-0.5">
-                                                        Cadastrado recentemente
+                                                    <p className="text-[11px] font-medium text-muted uppercase tracking-wider mt-0.5">
+                                                        Filiado Recente
                                                     </p>
                                                 </div>
                                                 <Badge
                                                     variant={member.status === "active" ? "green" : "yellow"}
-                                                    dot
-                                                    dotColor={member.status === "active" ? "green" : "yellow"}
-                                                    className="shadow-none border-0"
+                                                    className="rounded-sm font-black uppercase text-[9px] px-2 py-0.5"
                                                 >
                                                     {getStatusLabel(member.status)}
                                                 </Badge>
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-zinc-500 text-center py-6">Nenhum membro recente</p>
+                                        <p className="text-sm text-zinc-500 text-center py-10 font-medium">Nenhum membro recente</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -273,17 +273,17 @@ function ActionCard({
 }) {
     return (
         <Link href={href}>
-            <div className="group relative rounded-lg p-5 border border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-zinc-100 text-zinc-900 mb-3 group-hover:bg-zinc-900 group-hover:text-white transition-colors dark:bg-zinc-800 dark:text-zinc-100 dark:group-hover:bg-zinc-100 dark:group-hover:text-zinc-900">
+            <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer dark:bg-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-sm bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner dark:bg-zinc-900">
                     {icon}
                 </div>
-                <h3 className="text-sm font-semibold text-zinc-900 mb-1 dark:text-zinc-50">
+                <h3 className="text-sm font-black text-foreground mb-1 uppercase tracking-tight">
                     {label}
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-[11px] font-medium text-muted leading-relaxed">
                     {description}
                 </p>
-                <ArrowUpRight className="absolute top-4 right-4 h-4 w-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                <ArrowUpRight className="absolute top-6 right-6 h-4 w-4 text-muted opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 group-hover:translate-x-1" />
             </div>
         </Link>
     );

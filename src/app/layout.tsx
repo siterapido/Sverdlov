@@ -21,8 +21,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.className} ${inter.variable} antialiased`}>
-        <ThemeProvider defaultTheme="system" storageKey="sverdlov-theme">
-          <main className="min-h-screen bg-background text-foreground">
+        <ThemeProvider defaultTheme="light" storageKey="sverdlov-theme">
+          <main className="min-h-screen bg-background text-foreground transition-colors duration-200">
             {children}
           </main>
         </ThemeProvider>

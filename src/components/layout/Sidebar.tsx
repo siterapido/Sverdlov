@@ -40,12 +40,14 @@ function QuickAction({
 }) {
     return (
         <button
-            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:bg-zinc-200/50 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-foreground transition-all active:scale-[0.98]"
         >
-            {icon}
+            <div className="text-muted">
+                {icon}
+            </div>
             <span className="flex-1 text-left">{label}</span>
             {shortcut && (
-                <kbd className="hidden md:inline-flex items-center rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500 border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400">
+                <kbd className="hidden md:inline-flex items-center rounded-sm bg-zinc-50 px-1.5 py-0.5 text-[10px] font-bold text-muted border border-border dark:bg-zinc-900">
                     {shortcut}
                 </kbd>
             )}
@@ -101,27 +103,27 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
             <aside
                 className={cn(
                     "fixed left-0 top-0 z-40 h-screen",
-                    "bg-white dark:bg-zinc-950",
-                    "border-r border-zinc-200 dark:border-zinc-800",
+                    "bg-surface",
+                    "border-r border-border",
                     "transition-all duration-200 ease-out",
-                    isCollapsed ? "w-[60px]" : "w-60",
+                    isCollapsed ? "w-[60px]" : "w-64",
                     !isOpen && !isMobile && "-translate-x-full",
-                    isMobile && "shadow-xl"
+                    isMobile && "shadow-2xl"
                 )}
             >
                 <div className="flex h-full flex-col">
                     {/* Header / Logo */}
                     <div className={cn(
-                        "flex items-center h-14 px-3 border-b border-zinc-200 dark:border-zinc-800",
+                        "flex items-center h-16 px-4 border-b border-border",
                         isCollapsed ? "justify-center" : "justify-between"
                     )}>
                         {!isCollapsed && (
-                            <Link href="/dashboard" className="flex items-center gap-2 group">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-sverdlov-blue text-white font-bold text-sm">
+                            <Link href="/dashboard" className="flex items-center gap-2.5 group">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary text-primary-foreground font-black text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-transform group-hover:-translate-y-0.5 active:translate-y-0">
                                     S
                                 </div>
-                                <div className="flex-1 overflow-hidden">
-                                    <span className="text-zinc-900 font-bold text-sm tracking-tighter uppercase dark:text-zinc-100">
+                                <div className="overflow-hidden">
+                                    <span className="text-foreground font-black text-base tracking-tighter uppercase leading-none">
                                         Sverdlov
                                     </span>
                                 </div>
@@ -130,15 +132,15 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                         <button
                             onClick={toggleSidebar}
                             className={cn(
-                                "rounded-md p-1.5 text-zinc-500 hover:bg-zinc-200/50 hover:text-zinc-900",
-                                "transition-colors dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+                                "rounded-sm p-2 text-muted hover:bg-surface-hover hover:text-foreground transition-all",
+                                isCollapsed && "mx-auto"
                             )}
                         >
                             {isMobile ? (
                                 <X className="h-5 w-5" />
                             ) : (
                                 <ChevronsLeft className={cn(
-                                    "h-4 w-4 transition-transform duration-200",
+                                    "h-5 w-5 transition-transform duration-300",
                                     isCollapsed && "rotate-180"
                                 )} />
                             )}
@@ -147,7 +149,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
 
                     {/* Quick Actions */}
                     {!isCollapsed && (
-                        <div className="px-3 py-3 space-y-1">
+                        <div className="px-3 py-4 space-y-1">
                             <QuickAction
                                 icon={<Search className="h-4 w-4" />}
                                 label="Buscar"
@@ -163,11 +165,11 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                     {/* Navigation */}
                     <nav className="flex-1 overflow-y-auto px-3 py-2">
                         {navSections.map((section) => (
-                            <div key={section.title} className="mb-4">
+                            <div key={section.title} className="mb-6">
                                 {!isCollapsed ? (
                                     <button
                                         onClick={() => toggleSection(section.title)}
-                                        className="flex items-center gap-1 w-full px-2 py-1 text-xs font-semibold text-zinc-500 hover:text-zinc-900 uppercase tracking-wider transition-colors dark:text-zinc-500 dark:hover:text-zinc-300"
+                                        className="flex items-center gap-1 w-full px-2 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-[0.2em] transition-colors"
                                     >
                                         <ChevronRight className={cn(
                                             "h-3 w-3 transition-transform",
@@ -176,11 +178,11 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                         {section.title}
                                     </button>
                                 ) : (
-                                    <div className="mx-2 my-2 border-t border-zinc-200 dark:border-zinc-800" />
+                                    <div className="mx-2 my-4 border-t border-border" />
                                 )}
 
                                 {(expandedSections[section.title] || isCollapsed) && (
-                                    <ul className="space-y-0.5 mt-1">
+                                    <ul className="space-y-0.5 mt-2">
                                         {section.items.map((item) => {
                                             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                                             return (
@@ -188,21 +190,24 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                                     <Link
                                                         href={item.href}
                                                         className={cn(
-                                                            "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
+                                                            "flex items-center gap-3 rounded-sm px-3 py-2 text-[13px] transition-all",
                                                             isCollapsed && "justify-center px-2",
                                                             isActive
-                                                                ? "bg-zinc-100 text-sverdlov-blue font-semibold dark:bg-zinc-800 dark:text-white"
-                                                                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100"
+                                                                ? "bg-primary text-primary-foreground font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
+                                                                : "text-muted hover:bg-surface-hover hover:text-foreground"
                                                         )}
                                                         title={isCollapsed ? item.name : undefined}
                                                     >
-                                                        <item.icon className="h-4 w-4 shrink-0" />
+                                                        <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-muted")} />
 
                                                         {!isCollapsed && (
                                                             <>
                                                                 <span className="flex-1">{item.name}</span>
                                                                 {"badge" in item && typeof item.badge === "number" && item.badge > 0 && (
-                                                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white px-1.5 shadow-sm">
+                                                                    <span className={cn(
+                                                                        "flex h-4 min-w-4 items-center justify-center rounded-sm text-[9px] font-black px-1 shadow-sm",
+                                                                        isActive ? "bg-white text-primary" : "bg-primary text-white"
+                                                                    )}>
                                                                         {item.badge}
                                                                     </span>
                                                                 )}
@@ -219,13 +224,12 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                     </nav>
 
                     {/* Footer / User Section */}
-                    <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
+                    <div className="border-t border-border p-4 bg-surface">
                         {/* Settings */}
                         <Link
                             href="/settings"
                             className={cn(
-                                "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
-                                "text-zinc-500 hover:bg-zinc-200/50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
+                                "flex items-center gap-3 rounded-sm px-3 py-2 text-[13px] transition-all text-muted hover:bg-surface-hover hover:text-foreground",
                                 isCollapsed && "justify-center px-2"
                             )}
                             title={isCollapsed ? "Configurações" : undefined}
@@ -237,24 +241,23 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                         {/* User Profile */}
                         <div
                             className={cn(
-                                "mt-1 flex items-center gap-2 rounded-md px-2 py-2 cursor-pointer transition-colors",
-                                "hover:bg-zinc-50 dark:hover:bg-zinc-800",
+                                "mt-2 flex items-center gap-3 rounded-sm px-3 py-2 cursor-pointer transition-all hover:bg-surface-hover",
                                 isCollapsed && "justify-center px-2"
                             )}
                             onClick={() => setShowUserMenu(!showUserMenu)}
                         >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-bold border border-zinc-200 dark:bg-zinc-800 dark:text-white dark:border-zinc-700">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-zinc-100 text-zinc-900 text-xs font-black border border-border dark:bg-zinc-800 dark:text-white dark:border-zinc-700">
                                 UP
                             </div>
                             {!isCollapsed && (
                                 <>
                                     <div className="flex-1 overflow-hidden">
-                                        <p className="text-sm font-medium text-zinc-900 truncate dark:text-zinc-100">
+                                        <p className="text-[13px] font-bold text-foreground truncate">
                                             Usuário
                                         </p>
                                     </div>
                                     <ChevronDown className={cn(
-                                        "h-3 w-3 text-zinc-400 transition-transform",
+                                        "h-3 w-3 text-muted transition-transform",
                                         showUserMenu && "rotate-180"
                                     )} />
                                 </>
@@ -263,8 +266,8 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
 
                         {/* User Menu Dropdown */}
                         {showUserMenu && !isCollapsed && (
-                            <div className="mt-2 rounded-md bg-white border border-zinc-200 shadow-lg overflow-hidden dark:bg-zinc-900 dark:border-zinc-800">
-                                <button className="flex w-full items-center gap-2 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50">
+                            <div className="mt-2 rounded-sm bg-surface border border-border shadow-xl overflow-hidden">
+                                <button className="flex w-full items-center gap-2 px-3 py-2.5 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-danger transition-colors">
                                     <LogOut className="h-4 w-4" />
                                     Sair
                                 </button>
@@ -277,7 +280,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
             {/* Mobile Overlay */}
             {isOpen && isMobile && (
                 <div
-                    className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+                    className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] md:hidden"
                     onClick={toggleSidebar}
                 />
             )}
