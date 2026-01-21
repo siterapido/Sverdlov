@@ -7,6 +7,22 @@
       "summary": "Implementar gestão completa de planos de assinatura (mensal, anual, etc.), vincular a filiados, registrar pagamentos (recorrentes e extras) e visualizar status financeiro.",
       "linkedAt": "2026-01-21T00:10:34.321Z",
       "status": "active"
+    },
+    {
+      "slug": "ciclo-vida-filiado-aprovacao",
+      "path": "plans/ciclo-vida-filiado-aprovacao.md",
+      "title": "Plano de Implementação: Ciclo de Vida do Filiado e Aprovação",
+      "summary": "Implementar fluxo de aprovação de interessados, transição de status e gestão de responsáveis políticos.",
+      "linkedAt": "2026-01-21T12:43:35.224Z",
+      "status": "active"
+    },
+    {
+      "slug": "gestao-nucleos-territorialidade",
+      "path": "plans/gestao-nucleos-territorialidade.md",
+      "title": "Plano de Implementação: Gestão de Núcleos e Territorialidade",
+      "summary": "Implementar CRUD de Núcleos, dashboard de núcleos e atribuição de filiados para organização territorial e temática.",
+      "linkedAt": "2026-01-21T12:59:35.046Z",
+      "status": "active"
     }
   ],
   "completed": [],

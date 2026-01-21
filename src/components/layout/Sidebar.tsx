@@ -18,6 +18,8 @@ import {
     LogOut,
     ChevronDown,
     ChevronRight,
+    Layers,
+    UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +71,9 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
             title: "Gestão",
             items: [
                 { name: "Início", href: "/dashboard", icon: Home },
-                { name: "Membros", href: "/members", icon: Users },
+                { name: "Filiados", href: "/members", icon: Users },
+                { name: "Núcleos", href: "/members/nuclei", icon: Layers },
+                { name: "Solicitações", href: "/members/requests", icon: UserCheck },
                 { name: "Escalas", href: "/escalas", icon: ClipboardList },
             ],
         },

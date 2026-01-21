@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getMembers } from "@/app/actions/members";
+import { getMembers, getMemberById } from "@/app/actions/members";
 import { MemberForm } from "@/components/members/member-form";
 import { MemberFinancialTab } from "@/components/members/MemberFinancialTab";
+import { MemberOrgTab } from "@/components/members/MemberOrgTab";
 import { PageTransition } from "@/components/ui/page-transition";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ChevronLeft, User, MapPin, Calendar, CreditCard } from "lucide-react";
+import { ChevronLeft, User, MapPin, Calendar, CreditCard, Shield } from "lucide-react";
 
 export default function MemberProfilePage() {
     const { id } = useParams();
@@ -16,15 +17,15 @@ export default function MemberProfilePage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchMember = async () => {
-            const result = await getMembers(); // For now just filtering from all, ideally we have getMemberById
+        const fetchMemberData = async () => {
+            if (typeof id !== 'string') return;
+            const result = await getMemberById(id);
             if (result.success) {
-                const found = result.data?.find((m: any) => m.id === id);
-                setMember(found);
+                setMember(result.data);
             }
             setLoading(false);
         };
-        fetchMember();
+        fetchMemberData();
     }, [id]);
 
     if (loading) return <div className="p-8">Carregando...</div>;
@@ -61,8 +62,8 @@ export default function MemberProfilePage() {
                                 <p className="text-sm font-black uppercase text-primary">{member.status}</p>
                             </div>
                             <div className="p-6 bg-white">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">DOCUMENTO IDENTIDADE</p>
-                                <p className="text-sm font-black tabular-nums">{member.cpf}</p>
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">NIVEL MILITÂNCIA</p>
+                                <p className="text-sm font-black uppercase text-zinc-900">{member.militancyLevel}</p>
                             </div>
                             <div className="p-6 bg-white">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">LOCALIDADE TÉCNICA</p>
@@ -73,6 +74,7 @@ export default function MemberProfilePage() {
                         <Tabs defaultValue="cadastro" className="w-full">
                             <TabsList className="mb-8">
                                 <TabsTrigger value="cadastro">DADOS CADASTRAIS</TabsTrigger>
+                                <TabsTrigger value="organizacao">ORGANIZAÇÃO</TabsTrigger>
                                 <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
                             </TabsList>
                             
@@ -85,6 +87,20 @@ export default function MemberProfilePage() {
                                         <MemberForm initialData={member} isEditing={true} />
                                     </div>
                                 </div>
+                            </TabsContent>
+
+                            <TabsContent value="organizacao">
+                                <MemberOrgTab 
+                                    memberId={member.id} 
+                                    initialData={{ 
+                                        nucleusId: member.nucleusId, 
+                                        politicalResponsibleId: member.politicalResponsibleId,
+                                        requestDate: member.requestDate,
+                                        approvalDate: member.approvalDate,
+                                        affiliationDate: member.affiliationDate,
+                                        militancyLevel: member.militancyLevel
+                                    }} 
+                                />
                             </TabsContent>
 
                             <TabsContent value="financeiro">

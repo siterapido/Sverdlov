@@ -33,6 +33,30 @@ export async function getMemberFinancialHistory(memberId: string) {
     }
 }
 
+export async function getAllFinances() {
+    try {
+        const result = await db
+            .select({
+                id: finances.id,
+                amount: finances.amount,
+                paymentDate: finances.paymentDate,
+                type: finances.type,
+                status: finances.status,
+                memberName: members.fullName,
+                planName: subscriptionPlans.name,
+            })
+            .from(finances)
+            .leftJoin(members, eq(finances.memberId, members.id))
+            .leftJoin(subscriptionPlans, eq(finances.planId, subscriptionPlans.id))
+            .orderBy(desc(finances.paymentDate));
+
+        return { success: true, data: result };
+    } catch (error) {
+        console.error("Error fetching all finances:", error);
+        return { success: false, error: "Erro ao carregar finanças" };
+    }
+}
+
 export async function registerPayment(data: typeof finances.$inferInsert) {
     try {
         await db.insert(finances).values(data);

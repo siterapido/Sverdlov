@@ -1,15 +1,17 @@
-import { Calendar } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { PageTransition } from "@/components/ui/page-transition";
+import { CalendarClient } from "@/components/calendar/CalendarClient";
 
 export default function CalendarPage() {
     return (
         <PageTransition>
-            <div className="max-w-6xl">
+            <div className="max-w-7xl mx-auto py-8 px-4 md:px-0">
+                {/* Page Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-100 pb-8">
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <div className="h-5 w-5 bg-primary flex items-center justify-center">
-                                <Calendar className="h-3 w-3 text-white" />
+                                <CalendarIcon className="h-3 w-3 text-white" />
                             </div>
                             <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Agenda Nacional</span>
                         </div>
@@ -20,15 +22,21 @@ export default function CalendarPage() {
                             Cronograma unificado de congressos, formações e agitação de rua.
                         </p>
                     </div>
+
+                    <div className="flex items-center gap-4 bg-zinc-50 border-2 border-zinc-100 px-6 py-4">
+                        <div className="text-right">
+                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Atividades este mês</p>
+                            <p className="text-2xl font-black text-zinc-900 leading-none">--</p>
+                        </div>
+                        <div className="h-8 w-[2px] bg-zinc-200" />
+                        <div className="text-left">
+                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Taxa de Ocupação</p>
+                            <p className="text-2xl font-black text-zinc-900 leading-none">--%</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="border-2 border-dashed border-zinc-200 bg-zinc-50/50 py-24 text-center">
-                    <div className="h-16 w-16 bg-white border-2 border-zinc-100 flex items-center justify-center mx-auto mb-6">
-                        <Calendar className="h-8 w-8 text-zinc-300" />
-                    </div>
-                    <p className="text-xl font-black uppercase tracking-tight text-zinc-900">Módulo em construção</p>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2">Sincronização de eventos em processamento.</p>
-                </div>
+                <CalendarClient />
             </div>
         </PageTransition>
     );

@@ -1,6 +1,8 @@
 import { pgTable, text, timestamp, uuid, date, decimal } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 import { users } from './users';
 import { subscriptionPlans } from './plans';
+import { nuclei } from './nuclei';
 
 export const members = pgTable('members', {
     id: uuid('id').defaultRandom().primaryKey(),
@@ -18,7 +20,7 @@ export const members = pgTable('members', {
     city: text('city').notNull(),
     zone: text('zone'),
     neighborhood: text('neighborhood').notNull(),
-    nucleusId: uuid('nucleus_id'), // Will link to nuclei table
+    nucleusId: uuid('nucleus_id').references(() => nuclei.id),
 
     // Political
     affiliationDate: date('affiliation_date'),
@@ -38,3 +40,18 @@ export const members = pgTable('members', {
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+export const membersRelations = relations(members, ({ one }) => ({
+    nucleus: one(nuclei, {
+        fields: [members.nucleusId],
+        references: [nuclei.id],
+    }),
+    politicalResponsible: one(users, {
+        fields: [members.politicalResponsibleId],
+        references: [users.id],
+    }),
+    plan: one(subscriptionPlans, {
+        fields: [members.planId],
+        references: [subscriptionPlans.id],
+    }),
+}));
