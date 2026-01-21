@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
     {
         variants: {
             variant: {
@@ -94,7 +94,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
                 ref={ref}
                 variant={variant}
                 size={size}
-                className={cn("rounded-none", className)}
+                className={cn(className)}
                 {...props}
             >
                 {icon}
@@ -117,8 +117,8 @@ function ButtonGroup({ children, className, attached = false }: ButtonGroupProps
             <div className={cn(
                 "inline-flex",
                 "[&>button]:rounded-none",
-                "[&>button:first-child]:rounded-l-sm",
-                "[&>button:last-child]:rounded-r-sm",
+                "[&>button:first-child]:rounded-l-md",
+                "[&>button:last-child]:rounded-r-md",
                 "[&>button:not(:last-child)]:border-r-0",
                 className
             )}>

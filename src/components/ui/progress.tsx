@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const progressVariants = cva(
-    "h-full rounded-none transition-all duration-700 ease-in-out",
+    "h-full rounded-full transition-all duration-700 ease-in-out",
     {
         variants: {
             variant: {
@@ -59,7 +59,7 @@ export function Progress({
             )}
             <div
                 className={cn(
-                    "w-full rounded-none bg-zinc-50 border border-zinc-100 overflow-hidden",
+                    "w-full rounded-full bg-zinc-50 border border-zinc-100 overflow-hidden",
                     sizeClasses[size]
                 )}
             >
@@ -128,7 +128,7 @@ export function CircularProgress({
                     fill="none"
                     stroke={variant === 'default' ? '#0052FF' : variantColors[variant]} 
                     strokeWidth={strokeWidth}
-                    strokeLinecap="butt"
+                    strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={offset}
                     className="transition-all duration-700 ease-in-out"
@@ -168,9 +168,9 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
                         <div className="flex flex-col items-center">
                             <div
                                 className={cn(
-                                    "flex h-10 w-10 items-center justify-center rounded-none border-2 font-black transition-all",
-                                    isCompleted && "bg-primary border-primary text-white shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]",
-                                    isCurrent && "border-zinc-900 text-zinc-900 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]",
+                                    "flex h-10 w-10 items-center justify-center rounded-full border-2 font-black transition-all",
+                                    isCompleted && "bg-primary border-primary text-white shadow-md",
+                                    isCurrent && "border-zinc-900 text-zinc-900 bg-white shadow-sm",
                                     !isCompleted && !isCurrent && "border-zinc-100 text-zinc-300 bg-zinc-50"
                                 )}
                             >
