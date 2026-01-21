@@ -1,5 +1,6 @@
 import { pgTable, text, timestamp, uuid, date, decimal } from 'drizzle-orm/pg-core';
 import { users } from './users';
+import { subscriptionPlans } from './plans';
 
 export const members = pgTable('members', {
     id: uuid('id').defaultRandom().primaryKey(),
@@ -20,6 +21,7 @@ export const members = pgTable('members', {
     nucleusId: uuid('nucleus_id'), // Will link to nuclei table
 
     // Political
+    affiliationDate: date('affiliation_date'),
     requestDate: timestamp('request_date').defaultNow().notNull(),
     approvalDate: timestamp('approval_date'),
     status: text('status', { enum: ['interested', 'in_formation', 'active', 'inactive'] }).notNull().default('interested'),
@@ -30,6 +32,8 @@ export const members = pgTable('members', {
     // Financial
     suggestedContribution: decimal('suggested_contribution', { precision: 10, scale: 2 }),
     financialStatus: text('financial_status', { enum: ['up_to_date', 'late', 'exempt'] }).notNull().default('up_to_date'),
+    planId: uuid('plan_id').references(() => subscriptionPlans.id),
+    subscriptionStartDate: date('subscription_start_date'),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

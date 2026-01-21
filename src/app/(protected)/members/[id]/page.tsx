@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getMembers } from "@/app/actions/members";
 import { MemberForm } from "@/components/members/member-form";
+import { MemberFinancialTab } from "@/components/members/MemberFinancialTab";
 import { PageTransition } from "@/components/ui/page-transition";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ChevronLeft, User, MapPin, Calendar, CreditCard } from "lucide-react";
 
 export default function MemberProfilePage() {
@@ -68,15 +70,28 @@ export default function MemberProfilePage() {
                             </div>
                         </div>
 
-                        {/* Full Edit Form Section */}
-                        <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
-                            <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
-                                <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Dados Estatutários e Operacionais</h3>
-                            </div>
-                            <div className="p-10">
-                                <MemberForm initialData={member} isEditing={true} />
-                            </div>
-                        </div>
+                        <Tabs defaultValue="cadastro" className="w-full">
+                            <TabsList className="mb-8">
+                                <TabsTrigger value="cadastro">DADOS CADASTRAIS</TabsTrigger>
+                                <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="cadastro">
+                                <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
+                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Dados Estatutários e Operacionais</h3>
+                                    </div>
+                                    <div className="p-10">
+                                        <MemberForm initialData={member} isEditing={true} />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="financeiro">
+                                 <MemberFinancialTab memberId={member.id} memberData={member} />
+                            </TabsContent>
+                        </Tabs>
+
                     </div>
                 </div>
             </div>

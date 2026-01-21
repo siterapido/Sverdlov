@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "financeiro-assinaturas",
+      "path": "plans/financeiro-assinaturas.md",
+      "title": "Plano de Implementação: Módulo Financeiro e Assinaturas",
+      "summary": "Implementar gestão completa de planos de assinatura (mensal, anual, etc.), vincular a filiados, registrar pagamentos (recorrentes e extras) e visualizar status financeiro.",
+      "linkedAt": "2026-01-21T00:10:34.321Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "financeiro-assinaturas"
+}

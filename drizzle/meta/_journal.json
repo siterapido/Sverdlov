@@ -15,6 +15,20 @@
       "when": 1768755276065,
       "tag": "0001_rapid_red_wolf",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768951785163,
+      "tag": "0002_strong_titanium_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768954536922,
+      "tag": "0003_loving_masque",
+      "breakpoints": true
     }
   ]
 }

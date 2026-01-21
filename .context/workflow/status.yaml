@@ -1,26 +1,19 @@
 project:
-  name: "Refatoração UI/UX Sverdlov Original"
+  name: "implementacao-financeiro"
   scale: MEDIUM
-  started: "2026-01-19T10:49:01.874Z"
-  current_phase: V
+  started: "2026-01-21T00:09:36.478Z"
+  current_phase: P
 
 phases:
   P:
-    status: filled
-    started_at: "2026-01-19T10:49:01.862Z"
-    completed_at: "2026-01-19T16:36:29.455Z"
+    status: in_progress
+    started_at: "2026-01-21T00:09:36.474Z"
   R:
-    status: completed
-    started_at: "2026-01-19T16:36:29.467Z"
-    completed_at: "2026-01-19T16:36:32.289Z"
+    status: pending
   E:
-    status: filled
-    started_at: "2026-01-19T16:36:32.289Z"
-    completed_at: "2026-01-19T16:38:29.917Z"
+    status: pending
   V:
-    status: completed
-    started_at: "2026-01-19T16:38:29.920Z"
-    completed_at: "2026-01-19T16:38:49.822Z"
+    status: pending
   C:
     status: skipped
     reason: "Not required for scale MEDIUM"

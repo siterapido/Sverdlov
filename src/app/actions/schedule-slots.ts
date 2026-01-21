@@ -92,6 +92,61 @@ export async function createMultipleSlots(
 }
 
 /**
+ * Gerar turnos em lote (BATCH GENERATOR)
+ */
+export async function generateBatchSlots(
+    scheduleId: string,
+    config: {
+        startDate: string;
+        endDate: string;
+        daysOfWeek: number[]; // 0=Dom, 6=Sab
+        startTime: string;
+        endTime: string;
+        name: string;
+        location?: string;
+        maxParticipants: number;
+    }
+): Promise<{ success: boolean; count: number; error?: string }> {
+    try {
+        const start = new Date(config.startDate);
+        const end = new Date(config.endDate);
+        const slots: NewScheduleSlot[] = [];
+
+        // Loop através de cada dia no intervalo
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            // Verificar se o dia da semana está incluído (0-6)
+            // getDay() retorna 0 para Domingo, 6 para Sábado
+            // Certificando que estamos usando UTC ou timezone correto
+            // Usando d.getUTCDay() se as datas vierem como YYYY-MM-DD
+            // Mas `new Date('2026-01-20')` é UTC 00:00, então getUTCDay é seguro
+            const dayOfWeek = d.getUTCDay(); 
+            
+            if (config.daysOfWeek.includes(dayOfWeek)) {
+                slots.push({
+                    scheduleId,
+                    name: config.name,
+                    date: d.toISOString().split('T')[0], // YYYY-MM-DD
+                    startTime: config.startTime,
+                    endTime: config.endTime,
+                    location: config.location,
+                    maxParticipants: config.maxParticipants,
+                    status: 'open',
+                });
+            }
+        }
+
+        if (slots.length === 0) {
+            return { success: false, count: 0, error: 'Nenhuma data corresponde aos dias selecionados no período.' };
+        }
+
+        return await createMultipleSlots(slots);
+    } catch (error) {
+        console.error('Erro ao gerar turnos em lote:', error);
+        return { success: false, count: 0, error: 'Erro ao processar geração em lote' };
+    }
+}
+
+/**
  * Atualizar turno existente
  */
 export async function updateSlot(

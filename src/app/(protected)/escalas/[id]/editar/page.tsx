@@ -102,26 +102,26 @@ export default function EditarEscalaPage({ params }: { params: Promise<{ id: str
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="min-h-screen bg-gray-50">
+            <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200">
                 <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href={`/escalas/${id}`} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none">
-                            <ArrowLeft className="w-5 h-5" />
+                        <Link href={`/escalas/${id}`} className="p-2 hover:bg-gray-100 rounded-none">
+                            <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </Link>
                         <div>
-                            <h1 className="text-xl font-bold">Editar Escala</h1>
+                            <h1 className="text-xl font-bold text-gray-900">Editar Escala</h1>
                             <p className="text-sm text-gray-500">{formData.name}</p>
                         </div>
                     </div>
-                    <button onClick={handleDelete} disabled={saving} className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-none">
+                    <button onClick={handleDelete} disabled={saving} className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50 rounded-none">
                         <Trash2 className="w-4 h-4" />Excluir
                     </button>
                 </div>
@@ -130,80 +130,80 @@ export default function EditarEscalaPage({ params }: { params: Promise<{ id: str
             <main className="max-w-3xl mx-auto px-4 py-8">
                 <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="space-y-8">
                     {error && (
-                        <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-none text-red-700">
+                        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-none text-red-700">
                             <AlertCircle className="w-5 h-5" />{error}
                         </div>
                     )}
 
-                    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2"><Calendar className="w-5 h-5 text-red-500" />Informações Básicas</h2>
+                    <div className="bg-white rounded-none border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900"><Calendar className="w-5 h-5 text-red-500" />Informações Básicas</h2>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Nome *</label>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Nome *</label>
                             <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-none" />
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-none text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Descrição</label>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Descrição</label>
                             <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-none resize-none" />
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-none resize-none text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" />
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2"><Palette className="w-5 h-5 text-red-500" />Categoria</h2>
+                    <div className="bg-white rounded-none border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900"><Palette className="w-5 h-5 text-red-500" />Categoria</h2>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {CATEGORIES.map(c => (
                                 <button key={c.value} type="button" onClick={() => setFormData({ ...formData, category: c.value, color: c.color })}
-                                    className={`p-4 rounded-none border-2 text-left ${formData.category === c.value ? 'shadow-lg' : 'border-gray-200 dark:border-gray-600'}`}
+                                    className={`p-4 rounded-none border-2 text-left ${formData.category === c.value ? 'shadow-lg' : 'border-gray-200'}`}
                                     style={{ borderColor: formData.category === c.value ? c.color : undefined }}>
                                     <div className="w-4 h-4 rounded-full mb-2" style={{ backgroundColor: c.color }} />
-                                    <span className="text-sm font-medium">{c.label}</span>
+                                    <span className="text-sm font-medium text-gray-900">{c.label}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2"><Repeat className="w-5 h-5 text-red-500" />Tipo</h2>
+                    <div className="bg-white rounded-none border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900"><Repeat className="w-5 h-5 text-red-500" />Tipo</h2>
                         <div className="grid grid-cols-2 gap-3">
                             {TYPES.map(t => (
                                 <button key={t.value} type="button" onClick={() => setFormData({ ...formData, type: t.value })}
-                                    className={`p-4 rounded-none border-2 text-left ${formData.type === t.value ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-600'}`}>
-                                    <span className="text-sm font-medium">{t.label}</span>
+                                    className={`p-4 rounded-none border-2 text-left ${formData.type === t.value ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
+                                    <span className="text-sm font-medium text-gray-900">{t.label}</span>
                                     <p className="text-xs text-gray-500 mt-1">{t.description}</p>
                                 </button>
                             ))}
                         </div>
                         <label className="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" checked={formData.isRecurring} onChange={e => setFormData({ ...formData, isRecurring: e.target.checked })} className="w-5 h-5 rounded text-red-500" />
-                            <span className="text-sm">Escala recorrente</span>
+                            <input type="checkbox" checked={formData.isRecurring} onChange={e => setFormData({ ...formData, isRecurring: e.target.checked })} className="w-5 h-5 rounded text-red-500 border-gray-300 focus:ring-red-500" />
+                            <span className="text-sm text-gray-700">Escala recorrente</span>
                         </label>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2"><Clock className="w-5 h-5 text-red-500" />Período</h2>
+                    <div className="bg-white rounded-none border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900"><Clock className="w-5 h-5 text-red-500" />Período</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1">Início *</label>
+                                <label className="block text-sm font-medium mb-1 text-gray-700">Início *</label>
                                 <input type="date" required value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-none" />
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-none text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">Término</label>
+                                <label className="block text-sm font-medium mb-1 text-gray-700">Término</label>
                                 <input type="date" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} min={formData.startDate}
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-none" />
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-none text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2"><MapPin className="w-5 h-5 text-red-500" />Território</h2>
+                    <div className="bg-white rounded-none border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900"><MapPin className="w-5 h-5 text-red-500" />Território</h2>
                         <input type="text" value={formData.territoryScope} onChange={e => setFormData({ ...formData, territoryScope: e.target.value })} placeholder="Ex: SP ou SP:São Paulo"
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-none" />
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-none text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" />
                     </div>
 
                     <div className="flex justify-end gap-4 pt-4">
-                        <Link href={`/escalas/${id}`} className="px-6 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-none font-medium">Cancelar</Link>
+                        <Link href={`/escalas/${id}`} className="px-6 py-3 hover:bg-gray-100 rounded-none font-medium text-gray-700">Cancelar</Link>
                         <button type="submit" disabled={saving || !formData.name} className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-none hover:bg-red-600 disabled:opacity-50">
                             {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
                             {saving ? 'Salvando...' : 'Salvar Alterações'}

@@ -43,6 +43,8 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
         { key: "cpf", label: "CPF", required: true },
         { key: "voterTitle", label: "Título de Eleitor", required: false },
         { key: "dateOfBirth", label: "Data de Nascimento", required: true },
+        { key: "affiliationDate", label: "Data de Filiação", required: false },
+        { key: "gender", label: "Gênero", required: false },
         { key: "email", label: "E-mail", required: false },
         { key: "phone", label: "Telefone", required: false },
         { key: "state", label: "Estado (UF)", required: true },
