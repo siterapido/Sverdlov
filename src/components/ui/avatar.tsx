@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const avatarVariants = cva(
-    "relative inline-flex items-center justify-center overflow-hidden rounded-none font-black select-none bg-zinc-100 text-zinc-900 border border-zinc-200 uppercase tracking-tighter",
+    "relative inline-flex items-center justify-center overflow-hidden rounded-full font-black select-none bg-zinc-100 text-zinc-900 border border-zinc-200 uppercase tracking-tighter",
     {
         variants: {
             size: {

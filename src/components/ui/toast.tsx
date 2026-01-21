@@ -121,8 +121,8 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
             exit={{ opacity: 0, x: 100 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className={cn(
-                "pointer-events-auto flex items-start gap-4 rounded-none p-6 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)] min-w-[320px] max-w-[420px] border-2",
-                "bg-white border-zinc-900"
+                "pointer-events-auto flex items-start gap-4 rounded-lg p-6 shadow-lg min-w-[320px] max-w-[420px] border",
+                "bg-white border-zinc-200"
             )}
         >
             <span className={cn("shrink-0 mt-0.5", style.colorClass)}>{style.icon}</span>
@@ -134,7 +134,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
             </div>
             <button
                 onClick={onClose}
-                className="shrink-0 rounded-none p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 absolute right-2 top-2 transition-colors"
+                className="shrink-0 rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 absolute right-2 top-2 transition-colors"
             >
                 <X className="h-5 w-5" />
             </button>

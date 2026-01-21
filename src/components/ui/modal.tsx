@@ -66,7 +66,7 @@ export function ModalContent({ children, className, size = "md" }: ModalContentP
     return (
         <div
             className={cn(
-                "mx-auto w-full rounded-none border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]",
+                "mx-auto w-full rounded-xl border border-zinc-200 bg-white shadow-xl",
                 sizeClasses[size],
                 className
             )}
@@ -98,7 +98,7 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="hover:bg-zinc-100 rounded-none"
+                    className="hover:bg-zinc-100"
                 />
             )}
         </div>

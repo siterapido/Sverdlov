@@ -9,9 +9,9 @@ function Skeleton({ className, variant = "default", ...props }: SkeletonProps) {
         <div
             className={cn(
                 "animate-pulse bg-zinc-100",
-                variant === "default" && "rounded-none",
-                variant === "circle" && "rounded-none border border-zinc-200",
-                variant === "text" && "rounded-none h-4",
+                variant === "default" && "rounded-md",
+                variant === "circle" && "rounded-full border border-zinc-200",
+                variant === "text" && "rounded-md h-4",
                 className
             )}
             {...props}
@@ -22,7 +22,7 @@ function Skeleton({ className, variant = "default", ...props }: SkeletonProps) {
 // === SKELETON CARD ===
 function SkeletonCard({ className }: { className?: string }) {
     return (
-        <div className={cn("rounded-none border-2 border-zinc-100 bg-white p-8 space-y-6", className)}>
+        <div className={cn("rounded-lg border-2 border-zinc-100 bg-white p-8 space-y-6", className)}>
             <div className="flex items-center gap-4">
                 <Skeleton variant="circle" className="h-14 w-14" />
                 <div className="space-y-2 flex-1">
@@ -42,7 +42,7 @@ function SkeletonCard({ className }: { className?: string }) {
 // === SKELETON STAT CARD ===
 function SkeletonStatCard({ className }: { className?: string }) {
     return (
-        <div className={cn("rounded-none border-2 border-zinc-100 bg-white p-8 space-y-4", className)}>
+        <div className={cn("rounded-lg border-2 border-zinc-100 bg-white p-8 space-y-4", className)}>
             <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-20" />
                 <Skeleton variant="circle" className="h-8 w-8" />
