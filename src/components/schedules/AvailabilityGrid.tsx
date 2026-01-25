@@ -105,7 +105,7 @@ export function AvailabilityGrid({ availability, onChange, readOnly = false }: A
                                 "flex flex-col items-center justify-center p-2 rounded-none border-2 transition-all min-h-[80px]",
                                 readOnly ? "cursor-default" : "cursor-pointer",
                                 isSelected
-                                    ? "border-primary bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]"
+                                    ? "border-primary bg-primary text-white shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)]"
                                     : hasSlots
                                         ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                                         : "border-zinc-100 bg-white text-zinc-400 hover:border-zinc-900 hover:text-zinc-900"

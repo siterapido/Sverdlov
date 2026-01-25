@@ -29,6 +29,13 @@
       "when": 1768954536922,
       "tag": "0003_loving_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769094052411,
+      "tag": "0004_magenta_maginty",
+      "breakpoints": true
     }
   ]
 }

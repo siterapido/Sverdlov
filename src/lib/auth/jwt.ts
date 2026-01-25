@@ -7,8 +7,12 @@ const JWT_SECRET = new TextEncoder().encode(
 export interface JWTPayload {
     userId: string;
     email: string;
-    role: 'national_admin' | 'state_leader' | 'municipal_leader' | 'member';
-    territoryScope?: string;
+    role: 'ADMIN' | 'STATE_COORD' | 'CITY_COORD' | 'ZONE_COORD' | 'LOCAL_COORD';
+    territoryScope?: string | null;
+    scopeState?: string;
+    scopeCity?: string;
+    scopeZone?: string;
+    scopeNucleusId?: string;
 }
 
 export async function signToken(payload: JWTPayload): Promise<string> {

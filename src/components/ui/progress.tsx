@@ -126,7 +126,7 @@ export function CircularProgress({
                     cy={size / 2}
                     r={radius}
                     fill="none"
-                    stroke={variant === 'default' ? '#0052FF' : variantColors[variant]} 
+                    stroke={variant === 'default' ? '#9B111E' : variantColors[variant]}
                     strokeWidth={strokeWidth}
                     strokeLinecap="butt"
                     strokeDasharray={circumference}
@@ -169,7 +169,7 @@ export function StepsProgress({ steps, currentStep, className }: StepsProgressPr
                             <div
                                 className={cn(
                                     "flex h-10 w-10 items-center justify-center rounded-none border-2 font-black transition-all",
-                                    isCompleted && "bg-primary border-primary text-white shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]",
+                                    isCompleted && "bg-primary border-primary text-white shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)]",
                                     isCurrent && "border-zinc-900 text-zinc-900 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]",
                                     !isCompleted && !isCurrent && "border-zinc-100 text-zinc-300 bg-zinc-50"
                                 )}

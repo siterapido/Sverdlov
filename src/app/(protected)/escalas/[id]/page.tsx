@@ -21,7 +21,7 @@ const VARIANT_COLORS: Record<string, string> = {
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
     draft: { label: 'Rascunho', bg: 'bg-gray-100', text: 'text-gray-600' },
     active: { label: 'Ativa', bg: 'bg-green-100', text: 'text-green-700' },
-    completed: { label: 'Concluída', bg: 'bg-blue-100', text: 'text-blue-700' },
+    completed: { label: 'Concluída', bg: 'bg-primary/20', text: 'text-primary' },
     cancelled: { label: 'Cancelada', bg: 'bg-red-100', text: 'text-red-700' },
 };
 
@@ -161,7 +161,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
 
 function SlotRow({ slot }: { slot: ScheduleSlot }) {
     const STATUS_COLORS: Record<string, string> = {
-        open: 'bg-green-500', full: 'bg-amber-500', in_progress: 'bg-blue-500', completed: 'bg-gray-400', cancelled: 'bg-red-500',
+        open: 'bg-green-500', full: 'bg-amber-500', in_progress: 'bg-primary/100', completed: 'bg-gray-400', cancelled: 'bg-red-500',
     };
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between p-4 hover:bg-gray-50 bg-white">

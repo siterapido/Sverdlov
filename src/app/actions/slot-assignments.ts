@@ -466,12 +466,20 @@ export async function getAvailableMembersForSlot(
             }
 
             // Verificar exceções
-            const hasException = exceptions.some(
+            const unavailableException = exceptions.find(
                 (e) => e.memberId === member.id && e.type === 'unavailable'
             );
-            if (hasException) {
+            if (unavailableException) {
                 score -= 100;
                 reasons.push('Indisponível nesta data');
+            }
+
+            const availableException = exceptions.find(
+                (e) => e.memberId === member.id && e.type === 'available'
+            );
+            if (availableException) {
+                score += 50;
+                reasons.push('Disponibilidade confirmada');
             }
 
             // Bonus por nível de militância

@@ -12,7 +12,7 @@ import { ScheduleSlot, NewScheduleSlot } from '@/lib/db/schema';
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
     open: { bg: 'bg-green-100', text: 'text-green-700', label: 'Aberto' },
     full: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Lotado' },
-    in_progress: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Em andamento' },
+    in_progress: { bg: 'bg-primary/20', text: 'text-primary', label: 'Em andamento' },
     completed: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Concluído' },
     cancelled: { bg: 'bg-red-100', text: 'text-red-700', label: 'Cancelado' },
 };
@@ -31,11 +31,11 @@ export default function TurnosPage({ params }: { params: Promise<{ id: string }>
     async function loadSchedule() {
         setLoading(true);
         const data = await getScheduleById(scheduleId);
-        if (data) setSchedule({ 
-            name: data.name, 
-            startDate: new Date(data.startDate).toISOString().split('T')[0], 
+        if (data) setSchedule({
+            name: data.name,
+            startDate: new Date(data.startDate).toISOString().split('T')[0],
             endDate: data.endDate ? new Date(data.endDate).toISOString().split('T')[0] : undefined,
-            slots: data.slots 
+            slots: data.slots
         });
         setLoading(false);
     }
@@ -110,12 +110,12 @@ export default function TurnosPage({ params }: { params: Promise<{ id: string }>
                     <NewSlotModal scheduleId={scheduleId} onClose={() => setShowNewSlot(false)} onCreated={() => { setShowNewSlot(false); loadSchedule(); }} />
                 )}
                 {showBatchGen && (
-                    <BatchGeneratorModal 
-                        scheduleId={scheduleId} 
-                        defaultStart={schedule.startDate} 
+                    <BatchGeneratorModal
+                        scheduleId={scheduleId}
+                        defaultStart={schedule.startDate}
                         defaultEnd={schedule.endDate || schedule.startDate}
-                        onClose={() => setShowBatchGen(false)} 
-                        onCreated={() => { setShowBatchGen(false); loadSchedule(); }} 
+                        onClose={() => setShowBatchGen(false)}
+                        onCreated={() => { setShowBatchGen(false); loadSchedule(); }}
                     />
                 )}
                 {showAssignModal && selectedSlot && (
@@ -170,7 +170,7 @@ function SlotCard({ slot, index, onDelete, onAssign, onReload }: { slot: Schedul
                         {assignments.length}/{slot.maxParticipants}
                     </div>
                     <div className="h-8 w-px bg-gray-200 mx-2"></div>
-                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="p-2 hover:bg-blue-50 text-blue-600 rounded-none transition-colors" title="Atribuir Membro">
+                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="p-2 hover:bg-primary/10 text-primary rounded-none transition-colors" title="Atribuir Membro">
                         <UserPlus className="w-5 h-5" />
                     </button>
                     <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-2 hover:bg-red-50 text-red-600 rounded-none transition-colors" title="Excluir Turno">
@@ -187,11 +187,11 @@ function SlotCard({ slot, index, onDelete, onAssign, onReload }: { slot: Schedul
                                 <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Membros Atribuídos</h4>
                                 {slot.notes && <p className="text-xs text-gray-500 italic max-w-md text-right">{slot.notes}</p>}
                             </div>
-                            
+
                             {assignments.length === 0 ? (
                                 <div className="text-center py-4 border-2 border-dashed border-gray-200 rounded-none bg-white">
                                     <p className="text-sm text-gray-400">Nenhum membro atribuído a este turno.</p>
-                                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="text-sm text-blue-600 font-medium hover:underline mt-1">Clique para atribuir</button>
+                                    <button onClick={(e) => { e.stopPropagation(); onAssign(); }} className="text-sm text-primary font-medium hover:underline mt-1">Clique para atribuir</button>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -411,23 +411,32 @@ function AssignMemberModal({ slotId, onClose, onAssigned }: { slotId: string; on
                     ) : suggestions.length === 0 ? (
                         <div className="text-center py-8">
                             <p className="text-gray-500 mb-2">Nenhum membro com disponibilidade explícita.</p>
-                            <button className="text-sm text-blue-600 hover:underline">Ver todos os membros</button>
+                            <button className="text-sm text-primary hover:underline">Ver todos os membros</button>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             <p className="text-xs font-bold uppercase text-gray-400">Sugestões (Baseado na disponibilidade)</p>
-                            {suggestions.map(s => (
-                                <div key={s.memberId} className="flex items-center justify-between p-3 bg-white border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer group" onClick={() => handleAssign(s.memberId)}>
-                                    <div>
-                                        <p className="font-bold text-gray-900 text-sm group-hover:text-blue-700">{s.memberName}</p>
-                                        <p className="text-[10px] text-gray-500 mt-0.5">{s.reasons.join(' • ')}</p>
+                            {suggestions.map(s => {
+                                const isConfirmed = s.reasons.includes('Disponibilidade confirmada');
+                                return (
+                                    <div key={s.memberId}
+                                        className={`flex items-center justify-between p-3 border hover:border-primary transition-colors cursor-pointer group ${isConfirmed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}
+                                        onClick={() => handleAssign(s.memberId)}
+                                    >
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-gray-900 text-sm group-hover:text-primary">{s.memberName}</p>
+                                                {isConfirmed && <Check className="w-3 h-3 text-green-600" />}
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 mt-0.5">{s.reasons.join(' • ')}</p>
+                                        </div>
+                                        <button disabled={assigning === s.memberId}
+                                            className={`px-3 py-1 text-xs font-bold uppercase rounded-none group-hover:bg-primary group-hover:text-white transition-colors ${isConfirmed ? 'bg-green-200 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                                            {assigning === s.memberId ? '...' : 'Escolher'}
+                                        </button>
                                     </div>
-                                    <button disabled={assigning === s.memberId}
-                                        className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold uppercase rounded-none group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                        {assigning === s.memberId ? '...' : 'Escolher'}
-                                    </button>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

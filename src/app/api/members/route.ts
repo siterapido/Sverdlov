@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     try {
         const user = await getAuthUser(request);
 
-        if (!user || !hasRole(user, ['national_admin', 'state_leader', 'municipal_leader'])) {
+        if (!user || !hasRole(user, ['ADMIN', 'STATE_COORD', 'CITY_COORD'])) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
         }
 

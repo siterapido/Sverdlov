@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { fullName, email, password, role = 'member', territoryScope } = body;
+        const { fullName, email, password, role = 'LOCAL_COORD', scopeState, scopeCity, scopeZone, scopeNucleusId } = body;
 
         // Validate input
         if (!email || !password || !fullName) {
@@ -36,8 +36,11 @@ export async function POST(request: NextRequest) {
             fullName,
             email,
             passwordHash,
-            role,
-            territoryScope,
+            role: role as any,
+            scopeState,
+            scopeCity,
+            scopeZone,
+            scopeNucleusId,
         }).returning();
 
         // Generate JWT token
@@ -45,7 +48,10 @@ export async function POST(request: NextRequest) {
             userId: newUser.id,
             email: newUser.email,
             role: newUser.role as any,
-            territoryScope: newUser.territoryScope || undefined,
+            scopeState: newUser.scopeState || undefined,
+            scopeCity: newUser.scopeCity || undefined,
+            scopeZone: newUser.scopeZone || undefined,
+            scopeNucleusId: newUser.scopeNucleusId || undefined,
         });
 
         // Set cookie

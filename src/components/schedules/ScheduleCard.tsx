@@ -52,10 +52,10 @@ export function ScheduleCard({ schedule, index = 0, showLink = true, compact = f
         <Card
             bordered
             hover={showLink}
-            className="overflow-hidden border-2 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_0px_rgba(0,82,255,0.1)] transition-all group"
+            className="overflow-hidden border-2 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_0px_rgba(155,17,30,0.1)] transition-all group"
         >
-            <div className="h-2 w-full" style={{ backgroundColor: schedule.color || '#0052FF' }} />
-            
+            <div className="h-2 w-full" style={{ backgroundColor: schedule.color || '#9B111E' }} />
+
             <CardContent className={compact ? 'p-6' : 'p-8'}>
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">

@@ -14,8 +14,10 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getSchedules, ScheduleFilters } from '@/app/actions/schedules';
+import { getMembers } from '@/app/actions/members';
 import { Schedule } from '@/lib/db/schema';
 import { ScheduleCard, CATEGORY_LABELS } from '@/components/schedules/ScheduleCard';
+import { RequestAvailabilityModal } from '@/components/schedules/AvailabilityRequestModal';
 import { Button } from '@/components/ui/button';
 import { SearchInput, Label } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +29,12 @@ export default function EscalasPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState<ScheduleFilters>({});
     const [showFilters, setShowFilters] = useState(false);
+    const [isAvailabilityModal, setIsAvailabilityModal] = useState(false);
+    const [members, setMembers] = useState<any[]>([]);
+
+    useEffect(() => {
+        getMembers().then(res => { if (res.success) setMembers(res.data || []) });
+    }, []);
 
     useEffect(() => {
         loadSchedules();
@@ -86,10 +94,13 @@ export default function EscalasPage() {
                             </Button>
                         </Link>
                         <Link href="/escalas/nova">
-                            <Button variant="default" size="sm" className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all" leftIcon={<Plus className="w-4 h-4" />}>
+                            <Button variant="default" size="sm" className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)] transition-all" leftIcon={<Plus className="w-4 h-4" />}>
                                 NOVA ESCALA
                             </Button>
                         </Link>
+                        <Button variant="outline" size="sm" onClick={() => setIsAvailabilityModal(true)} className="rounded-none font-black uppercase tracking-widest text-[10px] border-2 border-zinc-900" leftIcon={<Users className="w-4 h-4" />}>
+                            COLETAR DISPONIBILIDADE
+                        </Button>
                     </div>
                 </div>
 
@@ -245,6 +256,11 @@ export default function EscalasPage() {
                         ))}
                     </div>
                 )}
+                <RequestAvailabilityModal
+                    isOpen={isAvailabilityModal}
+                    onClose={() => setIsAvailabilityModal(false)}
+                    members={members}
+                />
             </div>
         </PageTransition>
     );

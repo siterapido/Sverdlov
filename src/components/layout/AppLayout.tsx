@@ -6,7 +6,7 @@ import { AppHeader } from "./AppHeader";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export function AppLayout({ children, userRole }: { children: React.ReactNode, userRole?: string }) {
     const isMobile = useIsMobile();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,6 +26,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 isCollapsed={!isMobile && isCollapsed}
                 isMobile={isMobile}
                 toggleSidebar={toggleSidebar}
+                userRole={userRole}
             />
 
             <div

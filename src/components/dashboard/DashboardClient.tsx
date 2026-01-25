@@ -3,13 +3,11 @@
 import {
     Users,
     TrendingUp,
-    DollarSign,
     Target,
     Building2,
     ArrowUpRight,
     UserPlus,
     FileText,
-    Calendar
 } from "lucide-react";
 import { PageTransition } from "@/components/ui/page-transition";
 import { StatCard, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -62,7 +60,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-0 mb-10 border border-border divide-x divide-y md:divide-y-0 divide-border">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-0 mb-10 border border-border divide-x divide-y md:divide-y-0 divide-border">
                     <StatCard
                         title="Membros Ativos"
                         value={<AnimatedCounter value={stats.totalMembers} />}
@@ -86,13 +84,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                         className="border-0"
                     />
 
-                    <StatCard
-                        title="Receita Mensal"
-                        value={<AnimatedCurrency value={stats.monthlyRevenue} />}
-                        icon={<DollarSign className="h-4 w-4" />}
-                        trend={stats.revenueTrend}
-                        className="border-0"
-                    />
+
 
                     <StatCard
                         title="Núcleos"
@@ -138,43 +130,7 @@ export function DashboardClient({ data }: DashboardClientProps) {
                     </div>
 
                     {/* Upcoming Events */}
-                    <div>
-                        <Card bordered className="h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <span>Próximos Eventos</span>
-                                    <Link href="/calendar">
-                                        <Button variant="ghost" size="sm" className="h-8 text-zinc-400 hover:text-zinc-900 font-bold uppercase text-[10px] tracking-widest">
-                                            Ver todos
-                                        </Button>
-                                    </Link>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                    <div className="space-y-1">
-                                        {upcomingEvents.map((event, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-center gap-4 p-4 hover:bg-surface-hover transition-all cursor-pointer border-b border-zinc-50 last:border-0 dark:border-zinc-900"
-                                            >
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
-                                                    <Calendar className="h-5 w-5" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-zinc-900 truncate">
-                                                        {event.title}
-                                                    </p>
-                                                    <p className="text-[11px] font-medium text-muted uppercase tracking-wider">
-                                                        {event.date}
-                                                    </p>
-                                                </div>
-                                                <ArrowUpRight className="h-4 w-4 text-muted group-hover:text-primary transition-colors" />
-                                            </div>
-                                        ))}
-                                    </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+
 
                     {/* Recent Members */}
                     <div className="lg:col-span-2">
@@ -268,7 +224,7 @@ function ActionCard({
 }) {
     return (
         <Link href={href}>
-            <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
+            <div className="group relative p-6 border border-border bg-white hover:border-primary transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)]">
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-none bg-zinc-50 text-muted mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
                     {icon}
                 </div>

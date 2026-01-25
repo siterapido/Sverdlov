@@ -160,7 +160,7 @@ export function MemberFinancialTab({ memberId, memberData }: { memberId: string,
                                  <div 
                                     key={plan.id} 
                                     onClick={() => setSelectedPlanId(plan.id)}
-                                    className={`p-4 border-2 cursor-pointer transition-all ${selectedPlanId === plan.id ? 'border-primary bg-blue-50' : 'border-zinc-100 hover:border-zinc-300'}`}
+                                    className={`p-4 border-2 cursor-pointer transition-all ${selectedPlanId === plan.id ? 'border-primary bg-primary/10' : 'border-zinc-100 hover:border-zinc-300'}`}
                                 >
                                     <div className="flex justify-between">
                                         <span className="font-bold">{plan.name}</span>

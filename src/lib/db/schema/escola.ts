@@ -1,5 +1,6 @@
 import { pgTable, text, uuid, jsonb, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { projects } from './projects';
 
 // ==========================================
 // ESCOLA DE TRABALHO
@@ -20,6 +21,7 @@ export const et_projetos = pgTable('et_projetos', {
     id: uuid('id').defaultRandom().primaryKey(),
     nome: text('nome').notNull(),
     cor: text('cor').notNull().default('#3b82f6'),
+    projectId: uuid('project_id').references(() => projects.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -50,8 +52,12 @@ export const et_escalas = pgTable('et_escalas', {
 // RELAÇÕES
 // ==========================================
 
-export const et_projetosRelations = relations(et_projetos, ({ many }) => ({
+export const et_projetosRelations = relations(et_projetos, ({ one, many }) => ({
     tarefas: many(et_tarefas),
+    parentProject: one(projects, {
+        fields: [et_projetos.projectId],
+        references: [projects.id],
+    }),
 }));
 
 export const et_tarefasRelations = relations(et_tarefas, ({ one, many }) => ({

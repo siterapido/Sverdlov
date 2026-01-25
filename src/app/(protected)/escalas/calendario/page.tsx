@@ -233,7 +233,7 @@ function AssignMemberModal({ slot, onClose, onUpdated }: { slot: SlotEvent; onCl
                     </button>
                     <button 
                         onClick={() => setActiveTab('available')}
-                        className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'available' ? 'text-blue-600 border-b-2 border-blue-600 bg-white' : 'text-gray-500 bg-gray-50 hover:bg-gray-100'}`}
+                        className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'available' ? 'text-primary border-b-2 border-primary bg-white' : 'text-gray-500 bg-gray-50 hover:bg-gray-100'}`}
                     >
                         Disponíveis ({suggestions.length})
                     </button>
@@ -251,7 +251,7 @@ function AssignMemberModal({ slot, onClose, onUpdated }: { slot: SlotEvent; onCl
                                         <div className="text-center py-12 px-6">
                                             <Users className="w-12 h-12 mx-auto text-gray-200 mb-3" />
                                             <p className="text-gray-500 text-sm">Nenhum membro atribuído a este turno.</p>
-                                            <button onClick={() => setActiveTab('available')} className="mt-2 text-blue-600 font-bold text-xs uppercase hover:underline">Adicionar Membros</button>
+                                            <button onClick={() => setActiveTab('available')} className="mt-2 text-primary font-bold text-xs uppercase hover:underline">Adicionar Membros</button>
                                         </div>
                                     ) : (
                                         assignments.map(a => (
@@ -284,9 +284,9 @@ function AssignMemberModal({ slot, onClose, onUpdated }: { slot: SlotEvent; onCl
                                         </div>
                                     ) : (
                                         suggestions.map(s => (
-                                            <div key={s.memberId} className="flex items-center justify-between p-4 hover:bg-blue-50/30 transition-colors group">
+                                            <div key={s.memberId} className="flex items-center justify-between p-4 hover:bg-primary/10 transition-colors group">
                                                 <div>
-                                                    <p className="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition-colors">{s.memberName}</p>
+                                                    <p className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">{s.memberName}</p>
                                                     <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
                                                         {s.reasons.join(' • ')}
@@ -295,7 +295,7 @@ function AssignMemberModal({ slot, onClose, onUpdated }: { slot: SlotEvent; onCl
                                                 <button 
                                                     onClick={() => handleAssign(s.memberId)} 
                                                     disabled={assigning === s.memberId}
-                                                    className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-bold uppercase rounded-none hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all disabled:opacity-50"
+                                                    className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-bold uppercase rounded-none hover:bg-primary hover:text-white hover:border-primary transition-all disabled:opacity-50"
                                                 >
                                                     {assigning === s.memberId ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <><Plus className="w-3 h-3" /> Atribuir</>}
                                                 </button>

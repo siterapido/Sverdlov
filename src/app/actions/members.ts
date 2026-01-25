@@ -13,17 +13,15 @@ export async function createMemberAction(data: MemberSchema) {
         const validated = memberSchema.parse(data);
 
         // Check if CPF or Email already exists
-        const existingMember = await db.query.members.findFirst({
-            where: or(
-                eq(members.cpf, validated.cpf.replace(/\D/g, '')),
-                eq(members.email, validated.email)
-            ),
-        });
+        const [existingMember] = await db.select().from(members).where(or(
+            eq(members.cpf, validated.cpf.replace(/\D/g, '')),
+            eq(members.email, validated.email)
+        )).limit(1);
 
         if (existingMember) {
-            return { 
-                success: false, 
-                error: 'Já existe um cadastro com este CPF ou Email.' 
+            return {
+                success: false,
+                error: 'Já existe um cadastro com este CPF ou Email.'
             };
         }
 
@@ -55,9 +53,9 @@ export async function createMemberAction(data: MemberSchema) {
         return { success: true };
     } catch (error: any) {
         console.error('Error creating member:', error);
-        return { 
-            success: false, 
-            error: error.message || 'Erro interno ao processar cadastro.' 
+        return {
+            success: false,
+            error: error.message || 'Erro interno ao processar cadastro.'
         };
     }
 }
@@ -132,12 +130,12 @@ export async function getPendingMembers() {
 }
 
 export async function updateMemberStatus(
-    id: string, 
+    id: string,
     status: 'interested' | 'in_formation' | 'active' | 'inactive',
     politicalResponsibleId?: string
 ) {
     try {
-        const updateData: any = { 
+        const updateData: any = {
             status,
             updatedAt: new Date(),
         };
@@ -166,8 +164,8 @@ export async function updateMemberStatus(
 
 export async function updateMemberOrg(
     id: string,
-    data: { 
-        nucleusId?: string | null; 
+    data: {
+        nucleusId?: string | null;
         politicalResponsibleId?: string | null;
         militancyLevel?: 'supporter' | 'militant' | 'leader';
     }
@@ -192,7 +190,7 @@ export async function updateMemberOrg(
 // Helper to parse dates from various formats (Excel serial, DD/MM/YYYY, ISO)
 function parseImportDate(value: any): string | null {
     if (!value) return null;
-    
+
     try {
         // Excel serial number (approximate)
         if (typeof value === 'number') {
@@ -207,7 +205,7 @@ function parseImportDate(value: any): string | null {
                 const [day, month, year] = value.split('/');
                 return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             }
-            
+
             // Try standard parser
             const date = new Date(value);
             if (!isNaN(date.getTime())) {
@@ -218,24 +216,42 @@ function parseImportDate(value: any): string | null {
         console.error("Date parsing error for value:", value, e);
         return null;
     }
-    
+
     return null;
 }
 
-export async function importMembers(membersList: any[]) {
+export async function importMembers(membersList: any[], updateExisting: boolean = false) {
     try {
-        // Simple bulk insert
-        // In a real scenario, we might want to handle duplicates or transform data
-        await db.insert(members).values(membersList.map(m => {
-            const birthDate = parseImportDate(m.dateOfBirth);
-            if (!birthDate) throw new Error(`Data de nascimento inválida para: ${m.fullName}`);
+        const results = {
+            imported: 0,
+            updated: 0,
+            skipped: 0,
+            duplicates: [] as any[]
+        };
 
-            return {
+        for (const m of membersList) {
+            const birthDate = m.dateOfBirth ? parseImportDate(m.dateOfBirth) : null;
+            // CPF is cleaned to digits only
+            const cleanCpf = m.cpf ? String(m.cpf).replace(/\D/g, '') : null;
+            const voterTitle = m.voterTitle ? String(m.voterTitle).trim() : null;
+
+            // Check if member exists
+            let existingMember;
+            const searchConditions = [];
+            if (cleanCpf) searchConditions.push(eq(members.cpf, cleanCpf));
+            if (voterTitle) searchConditions.push(eq(members.voterTitle, voterTitle));
+
+            if (searchConditions.length > 0) {
+                const rows = await db.select().from(members).where(or(...searchConditions)).limit(1);
+                existingMember = rows[0];
+            }
+
+            const memberData: any = {
                 fullName: m.fullName,
-                cpf: m.cpf ? String(m.cpf).replace(/\D/g, '') : '', // Clean CPF
-                voterTitle: m.voterTitle ? String(m.voterTitle) : null,
+                cpf: cleanCpf || '',
+                voterTitle: voterTitle,
                 email: m.email || '',
-                phone: m.phone || '',
+                phone: m.phone ? String(m.phone).replace(/\D/g, '') : '',
                 state: m.state,
                 city: m.city,
                 zone: m.zone ? String(m.zone) : null,
@@ -243,14 +259,46 @@ export async function importMembers(membersList: any[]) {
                 dateOfBirth: birthDate,
                 gender: m.gender || null,
                 affiliationDate: parseImportDate(m.affiliationDate),
+                party: m.party || null,
+                situation: m.situation || null,
+                disaffiliationReason: m.disaffiliationReason || null,
+                communicationPending: m.communicationPending || null,
+                updatedAt: new Date(),
             };
-        }));
+
+            if (existingMember) {
+                if (updateExisting) {
+                    await db.update(members)
+                        .set(memberData)
+                        .where(eq(members.id, existingMember.id));
+                    results.updated++;
+                } else {
+                    results.duplicates.push({
+                        ...m,
+                        existingId: existingMember.id,
+                        existingName: existingMember.fullName
+                    });
+                    results.skipped++;
+                }
+            } else {
+                if (!birthDate && !m.fullName) {
+                    // Skip empty rows or rows without minimum data
+                    results.skipped++;
+                    continue;
+                }
+
+                await db.insert(members).values({
+                    ...memberData,
+                    status: 'active', // Imported members are usually active
+                });
+                results.imported++;
+            }
+        }
 
         revalidatePath("/members");
-        return { success: true };
+        return { success: true, results };
     } catch (error) {
         console.error("Error importing members:", error);
-        // Better error message
         const msg = error instanceof Error ? error.message : "Erro desconhecido";
         return { success: false, error: `Erro ao importar: ${msg}` };
     }

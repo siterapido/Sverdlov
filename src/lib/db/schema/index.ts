@@ -5,3 +5,5 @@ export * from './nuclei';
 export * from './schedules';
 export * from './escola';
 export * from './plans';
+
+export * from './projects';

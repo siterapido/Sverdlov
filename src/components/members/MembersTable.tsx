@@ -31,7 +31,7 @@ interface Member {
 
 interface MembersTableProps {
     initialMembers: Member[];
-    onImportClick: () => void;
+    onExportClick: () => void;
     onNewClick: () => void;
 }
 
@@ -75,7 +75,7 @@ function FilterButton({
     );
 }
 
-export function MembersTable({ initialMembers, onImportClick, onNewClick }: MembersTableProps) {
+export function MembersTable({ initialMembers, onExportClick, onNewClick }: MembersTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState<string | null>(null);
     const router = useRouter();
@@ -144,7 +144,7 @@ export function MembersTable({ initialMembers, onImportClick, onNewClick }: Memb
                             className="rounded-none border-zinc-900 border-2"
                         />
                     </div>
-                    <Button variant="outline" size="lg" onClick={onImportClick} className="hidden sm:flex items-center gap-2 border-2 border-zinc-900 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                    <Button variant="outline" size="lg" onClick={onExportClick} className="hidden sm:flex items-center gap-2 border-2 border-zinc-900 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
                         <FileDown className="h-5 w-5" />
                         EXPORTAR
                     </Button>

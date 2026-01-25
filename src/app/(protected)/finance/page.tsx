@@ -36,7 +36,7 @@ export default async function FinancePage() {
                                 GERENCIAR PLANOS
                             </Link>
                         </Button>
-                        <Button className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] h-12 px-6 shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
+                        <Button className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] h-12 px-6 shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
                             NOVA ENTRADA
                         </Button>
                     </div>

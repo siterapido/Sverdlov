@@ -21,8 +21,8 @@ export function OverviewDashboard({ militantes, projetos, tarefas, escalas }: Pr
                     <div className="text-3xl font-bold text-red-600">{militantes.length}</div>
                     <div className="text-sm text-gray-600">Militantes cadastrados</div>
                 </div>
-                <div className="bg-blue-100 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-600">{tarefas.length}</div>
+                <div className="bg-primary/20 p-4 rounded-lg">
+                    <div className="text-3xl font-bold text-primary">{tarefas.length}</div>
                     <div className="text-sm text-gray-600">Tarefas totais</div>
                 </div>
                 <div className="bg-green-100 p-4 rounded-lg">
@@ -52,7 +52,7 @@ export function OverviewDashboard({ militantes, projetos, tarefas, escalas }: Pr
                                             </span>
                                             <span className="font-semibold">{e.tarefa?.nome}</span>
                                             <span className="capitalize text-gray-600">• {e.turno}</span>
-                                            <span className="text-blue-600">→ {e.militante?.nome || 'Não atribuído'}</span>
+                                            <span className="text-primary">→ {e.militante?.nome || 'Não atribuído'}</span>
                                             {e.observacao && (
                                                 <span className="text-xs text-gray-500 italic">({e.observacao})</span>
                                             )}

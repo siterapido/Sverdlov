@@ -112,7 +112,7 @@ export function CalendarClient() {
                             <option>Agitação</option>
                         </select>
                     </div>
-                    <Button className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] h-12 px-6 shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
+                    <Button className="bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] h-12 px-6 shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
                         <Plus className="h-4 w-4 mr-2" />
                         NOVA ESCALA
                     </Button>
@@ -193,7 +193,7 @@ export function CalendarClient() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Agitação</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 bg-blue-500 rounded-none border border-zinc-900" />
+                    <div className="h-3 w-3 bg-primary/100 rounded-none border border-zinc-900" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Vigilância</span>
                 </div>
                 <div className="flex items-center gap-2">

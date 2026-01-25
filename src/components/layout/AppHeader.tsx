@@ -23,10 +23,8 @@ interface AppHeaderProps {
 const breadcrumbMap: Record<string, { label: string; icon?: React.ReactNode }> = {
     dashboard: { label: "Dashboard", icon: <Home className="h-3.5 w-3.5" /> },
     members: { label: "Membros" },
+    nucleos: { label: "Núcleos" },
     escalas: { label: "Escalas" },
-    finance: { label: "Financeiro" },
-    calendar: { label: "Calendário" },
-    chat: { label: "Chat" },
     settings: { label: "Configurações" },
 };
 
@@ -181,17 +179,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                                         time="Há 5 minutos"
                                         unread
                                     />
-                                    <NotificationItem
-                                        title="Contribuição recebida"
-                                        description="R$ 50,00 de Maria Santos"
-                                        time="Há 1 hora"
-                                        unread
-                                    />
-                                    <NotificationItem
-                                        title="Reunião agendada"
-                                        description="Amanhã às 19h - Núcleo Centro"
-                                        time="Há 2 horas"
-                                    />
+
                                 </div>
                                 <div className="px-3 py-2 border-t border-border">
                                     <Button variant="ghost" size="sm" className="w-full text-muted font-bold uppercase text-[10px] tracking-widest">

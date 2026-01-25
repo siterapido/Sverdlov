@@ -1,50 +1,35 @@
 project:
-  name: "Análise e Roadmap de Expansão"
-  scale: MEDIUM
-  started: "2026-01-21T12:17:46.552Z"
-  current_phase: V
+  name: "gestao-nucleos-hierarquica-completa"
+  scale: LARGE
+  started: "2026-01-22T14:24:51.501Z"
+  current_phase: R
 
 phases:
   P:
     status: filled
-    started_at: "2026-01-21T12:17:46.550Z"
-    completed_at: "2026-01-21T12:43:35.674Z"
+    started_at: "2026-01-22T14:24:51.501Z"
+    completed_at: "2026-01-22T14:25:24.992Z"
   R:
     status: in_progress
-    started_at: "2026-01-21T12:43:35.676Z"
+    started_at: "2026-01-22T14:25:24.993Z"
   E:
-    status: filled
-    started_at: "2026-01-21T12:44:00.966Z"
-    completed_at: "2026-01-21T12:57:40.859Z"
+    status: pending
   V:
-    status: completed
-    started_at: "2026-01-21T12:57:40.874Z"
-    completed_at: "2026-01-21T13:14:31.115Z"
-    outputs:
-      - path: "src/components/calendar/CalendarClient.tsx"
-        status: filled
-      - path: "src/app/(protected)/calendar/page.tsx"
-        status: filled
-      - path: "src/app/actions/finances.ts"
-        status: filled
-      - path: "src/components/finance/FinanceDashboard.tsx"
-        status: filled
-      - path: "src/app/(protected)/finance/page.tsx"
-        status: filled
-      - path: "src/components/layout/Sidebar.tsx"
-        status: filled
+    status: pending
   C:
-    status: skipped
-    reason: "Not required for scale MEDIUM"
+    status: pending
 
-roles:
-  planner:
-    status: completed
-  architect:
-    status: pending
-  developer:
-    status: in_progress
-  qa:
-    status: pending
-  reviewer:
-    status: pending
+execution:
+  history:
+    - timestamp: "2026-01-22T15:08:43.435Z"
+      phase: R
+      action: plan_phase_updated
+      plan: "sistema-usuarios-hierarquicos"
+      description: "Plan phase Phase 4: Validação e Testes updated to completed"
+  last_activity: "2026-01-22T15:08:43.435Z"
+  resume_context: "Fase do plano atualizada"
+
+approval:
+  plan_created: true
+  plan_approved: false
+

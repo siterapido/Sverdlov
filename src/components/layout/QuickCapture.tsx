@@ -32,7 +32,7 @@ export function QuickCapture() {
                 size="icon"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "h-10 w-10 rounded-none shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all",
+                    "h-10 w-10 rounded-none shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)] transition-all",
                     isOpen && "rotate-45"
                 )}
             >

@@ -1,30 +1,14 @@
 {
   "active": [
     {
-      "slug": "financeiro-assinaturas",
-      "path": "plans/financeiro-assinaturas.md",
-      "title": "Plano de Implementação: Módulo Financeiro e Assinaturas",
-      "summary": "Implementar gestão completa de planos de assinatura (mensal, anual, etc.), vincular a filiados, registrar pagamentos (recorrentes e extras) e visualizar status financeiro.",
-      "linkedAt": "2026-01-21T00:10:34.321Z",
-      "status": "active"
-    },
-    {
-      "slug": "ciclo-vida-filiado-aprovacao",
-      "path": "plans/ciclo-vida-filiado-aprovacao.md",
-      "title": "Plano de Implementação: Ciclo de Vida do Filiado e Aprovação",
-      "summary": "Implementar fluxo de aprovação de interessados, transição de status e gestão de responsáveis políticos.",
-      "linkedAt": "2026-01-21T12:43:35.224Z",
-      "status": "active"
-    },
-    {
-      "slug": "gestao-nucleos-territorialidade",
-      "path": "plans/gestao-nucleos-territorialidade.md",
-      "title": "Plano de Implementação: Gestão de Núcleos e Territorialidade",
-      "summary": "Implementar CRUD de Núcleos, dashboard de núcleos e atribuição de filiados para organização territorial e temática.",
-      "linkedAt": "2026-01-21T12:59:35.046Z",
+      "slug": "gestao-nucleos-hierarquica-completa",
+      "path": "plans/gestao-nucleos-hierarquica-completa.md",
+      "title": "Plano de Implementação: Gestão Hierárquica de Núcleos e Filiados",
+      "summary": "Implementar o fluxo completo de criação, edição e organização de núcleos em múltiplos níveis (Estado, Cidade, Zona, Local), com atribuição de responsáveis e gestão de membros.",
+      "linkedAt": "2026-01-22T14:25:09.357Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "financeiro-assinaturas"
+  "primary": "gestao-nucleos-hierarquica-completa"
 }

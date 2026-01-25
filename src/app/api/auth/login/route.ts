@@ -43,7 +43,10 @@ export async function POST(request: NextRequest) {
             userId: user.id,
             email: user.email,
             role: user.role as any,
-            territoryScope: user.territoryScope || undefined,
+            scopeState: user.scopeState || undefined,
+            scopeCity: user.scopeCity || undefined,
+            scopeZone: user.scopeZone || undefined,
+            scopeNucleusId: user.scopeNucleusId || undefined,
         });
 
         // Set cookie

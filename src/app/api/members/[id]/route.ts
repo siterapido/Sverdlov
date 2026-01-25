@@ -17,7 +17,7 @@ export async function PATCH(
         const user = await getAuthUser(request);
         const { id } = await context.params;
 
-        if (!user || !hasRole(user, ['national_admin', 'state_leader', 'municipal_leader'])) {
+        if (!user || !hasRole(user, ['ADMIN', 'STATE_COORD', 'CITY_COORD'])) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
         }
 
@@ -84,7 +84,7 @@ export async function DELETE(
         const user = await getAuthUser(request);
         const { id } = await context.params;
 
-        if (!user || !hasRole(user, ['national_admin'])) {
+        if (!user || !hasRole(user, ['ADMIN'])) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
         }
 

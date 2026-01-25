@@ -19,28 +19,41 @@ export function hasRole(
     return allowedRoles.includes(user.role);
 }
 
-export function canAccessTerritory(
+interface NucleusLocation {
+    state: string;
+    city: string;
+    zone?: string | null;
+    id: string;
+}
+
+export function canManageNucleus(
     user: JWTPayload | null,
-    targetState?: string,
-    targetCity?: string
+    nucleus: NucleusLocation
 ): boolean {
     if (!user) return false;
 
-    // National admin can access everything
-    if (user.role === 'national_admin') return true;
+    if (user.role === 'ADMIN') return true;
 
-    if (!user.territoryScope) return false;
-
-    const [userState, userCity] = user.territoryScope.split(':');
-
-    // State leader can access their state
-    if (user.role === 'state_leader' && targetState === userState) {
-        return true;
+    if (user.role === 'STATE_COORD') {
+        return user.scopeState === nucleus.state;
     }
 
-    // Municipal leader can access their city
-    if (user.role === 'municipal_leader' && targetState === userState && targetCity === userCity) {
-        return true;
+    if (user.role === 'CITY_COORD') {
+        return user.scopeState === nucleus.state &&
+            user.scopeCity === nucleus.city;
+    }
+
+    if (user.role === 'ZONE_COORD') {
+        // If the nucleus has no zone but the user covers a zone, strictly speaking they manage that zone.
+        // If the nucleus is undefined zone, maybe it's not under their jurisdiction?
+        // Assuming strict match:
+        return user.scopeState === nucleus.state &&
+            user.scopeCity === nucleus.city &&
+            user.scopeZone === nucleus.zone;
+    }
+
+    if (user.role === 'LOCAL_COORD') {
+        return user.scopeNucleusId === nucleus.id;
     }
 
     return false;

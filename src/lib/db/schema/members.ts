@@ -37,6 +37,12 @@ export const members = pgTable('members', {
     planId: uuid('plan_id').references(() => subscriptionPlans.id),
     subscriptionStartDate: date('subscription_start_date'),
 
+    // Extra fields for import
+    party: text('party'),
+    situation: text('situation'),
+    disaffiliationReason: text('disaffiliation_reason'),
+    communicationPending: text('communication_pending'),
+
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

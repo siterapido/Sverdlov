@@ -61,7 +61,7 @@ export function ProjectBoard({ projetos }: { projetos: Projeto[] }) {
                 <button 
                     onClick={handleAddProject}
                     disabled={isPending}
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                    className="bg-primary text-white px-4 py-2 rounded"
                 >
                     Criar Projeto
                 </button>
@@ -93,7 +93,7 @@ export function ProjectBoard({ projetos }: { projetos: Projeto[] }) {
                                     </span>
                                 </div>
                                 {(tarefa.dia || tarefa.turno) && (
-                                    <span className="text-sm bg-blue-100 px-2 py-1 rounded capitalize">
+                                    <span className="text-sm bg-primary/20 px-2 py-1 rounded capitalize">
                                         {tarefa.dia} - {tarefa.turno}
                                     </span>
                                 )}

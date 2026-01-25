@@ -39,7 +39,7 @@ export default async function NucleiPage() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Button className="flex items-center gap-2 bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
+                        <Button className="flex items-center gap-2 bg-primary hover:brightness-110 text-white border-2 border-primary rounded-none font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)] transition-all active:translate-y-0.5 active:shadow-none">
                             <Plus className="h-4 w-4" />
                             CRIAR NÚCLEO
                         </Button>

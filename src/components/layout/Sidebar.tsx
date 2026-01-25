@@ -20,14 +20,18 @@ import {
     ChevronRight,
     Layers,
     UserCheck,
+    FolderKanban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logout } from "@/app/actions/auth";
+
 
 interface SidebarProps {
     isOpen: boolean;
     isCollapsed: boolean;
     isMobile: boolean;
     toggleSidebar: () => void;
+    userRole?: string;
 }
 
 // === Quick Action Button ===
@@ -57,13 +61,14 @@ function QuickAction({
     );
 }
 
-export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: SidebarProps) {
+export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole }: SidebarProps) {
     const pathname = usePathname();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         "Gestão": true,
         "Execução": true,
         "Comunicação": true,
+        "Administração": true,
     });
 
     const navSections = [
@@ -71,26 +76,22 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
             title: "Gestão",
             items: [
                 { name: "Início", href: "/dashboard", icon: Home },
-                { name: "Filiados", href: "/members", icon: Users },
-                { name: "Núcleos", href: "/members/nuclei", icon: Layers },
-                { name: "Solicitações", href: "/members/requests", icon: UserCheck },
+                { name: "Pessoas", href: "/members", icon: Users },
+                { name: "Núcleos", href: "/members/nucleos", icon: Layers },
+                { name: "Projetos", href: "/projects", icon: FolderKanban },
                 { name: "Escalas", href: "/escalas", icon: ClipboardList },
             ],
         },
-        {
-            title: "Execução",
-            items: [
-                { name: "Financeiro", href: "/finance", icon: DollarSign },
-                { name: "Calendário", href: "/calendar", icon: Calendar },
-            ],
-        },
-        {
-            title: "Comunicação",
-            items: [
-                { name: "Chat", href: "/chat", icon: MessageSquare, badge: 3 },
-            ],
-        },
     ];
+
+    if (userRole === 'ADMIN') {
+        navSections.push({
+            title: "Administração",
+            items: [
+                { name: "Usuários", href: "/admin", icon: Settings },
+            ]
+        });
+    }
 
     const toggleSection = (title: string) => {
         setExpandedSections(prev => ({
@@ -188,7 +189,14 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                                 {(expandedSections[section.title] || isCollapsed) && (
                                     <ul className="space-y-0.5 mt-2">
                                         {section.items.map((item) => {
-                                            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                                            const allItems = navSections.flatMap(s => s.items);
+                                            const isActive = pathname === item.href || (
+                                                pathname.startsWith(`${item.href}/`) &&
+                                                !allItems.some(otherItem =>
+                                                    otherItem.href !== item.href &&
+                                                    (pathname === otherItem.href || pathname.startsWith(`${otherItem.href}/`))
+                                                )
+                                            );
                                             return (
                                                 <li key={item.href}>
                                                     <Link
@@ -271,7 +279,10 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar }: Sideba
                         {/* User Menu Dropdown */}
                         {showUserMenu && !isCollapsed && (
                             <div className="mt-2 rounded-none bg-white border border-border shadow-xl overflow-hidden">
-                                <button className="flex w-full items-center gap-2 px-3 py-2.5 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-danger transition-colors">
+                                <button
+                                    onClick={() => logout()}
+                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-danger transition-colors"
+                                >
                                     <LogOut className="h-4 w-4" />
                                     Sair
                                 </button>

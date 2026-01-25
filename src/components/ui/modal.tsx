@@ -11,6 +11,20 @@ interface ModalProps {
     children: React.ReactNode;
 }
 
+// Create a context to manage modal state
+const ModalContext = React.createContext<{
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+} | null>(null);
+
+function useModal() {
+    const context = React.useContext(ModalContext);
+    if (!context) {
+        throw new Error("useModal must be used within a Modal");
+    }
+    return context;
+}
+
 export function Modal({ open, onOpenChange, children }: ModalProps) {
     // Close on escape
     React.useEffect(() => {
@@ -30,28 +44,30 @@ export function Modal({ open, onOpenChange, children }: ModalProps) {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
-                onClick={() => onOpenChange(false)}
-            />
+        <ModalContext.Provider value={{ open, onOpenChange }}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
+                    onClick={() => onOpenChange(false)}
+                />
 
-            {/* Content */}
-            <div
-                className="relative z-50 w-full animate-slide-up"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {children}
+                {/* Content */}
+                <div
+                    className="relative z-50 w-full animate-slide-up"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {children}
+                </div>
             </div>
-        </div>
+        </ModalContext.Provider>
     );
 }
 
 interface ModalContentProps {
     children: React.ReactNode;
     className?: string;
-    size?: "sm" | "md" | "lg" | "xl" | "full";
+    size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "full";
 }
 
 const sizeClasses = {
@@ -59,6 +75,9 @@ const sizeClasses = {
     md: "max-w-md",
     lg: "max-w-lg",
     xl: "max-w-xl",
+    "2xl": "max-w-2xl",
+    "3xl": "max-w-3xl",
+    "4xl": "max-w-4xl",
     full: "max-w-5xl",
 };
 
@@ -83,6 +102,20 @@ interface ModalHeaderProps {
 }
 
 export function ModalHeader({ children, className, onClose }: ModalHeaderProps) {
+    const context = React.useContext(ModalContext);
+
+    // Use explicit onClose if provided, otherwise fallback to context
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else if (context) {
+            context.onOpenChange(false);
+        }
+    };
+
+    // Show button if onClose is provided OR if we are inside a Modal (context exists)
+    const showCloseButton = onClose || context;
+
     return (
         <div
             className={cn(
@@ -91,13 +124,13 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
             )}
         >
             <div className="flex-1 space-y-2 text-left">{children}</div>
-            {onClose && (
+            {showCloseButton && (
                 <IconButton
                     icon={<X className="h-5 w-5" />}
                     aria-label="Close"
                     variant="ghost"
                     size="icon"
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="hover:bg-zinc-100 rounded-none"
                 />
             )}
@@ -137,7 +170,7 @@ interface ModalBodyProps {
 }
 
 export function ModalBody({ children, className }: ModalBodyProps) {
-    return <div className={cn("p-8 pt-0", className)}>{children}</div>;
+    return <div className={cn("p-10 pt-0", className)}>{children}</div>;
 }
 
 interface ModalFooterProps {
@@ -190,7 +223,7 @@ export function ConfirmDialog({
     return (
         <Modal open={open} onOpenChange={onOpenChange}>
             <ModalContent size="sm">
-                <ModalHeader onClose={() => onOpenChange(false)}>
+                <ModalHeader>
                     <ModalTitle>{title}</ModalTitle>
                     <ModalDescription>{description}</ModalDescription>
                 </ModalHeader>

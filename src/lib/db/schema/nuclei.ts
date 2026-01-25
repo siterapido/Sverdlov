@@ -6,6 +6,7 @@ export const nuclei = pgTable('nuclei', {
     type: text('type', { enum: ['territorial', 'thematic'] }).notNull().default('territorial'),
     state: text('state').notNull(),
     city: text('city').notNull(),
+    zone: text('zone'), // Optional, for zonal coordinators
     status: text('status', { enum: ['dispersed', 'pre_nucleus', 'in_formation', 'active', 'consolidated'] }).notNull().default('in_formation'),
     coordinatorId: uuid('coordinator_id'), // Links to users or members
     createdAt: timestamp('created_at').defaultNow().notNull(),

@@ -111,7 +111,7 @@ interface StatCardProps {
 
 const statCardVariants: Record<StatCardVariant, { indicator: string }> = {
     default: { indicator: "bg-zinc-900" },
-    blue: { indicator: "bg-blue-500" },
+    blue: { indicator: "bg-primary/100" },
     green: { indicator: "bg-emerald-500" },
     yellow: { indicator: "bg-amber-500" },
     red: { indicator: "bg-red-500" },

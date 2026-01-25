@@ -1,0 +1,50 @@
+project:
+  name: "Análise e Roadmap de Expansão"
+  scale: MEDIUM
+  started: "2026-01-21T12:17:46.552Z"
+  current_phase: V
+
+phases:
+  P:
+    status: filled
+    started_at: "2026-01-21T12:17:46.550Z"
+    completed_at: "2026-01-21T12:43:35.674Z"
+  R:
+    status: in_progress
+    started_at: "2026-01-21T12:43:35.676Z"
+  E:
+    status: filled
+    started_at: "2026-01-21T12:44:00.966Z"
+    completed_at: "2026-01-21T12:57:40.859Z"
+  V:
+    status: completed
+    started_at: "2026-01-21T12:57:40.874Z"
+    completed_at: "2026-01-21T13:14:31.115Z"
+    outputs:
+      - path: "src/components/calendar/CalendarClient.tsx"
+        status: filled
+      - path: "src/app/(protected)/calendar/page.tsx"
+        status: filled
+      - path: "src/app/actions/finances.ts"
+        status: filled
+      - path: "src/components/finance/FinanceDashboard.tsx"
+        status: filled
+      - path: "src/app/(protected)/finance/page.tsx"
+        status: filled
+      - path: "src/components/layout/Sidebar.tsx"
+        status: filled
+  C:
+    status: skipped
+    reason: "Not required for scale MEDIUM"
+
+roles:
+  planner:
+    status: completed
+  architect:
+    status: pending
+  developer:
+    status: in_progress
+  qa:
+    status: pending
+  reviewer:
+    status: pending

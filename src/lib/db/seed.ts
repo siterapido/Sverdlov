@@ -20,7 +20,7 @@ async function seed() {
             fullName: "Administrador do Sistema",
             email: "admin@sverdlov.com",
             passwordHash: hashedPassword,
-            role: "national_admin",
+            role: "ADMIN",
         }).onConflictDoNothing({ target: users.email }).returning();
 
         const userId = adminUser?.id;

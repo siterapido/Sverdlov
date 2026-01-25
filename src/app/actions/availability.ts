@@ -1,511 +1,148 @@
-'use server';
+"use server";
 
-import { db } from '@/lib/db';
-import {
-    memberAvailability,
-    scheduleExceptions,
-    MemberAvailability,
-    NewMemberAvailability,
-    ScheduleException,
-    NewScheduleException,
-} from '@/lib/db/schema';
-import { eq, and, gte, lte, asc, desc, inArray } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { db } from "@/lib/db";
+import { availabilityRequests, memberAvailability, scheduleExceptions } from "@/lib/db/schema/schedules";
+import { eq, and } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/jwt";
+import { randomBytes } from "crypto";
 
-// ==========================================
-// TIPOS AUXILIARES
-// ==========================================
-
-export interface WeeklyAvailabilityInput {
-    dayOfWeek: number; // 0-6
-    slots: {
-        startTime: string; // HH:mm
-        endTime: string;   // HH:mm
-    }[];
+async function getCurrentUser() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth_token')?.value;
+    if (!token) return null;
+    return await verifyToken(token);
 }
 
-export interface DayAvailability {
-    dayOfWeek: number;
-    dayName: string;
-    slots: {
-        id: string;
-        startTime: string;
-        endTime: string;
-        isAvailable: boolean;
-    }[];
-}
-
-const DAY_NAMES = [
-    'Domingo',
-    'Segunda-feira',
-    'Terça-feira',
-    'Quarta-feira',
-    'Quinta-feira',
-    'Sexta-feira',
-    'Sábado',
-];
-
-// ==========================================
-// DISPONIBILIDADE SEMANAL
-// ==========================================
-
-/**
- * Definir disponibilidade semanal do membro
- * Remove a disponibilidade anterior e substitui pela nova
- */
-export async function setWeeklyAvailability(
-    memberId: string,
-    availability: WeeklyAvailabilityInput[]
-): Promise<{ success: boolean; error?: string }> {
+export async function createAvailabilityRequest(memberId: string, period: '7_days' | '15_days' | '30_days') {
     try {
-        // Remover disponibilidade anterior
-        await db
-            .delete(memberAvailability)
-            .where(eq(memberAvailability.memberId, memberId));
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
 
-        // Criar novas entradas
-        const entries: NewMemberAvailability[] = [];
+        // Generate a secure random token
+        const token = randomBytes(32).toString('hex');
 
-        for (const day of availability) {
-            for (const slot of day.slots) {
-                entries.push({
-                    memberId,
-                    dayOfWeek: day.dayOfWeek,
-                    startTime: slot.startTime,
-                    endTime: slot.endTime,
-                    isAvailable: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                });
-            }
-        }
+        // Calculate expiration (e.g., 7 days from now)
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
 
-        if (entries.length > 0) {
-            await db.insert(memberAvailability).values(entries);
-        }
+        const [request] = await db.insert(availabilityRequests).values({
+            memberId,
+            token,
+            period,
+            expiresAt,
+            status: 'pending'
+        }).returning();
 
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true };
+        revalidatePath('/escalas');
+        return { success: true, token: request.token, id: request.id };
     } catch (error) {
-        console.error('Erro ao definir disponibilidade:', error);
-        return { success: false, error: 'Erro ao salvar disponibilidade' };
+        console.error("Error creating availability request:", error);
+        return { success: false, error: "Falha ao criar solicitação" };
     }
 }
 
-/**
- * Adicionar slot de disponibilidade
- */
-export async function addAvailabilitySlot(
-    memberId: string,
-    dayOfWeek: number,
-    startTime: string,
-    endTime: string
-): Promise<{ success: boolean; availability?: MemberAvailability; error?: string }> {
+export async function getAvailabilityRequest(token: string) {
     try {
-        const [availability] = await db
-            .insert(memberAvailability)
-            .values({
-                memberId,
-                dayOfWeek,
-                startTime,
-                endTime,
-                isAvailable: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            })
-            .returning();
-
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true, availability };
-    } catch (error) {
-        console.error('Erro ao adicionar disponibilidade:', error);
-        return { success: false, error: 'Erro ao adicionar' };
-    }
-}
-
-/**
- * Remover slot de disponibilidade
- */
-export async function removeAvailabilitySlot(
-    availabilityId: string
-): Promise<{ success: boolean; error?: string }> {
-    try {
-        await db
-            .delete(memberAvailability)
-            .where(eq(memberAvailability.id, availabilityId));
-
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true };
-    } catch (error) {
-        console.error('Erro ao remover disponibilidade:', error);
-        return { success: false, error: 'Erro ao remover' };
-    }
-}
-
-/**
- * Atualizar slot de disponibilidade
- */
-export async function updateAvailabilitySlot(
-    availabilityId: string,
-    data: { startTime?: string; endTime?: string; isAvailable?: boolean }
-): Promise<{ success: boolean; error?: string }> {
-    try {
-        await db
-            .update(memberAvailability)
-            .set({
-                ...data,
-                updatedAt: new Date(),
-            })
-            .where(eq(memberAvailability.id, availabilityId));
-
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true };
-    } catch (error) {
-        console.error('Erro ao atualizar disponibilidade:', error);
-        return { success: false, error: 'Erro ao atualizar' };
-    }
-}
-
-/**
- * Buscar disponibilidade do membro
- */
-export async function getAvailability(
-    memberId: string
-): Promise<DayAvailability[]> {
-    try {
-        const availability = await db
-            .select()
-            .from(memberAvailability)
-            .where(eq(memberAvailability.memberId, memberId))
-            .orderBy(asc(memberAvailability.dayOfWeek), asc(memberAvailability.startTime));
-
-        // Organizar por dia da semana
-        const byDay: DayAvailability[] = [];
-
-        for (let day = 0; day < 7; day++) {
-            const daySlots = availability.filter((a) => a.dayOfWeek === day);
-            byDay.push({
-                dayOfWeek: day,
-                dayName: DAY_NAMES[day],
-                slots: daySlots.map((s) => ({
-                    id: s.id,
-                    startTime: s.startTime,
-                    endTime: s.endTime,
-                    isAvailable: s.isAvailable ?? true,
-                })),
-            });
-        }
-
-        return byDay;
-    } catch (error) {
-        console.error('Erro ao buscar disponibilidade:', error);
-        return [];
-    }
-}
-
-/**
- * Verificar se membro está disponível em determinado horário
- */
-export async function checkMemberAvailability(
-    memberId: string,
-    date: string,
-    startTime: string,
-    endTime: string
-): Promise<{ available: boolean; reason?: string }> {
-    try {
-        const dateObj = new Date(date);
-        const dayOfWeek = dateObj.getDay();
-
-        // Verificar exceções primeiro
-        const exception = await db.query.scheduleExceptions.findFirst({
-            where: and(
-                eq(scheduleExceptions.memberId, memberId),
-                eq(scheduleExceptions.date, date)
-            ),
-        });
-
-        if (exception) {
-            if (exception.type === 'unavailable') {
-                return { available: false, reason: exception.reason || 'Indisponível nesta data' };
-            }
-            if (exception.type === 'available') {
-                return { available: true };
-            }
-            // Para 'partial', verificar horário
-            if (
-                exception.startTime &&
-                exception.endTime &&
-                startTime >= exception.startTime &&
-                endTime <= exception.endTime
-            ) {
-                return { available: false, reason: 'Indisponível neste horário' };
-            }
-        }
-
-        // Verificar disponibilidade semanal
-        const availability = await db.query.memberAvailability.findFirst({
-            where: and(
-                eq(memberAvailability.memberId, memberId),
-                eq(memberAvailability.dayOfWeek, dayOfWeek),
-                eq(memberAvailability.isAvailable, true),
-                lte(memberAvailability.startTime, startTime),
-                gte(memberAvailability.endTime, endTime)
-            ),
-        });
-
-        if (availability) {
-            return { available: true };
-        }
-
-        return { available: false, reason: 'Sem disponibilidade cadastrada' };
-    } catch (error) {
-        console.error('Erro ao verificar disponibilidade:', error);
-        return { available: false, reason: 'Erro ao verificar' };
-    }
-}
-
-// ==========================================
-// EXCEÇÕES DE DISPONIBILIDADE
-// ==========================================
-
-/**
- * Adicionar exceção (data específica indisponível)
- */
-export async function addException(
-    memberId: string,
-    date: string,
-    reason?: string,
-    type: 'unavailable' | 'available' | 'partial' = 'unavailable',
-    startTime?: string,
-    endTime?: string
-): Promise<{ success: boolean; exception?: ScheduleException; error?: string }> {
-    try {
-        // Remover exceção anterior para a mesma data
-        await db
-            .delete(scheduleExceptions)
-            .where(
-                and(
-                    eq(scheduleExceptions.memberId, memberId),
-                    eq(scheduleExceptions.date, date)
-                )
-            );
-
-        const [exception] = await db
-            .insert(scheduleExceptions)
-            .values({
-                memberId,
-                date,
-                type,
-                reason,
-                startTime,
-                endTime,
-                createdAt: new Date(),
-            })
-            .returning();
-
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true, exception };
-    } catch (error) {
-        console.error('Erro ao adicionar exceção:', error);
-        return { success: false, error: 'Erro ao adicionar exceção' };
-    }
-}
-
-/**
- * Remover exceção
- */
-export async function removeException(
-    exceptionId: string
-): Promise<{ success: boolean; error?: string }> {
-    try {
-        await db
-            .delete(scheduleExceptions)
-            .where(eq(scheduleExceptions.id, exceptionId));
-
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true };
-    } catch (error) {
-        console.error('Erro ao remover exceção:', error);
-        return { success: false, error: 'Erro ao remover exceção' };
-    }
-}
-
-/**
- * Listar exceções do membro
- */
-export async function getExceptions(
-    memberId: string,
-    options?: { startDate?: string; endDate?: string }
-): Promise<ScheduleException[]> {
-    try {
-        const conditions = [eq(scheduleExceptions.memberId, memberId)];
-
-        if (options?.startDate) {
-            conditions.push(gte(scheduleExceptions.date, options.startDate));
-        }
-
-        if (options?.endDate) {
-            conditions.push(lte(scheduleExceptions.date, options.endDate));
-        }
-
-        return await db
-            .select()
-            .from(scheduleExceptions)
-            .where(and(...conditions))
-            .orderBy(asc(scheduleExceptions.date));
-    } catch (error) {
-        console.error('Erro ao listar exceções:', error);
-        return [];
-    }
-}
-
-/**
- * Buscar membros disponíveis para um horário específico
- */
-export async function getAvailableMembers(
-    date: string,
-    startTime: string,
-    endTime: string,
-    territoryScope?: string
-): Promise<{
-    memberId: string;
-    memberName: string;
-    militancyLevel: string;
-}[]> {
-    try {
-        const dateObj = new Date(date);
-        const dayOfWeek = dateObj.getDay();
-
-        // Buscar disponibilidades no dia
-        const availabilities = await db.query.memberAvailability.findMany({
-            where: and(
-                eq(memberAvailability.dayOfWeek, dayOfWeek),
-                eq(memberAvailability.isAvailable, true),
-                lte(memberAvailability.startTime, startTime),
-                gte(memberAvailability.endTime, endTime)
-            ),
+        const request = await db.query.availabilityRequests.findFirst({
+            where: eq(availabilityRequests.token, token),
             with: {
-                member: true,
-            },
+                member: true
+            }
         });
 
-        // Buscar exceções para a data
-        const memberIds = availabilities.map((a) => a.memberId);
-        const exceptions =
-            memberIds.length > 0
-                ? await db
-                    .select()
-                    .from(scheduleExceptions)
-                    .where(
-                        and(
-                            inArray(scheduleExceptions.memberId, memberIds),
-                            eq(scheduleExceptions.date, date),
-                            eq(scheduleExceptions.type, 'unavailable')
-                        )
-                    )
-                : [];
+        if (!request) return { success: false, error: "Solicitação não encontrada" };
+        if (request.status !== 'pending') return { success: false, error: "Solicitação já utilizada ou expirada" };
+        if (new Date() > request.expiresAt) return { success: false, error: "Solicitação expirada" };
 
-        const exceptionMemberIds = new Set(exceptions.map((e) => e.memberId));
-
-        // Filtrar disponíveis (removendo os com exceções)
-        let available = availabilities
-            .filter((a) => !exceptionMemberIds.has(a.memberId))
-            .filter((a) => a.member?.status === 'active');
-
-        // Filtrar por território
-        if (territoryScope) {
-            const [state, city] = territoryScope.split(':');
-            available = available.filter((a) => {
-                if (!a.member) return false;
-                if (city) {
-                    return a.member.state === state && a.member.city === city;
-                }
-                return a.member.state === state;
-            });
-        }
-
-        // Remover duplicatas (mesmo membro pode ter múltiplos slots)
-        const uniqueMembers = new Map<
-            string,
-            { memberId: string; memberName: string; militancyLevel: string }
-        >();
-
-        for (const a of available) {
-            if (a.member && !uniqueMembers.has(a.memberId)) {
-                uniqueMembers.set(a.memberId, {
-                    memberId: a.memberId,
-                    memberName: a.member.fullName,
-                    militancyLevel: a.member.militancyLevel,
-                });
-            }
-        }
-
-        return Array.from(uniqueMembers.values());
+        return { success: true, data: request };
     } catch (error) {
-        console.error('Erro ao buscar membros disponíveis:', error);
-        return [];
+        console.error("Error getting request:", error);
+        return { success: false, error: "Erro ao buscar solicitação" };
     }
 }
 
-/**
- * Copiar disponibilidade de um dia para outros dias
- */
-export async function copyAvailabilityToOtherDays(
-    memberId: string,
-    sourceDay: number,
-    targetDays: number[]
-): Promise<{ success: boolean; count: number; error?: string }> {
+export async function submitAvailability(token: string, availabilityData: any[]) {
     try {
-        // Buscar disponibilidade do dia fonte
-        const sourceAvailability = await db
-            .select()
-            .from(memberAvailability)
-            .where(
-                and(
-                    eq(memberAvailability.memberId, memberId),
-                    eq(memberAvailability.dayOfWeek, sourceDay)
-                )
-            );
+        const request = await db.query.availabilityRequests.findFirst({
+            where: eq(availabilityRequests.token, token),
+        });
 
-        if (sourceAvailability.length === 0) {
-            return { success: false, count: 0, error: 'Dia origem sem disponibilidade' };
+        if (!request || request.status !== 'pending') {
+            return { success: false, error: "Solicitação inválida" };
         }
 
-        // Remover disponibilidade dos dias alvo
-        await db
-            .delete(memberAvailability)
-            .where(
-                and(
-                    eq(memberAvailability.memberId, memberId),
-                    inArray(memberAvailability.dayOfWeek, targetDays)
-                )
-            );
+        // 1. Save Availability (assuming scheduleExceptions or memberAvailability update)
+        // Here we assume availabilityData is a list of specific dates/times available or unavailable
+        // depending on how the frontend form works.
+        // For simplicity, let's assume valid availabilities for the period.
 
-        // Criar novas entradas para cada dia alvo
-        const entries: NewMemberAvailability[] = [];
+        // Wait, typical availability is weekly pattern OR specific dates.
+        // Prompt says "availability for next 7, 15 or 30 days". This implies specific date exceptions or confirmations.
+        // We will store as 'scheduleExceptions' type 'available' for specific dates, or 'unavailable'.
 
-        for (const targetDay of targetDays) {
-            for (const slot of sourceAvailability) {
-                entries.push({
-                    memberId,
-                    dayOfWeek: targetDay,
-                    startTime: slot.startTime,
-                    endTime: slot.endTime,
-                    isAvailable: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
+        await db.transaction(async (tx) => {
+            for (const item of availabilityData) {
+                // Remove existing for same day
+                await tx.delete(scheduleExceptions)
+                    .where(and(
+                        eq(scheduleExceptions.memberId, request.memberId),
+                        eq(scheduleExceptions.date, item.date)
+                    ));
+
+                await tx.insert(scheduleExceptions).values({
+                    memberId: request.memberId,
+                    date: item.date, // string 'YYYY-MM-DD'
+                    type: item.type, // 'available', 'unavailable'
+                    startTime: item.startTime || null,
+                    endTime: item.endTime || null,
+                    reason: 'Preenchimento via link',
                 });
             }
-        }
 
-        if (entries.length > 0) {
-            await db.insert(memberAvailability).values(entries);
-        }
+            // Update request status
+            await tx.update(availabilityRequests)
+                .set({ status: 'completed', completedAt: new Date() })
+                .where(eq(availabilityRequests.id, request.id));
+        });
 
-        revalidatePath(`/escalas/minha-agenda`);
-        return { success: true, count: entries.length };
+        return { success: true };
     } catch (error) {
-        console.error('Erro ao copiar disponibilidade:', error);
-        return { success: false, count: 0, error: 'Erro ao copiar' };
+        console.error("Error submitting availability:", error);
+        return { success: false, error: "Falha ao salvar disponibilidade" };
+    }
+}
+
+export async function submitAvailabilityDirect(memberId: string, availabilityData: any[]) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        await db.transaction(async (tx) => {
+            for (const item of availabilityData) {
+                // Remove existing for same day
+                await tx.delete(scheduleExceptions)
+                    .where(and(
+                        eq(scheduleExceptions.memberId, memberId),
+                        eq(scheduleExceptions.date, item.date)
+                    ));
+
+                await tx.insert(scheduleExceptions).values({
+                    memberId: memberId,
+                    date: item.date,
+                    type: item.type,
+                    startTime: item.startTime || null,
+                    endTime: item.endTime || null,
+                    reason: 'Cadastro direto pelo administrador',
+                });
+            }
+        });
+
+        revalidatePath('/escalas');
+        return { success: true };
+    } catch (error) {
+        console.error("Error submitting availability direct:", error);
+        return { success: false, error: "Falha ao salvar disponibilidade" };
     }
 }

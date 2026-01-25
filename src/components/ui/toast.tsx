@@ -106,7 +106,7 @@ const toastStyles: Record<ToastType, { icon: React.ReactNode; colorClass: string
     },
     info: {
         icon: <Info className="h-5 w-5" />,
-        colorClass: "text-blue-500 dark:text-blue-400",
+        colorClass: "text-primary dark:text-primary/70",
     },
 };
 

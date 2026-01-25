@@ -5,7 +5,7 @@
 :root {
   --color-white: #FFFFFF;
   --color-black: #000000;
-  --color-sverdlov-blue: #0052FF;
+  --color-sverdlov-red: #9B111E;
   
   --color-zinc-50: #F8F9FA;
   --color-zinc-100: #F1F3F5;
@@ -26,7 +26,7 @@
   --color-surface-active: #F1F3F5;
   --color-border: #E9ECEF;
   --color-border-hover: #DEE2E6;
-  --color-primary: #0052FF;
+  --color-primary: #9B111E;
   --color-primary-foreground: #FFFFFF;
   --color-muted: #6C757D;
   --color-muted-foreground: #ADB5BD;
@@ -34,7 +34,7 @@
   --color-success: #00A86B;
   --color-warning: #FFBF00;
   --color-danger: #D90429;
-  --color-info: #0052FF;
+  --color-info: #9B111E;
 
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -51,7 +51,7 @@
 @theme {
   --color-white: var(--color-white);
   --color-black: var(--color-black);
-  --color-sverdlov-blue: var(--color-sverdlov-blue);
+  --color-sverdlov-red: var(--color-sverdlov-red);
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
   --color-surface: var(--color-surface);
@@ -85,9 +85,9 @@ body, main, aside, header {
   color: #000000 !important;
 }
 
-/* Re-apply Primary Blue */
-.bg-primary, .bg-sverdlov-blue {
-  background-color: #0052FF !important;
+/* Re-apply Primary Red */
+.bg-primary, .bg-sverdlov-red {
+  background-color: #9B111E !important;
   color: #FFFFFF !important;
 }
 

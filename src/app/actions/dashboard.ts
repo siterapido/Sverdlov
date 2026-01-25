@@ -64,10 +64,18 @@ export async function getDashboardStats() {
             .where(eq(nuclei.status, 'active'));
 
         // 5. Recent Members
-        const recentMembersList = await db.query.members.findMany({
-            orderBy: [desc(members.createdAt)],
-            limit: 5,
-        });
+        let recentMembersList: any[] = [];
+        try {
+            recentMembersList = await db
+                .select()
+                .from(members)
+                .orderBy(desc(members.createdAt))
+                .limit(5);
+        } catch (memberError) {
+            console.error("Error fetching recent members:", memberError);
+            // Return empty array if query fails
+            recentMembersList = [];
+        }
 
         // Calculate trends
         const memberTrend = newMembersLastMonth?.value
@@ -100,6 +108,9 @@ export async function getDashboardStats() {
         };
     } catch (error) {
         console.error("Dashboard stats fetch error:", error);
+        if (error instanceof Error) {
+            console.error("Error details:", error.message, error.stack);
+        }
         throw new Error("Falha ao carregar estatísticas do dashboard");
     }
 }

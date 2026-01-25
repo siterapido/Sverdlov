@@ -43,7 +43,7 @@ export default function MemberProfilePage() {
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 bg-primary flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,82,255,0.1)]">
+                        <div className="h-10 w-10 bg-primary flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(155,17,30,0.1)]">
                             <User className="h-5 w-5 text-white" />
                         </div>
                         <div>
@@ -77,34 +77,36 @@ export default function MemberProfilePage() {
                                 <TabsTrigger value="organizacao">ORGANIZAÇÃO</TabsTrigger>
                                 <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
                             </TabsList>
-                            
+
                             <TabsContent value="cadastro">
                                 <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
                                     <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
                                         <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Dados Estatutários e Operacionais</h3>
                                     </div>
                                     <div className="p-10">
-                                        <MemberForm initialData={member} isEditing={true} />
+                                        <div className="max-w-xl mx-auto">
+                                            <MemberForm initialData={member} isEditing={true} />
+                                        </div>
                                     </div>
                                 </div>
                             </TabsContent>
 
                             <TabsContent value="organizacao">
-                                <MemberOrgTab 
-                                    memberId={member.id} 
-                                    initialData={{ 
-                                        nucleusId: member.nucleusId, 
+                                <MemberOrgTab
+                                    memberId={member.id}
+                                    initialData={{
+                                        nucleusId: member.nucleusId,
                                         politicalResponsibleId: member.politicalResponsibleId,
                                         requestDate: member.requestDate,
                                         approvalDate: member.approvalDate,
                                         affiliationDate: member.affiliationDate,
                                         militancyLevel: member.militancyLevel
-                                    }} 
+                                    }}
                                 />
                             </TabsContent>
 
                             <TabsContent value="financeiro">
-                                 <MemberFinancialTab memberId={member.id} memberData={member} />
+                                <MemberFinancialTab memberId={member.id} memberData={member} />
                             </TabsContent>
                         </Tabs>
 

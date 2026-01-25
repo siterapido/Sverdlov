@@ -10,7 +10,7 @@ const STATUS_CONFIG: Record<string, { label: string; icon: typeof Check; color: 
     pending: { label: 'Pendente', icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-50' },
     confirmed: { label: 'Confirmado', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
     declined: { label: 'Recusado', icon: XCircle, color: 'text-red-500', bg: 'bg-red-50' },
-    attended: { label: 'Presente', icon: Check, color: 'text-blue-500', bg: 'bg-blue-50' },
+    attended: { label: 'Presente', icon: Check, color: 'text-primary', bg: 'bg-primary/10' },
     absent: { label: 'Ausente', icon: X, color: 'text-red-500', bg: 'bg-red-50' },
     excused: { label: 'Justificado', icon: AlertCircle, color: 'text-gray-500', bg: 'bg-gray-50' },
 };
