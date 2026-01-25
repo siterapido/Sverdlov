@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/ui/page-transition";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 export default async function NucleiPage() {
     const result = await getNuclei();
     const nuclei = result.success && result.data ? result.data : [];

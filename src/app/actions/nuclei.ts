@@ -3,10 +3,11 @@
 import { db } from "@/lib/db";
 import { nuclei } from "@/lib/db/schema/nuclei";
 import { members } from "@/lib/db/schema/members";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc, sql, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
+import { canManageNucleus } from "@/lib/auth/rbac";
 
 async function getCurrentUser() {
     const cookieStore = await cookies();
@@ -67,8 +68,6 @@ export async function getNuclei() {
         return { success: false, error: "Falha ao carregar núcleos" };
     }
 }
-
-import { canManageNucleus } from "@/lib/auth/rbac";
 
 export async function getNucleusById(id: string) {
     try {
@@ -196,5 +195,72 @@ export async function assignMemberToNucleus(memberId: string, nucleusId: string 
     } catch (error) {
         console.error("Error assigning member to nucleus:", error);
         return { success: false, error: "Erro ao vincular membro ao núcleo" };
+    }
+}
+
+export async function updateNucleiBulk(ids: string[], data: any) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const existingNuclei = await db.select().from(nuclei).where(inArray(nuclei.id, ids));
+        
+        const authorizedIds = existingNuclei
+            .filter(n => canManageNucleus(user, n))
+            .map(n => n.id);
+
+        if (authorizedIds.length === 0) {
+            return { success: false, error: "Sem permissão para editar os núcleos selecionados." };
+        }
+
+        await db.update(nuclei)
+            .set({
+                ...data,
+                updatedAt: new Date(),
+            })
+            .where(inArray(nuclei.id, authorizedIds));
+
+        revalidatePath("/members/nucleos");
+        return { 
+            success: true, 
+            message: `${authorizedIds.length} núcleos atualizados com sucesso.` + 
+                     (authorizedIds.length < ids.length ? ` (${ids.length - authorizedIds.length} ignorados)` : "")
+        };
+    } catch (error) {
+        console.error("Error updating nuclei bulk:", error);
+        return { success: false, error: "Erro ao atualizar núcleos em massa" };
+    }
+}
+
+export async function deleteNuclei(ids: string[]) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const existingNuclei = await db.select().from(nuclei).where(inArray(nuclei.id, ids));
+        
+        const authorizedIds = existingNuclei
+            .filter(n => canManageNucleus(user, n))
+            .map(n => n.id);
+
+        if (authorizedIds.length === 0) {
+            return { success: false, error: "Sem permissão para excluir os núcleos selecionados." };
+        }
+
+        await db.update(members)
+            .set({ nucleusId: null })
+            .where(inArray(members.nucleusId, authorizedIds));
+
+        await db.delete(nuclei).where(inArray(nuclei.id, authorizedIds));
+
+        revalidatePath("/members/nucleos");
+        return { 
+            success: true, 
+            message: `${authorizedIds.length} núcleos excluídos com sucesso.` +
+                     (authorizedIds.length < ids.length ? ` (${ids.length - authorizedIds.length} ignorados)` : "")
+        };
+    } catch (error) {
+        console.error("Error deleting nuclei bulk:", error);
+        return { success: false, error: "Erro ao excluir núcleos em massa" };
     }
 }

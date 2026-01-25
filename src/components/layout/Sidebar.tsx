@@ -84,15 +84,6 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
         },
     ];
 
-    if (userRole === 'ADMIN') {
-        navSections.push({
-            title: "Administração",
-            items: [
-                { name: "Usuários", href: "/admin", icon: Settings },
-            ]
-        });
-    }
-
     const toggleSection = (title: string) => {
         setExpandedSections(prev => ({
             ...prev,

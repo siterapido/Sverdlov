@@ -1,35 +1,32 @@
 project:
-  name: "gestao-nucleos-hierarquica-completa"
-  scale: LARGE
-  started: "2026-01-22T14:24:51.501Z"
-  current_phase: R
+  name: "agrupar-configuracoes-usuarios"
+  scale: SMALL
+  started: "2026-01-25T19:31:08.698Z"
+  current_phase: V
 
 phases:
   P:
     status: filled
-    started_at: "2026-01-22T14:24:51.501Z"
-    completed_at: "2026-01-22T14:25:24.992Z"
+    started_at: "2026-01-25T19:31:08.690Z"
+    completed_at: "2026-01-25T19:39:47.763Z"
   R:
-    status: in_progress
-    started_at: "2026-01-22T14:25:24.993Z"
+    status: skipped
+    reason: "Not required for scale SMALL"
   E:
-    status: pending
+    status: filled
+    started_at: "2026-01-25T19:39:47.764Z"
+    completed_at: "2026-01-25T19:39:52.954Z"
   V:
-    status: pending
+    status: in_progress
+    started_at: "2026-01-25T19:39:52.954Z"
   C:
+    status: skipped
+    reason: "Not required for scale SMALL"
+
+roles:
+  planner:
     status: pending
-
-execution:
-  history:
-    - timestamp: "2026-01-22T15:08:43.435Z"
-      phase: R
-      action: plan_phase_updated
-      plan: "sistema-usuarios-hierarquicos"
-      description: "Plan phase Phase 4: Validação e Testes updated to completed"
-  last_activity: "2026-01-22T15:08:43.435Z"
-  resume_context: "Fase do plano atualizada"
-
-approval:
-  plan_created: true
-  plan_approved: false
-
+  developer:
+    status: pending
+  qa:
+    status: pending

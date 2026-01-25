@@ -14,10 +14,11 @@ This directory contains plans for coordinating work across documentation and pla
 9. [Gestao Nucleos Territorialidade](./gestao-nucleos-territorialidade.md)
 10. [Original Ui Ux Refactor](./original-ui-ux-refactor.md)
 11. [Project Availability Enhancement](./project-availability-enhancement.md)
-12. [Sistema Escalas Trabalho](./sistema-escalas-trabalho.md)
-13. [Sistema Usuarios Hierarquicos](./sistema-usuarios-hierarquicos.md)
-14. [Ui Ux Refactor](./ui-ux-refactor.md)
-15. [White Design Ux Plan](./white-design-ux-plan.md)
+12. [Settings Users Consolidation](./settings-users-consolidation.md)
+13. [Sistema Escalas Trabalho](./sistema-escalas-trabalho.md)
+14. [Sistema Usuarios Hierarquicos](./sistema-usuarios-hierarquicos.md)
+15. [Ui Ux Refactor](./ui-ux-refactor.md)
+16. [White Design Ux Plan](./white-design-ux-plan.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

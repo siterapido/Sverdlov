@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import { ToastProvider } from '@/components/ui/toast';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,9 +23,11 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.className} ${inter.variable} antialiased`}>
         <ThemeProvider defaultTheme="light" storageKey="sverdlov-theme">
-          <main className="min-h-screen bg-background text-foreground transition-colors duration-200">
-            {children}
-          </main>
+          <ToastProvider>
+            <main className="min-h-screen bg-background text-foreground transition-colors duration-200">
+              {children}
+            </main>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

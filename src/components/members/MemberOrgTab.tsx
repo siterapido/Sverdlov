@@ -33,11 +33,11 @@ export function MemberOrgTab({ memberId, initialData }: MemberOrgTabProps) {
     useEffect(() => {
         const fetchData = async () => {
             const [usersRes, nucleiRes] = await Promise.all([
-                getUsers(),
+                getUsers().catch(() => []),
                 getNuclei()
             ]);
             
-            if (usersRes.success) setUsers(usersRes.data || []);
+            setUsers(Array.isArray(usersRes) ? usersRes : []);
             if (nucleiRes.success) setNuclei(nucleiRes.data || []);
             setLoading(false);
         };

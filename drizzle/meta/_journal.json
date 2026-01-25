@@ -36,6 +36,13 @@
       "when": 1769094052411,
       "tag": "0004_magenta_maginty",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1769370918325,
+      "tag": "0005_nifty_zeigeist",
+      "breakpoints": true
     }
   ]
 }

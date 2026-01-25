@@ -252,8 +252,8 @@ export async function importMembers(membersList: any[], updateExisting: boolean 
                 voterTitle: voterTitle,
                 email: m.email || '',
                 phone: m.phone ? String(m.phone).replace(/\D/g, '') : '',
-                state: m.state,
-                city: m.city,
+                state: m.state || '',
+                city: m.city || '',
                 zone: m.zone ? String(m.zone) : null,
                 neighborhood: m.neighborhood || '',
                 dateOfBirth: birthDate,
@@ -281,17 +281,38 @@ export async function importMembers(membersList: any[], updateExisting: boolean 
                     results.skipped++;
                 }
             } else {
-                if (!birthDate && !m.fullName) {
-                    // Skip empty rows or rows without minimum data
+                if (!cleanCpf) {
+                     // Skip rows without CPF (required by DB and unique)
+                     console.warn(`Skipping member ${m.fullName}: Missing CPF`);
+                     results.skipped++;
+                     continue;
+                }
+
+                if (!birthDate) {
+                     // Skip rows without valid date of birth (required by DB)
+                     console.warn(`Skipping member ${m.fullName}: Missing or invalid Date of Birth`);
+                     results.skipped++;
+                     continue;
+                }
+
+                if (!m.fullName) {
+                    // Skip empty rows
                     results.skipped++;
                     continue;
                 }
 
-                await db.insert(members).values({
-                    ...memberData,
-                    status: 'active', // Imported members are usually active
-                });
-                results.imported++;
+                try {
+                    await db.insert(members).values({
+                        ...memberData,
+                        status: 'active', // Imported members are usually active
+                    });
+                    results.imported++;
+                } catch (insertError: unknown) {
+                    // Catch individual insert errors (like unique constraint violations on other fields) to not fail the whole batch
+                    const errorMessage = insertError instanceof Error ? insertError.message : String(insertError);
+                    console.error(`Failed to insert member ${m.fullName}:`, errorMessage);
+                    results.skipped++;
+                }
             }
         }
 

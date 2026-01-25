@@ -18,7 +18,7 @@ export async function getPlans() {
 export async function createPlan(data: typeof subscriptionPlans.$inferInsert) {
     try {
         await db.insert(subscriptionPlans).values(data);
-        revalidatePath("/admin/finance/plans");
+        revalidatePath("/finance/plans");
         return { success: true };
     } catch (error) {
         console.error("Error creating plan:", error);
@@ -29,7 +29,7 @@ export async function createPlan(data: typeof subscriptionPlans.$inferInsert) {
 export async function updatePlan(id: string, data: Partial<typeof subscriptionPlans.$inferInsert>) {
     try {
         await db.update(subscriptionPlans).set(data).where(eq(subscriptionPlans.id, id));
-        revalidatePath("/admin/finance/plans");
+        revalidatePath("/finance/plans");
         return { success: true };
     } catch (error) {
         console.error("Error updating plan:", error);
@@ -40,7 +40,7 @@ export async function updatePlan(id: string, data: Partial<typeof subscriptionPl
 export async function togglePlanStatus(id: string, active: boolean) {
     try {
         await db.update(subscriptionPlans).set({ active }).where(eq(subscriptionPlans.id, id));
-        revalidatePath("/admin/finance/plans");
+        revalidatePath("/finance/plans");
         return { success: true };
     } catch (error) {
         console.error("Error toggling plan status:", error);

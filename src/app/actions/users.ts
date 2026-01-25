@@ -59,7 +59,7 @@ export async function createUser(data: CreateUserData) {
         scopeNucleusId: data.scopeNucleusId || null,
     });
 
-    revalidatePath('/admin');
+    revalidatePath('/settings');
     return { success: true };
 }
 
@@ -69,6 +69,6 @@ export async function deleteUser(userId: string) {
         throw new Error('Unauthorized');
     }
     await db.delete(users).where(eq(users.id, userId));
-    revalidatePath('/admin');
+    revalidatePath('/settings');
     return { success: true };
 }

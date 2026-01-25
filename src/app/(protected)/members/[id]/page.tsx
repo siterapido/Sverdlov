@@ -72,10 +72,10 @@ export default function MemberProfilePage() {
                         </div>
 
                         <Tabs defaultValue="cadastro" className="w-full">
-                            <TabsList className="mb-8">
-                                <TabsTrigger value="cadastro">DADOS CADASTRAIS</TabsTrigger>
-                                <TabsTrigger value="organizacao">ORGANIZAÇÃO</TabsTrigger>
-                                <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
+                            <TabsList className="mb-8 bg-white">
+                                <TabsTrigger value="cadastro" className="text-black">DADOS CADASTRAIS</TabsTrigger>
+                                <TabsTrigger value="organizacao" className="text-black">ORGANIZAÇÃO</TabsTrigger>
+                                <TabsTrigger value="financeiro" className="text-black">FINANCEIRO</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="cadastro">

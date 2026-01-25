@@ -7,6 +7,14 @@
       "summary": "Implementar o fluxo completo de criação, edição e organização de núcleos em múltiplos níveis (Estado, Cidade, Zona, Local), com atribuição de responsáveis e gestão de membros.",
       "linkedAt": "2026-01-22T14:25:09.357Z",
       "status": "active"
+    },
+    {
+      "slug": "settings-users-consolidation",
+      "path": "plans/settings-users-consolidation.md",
+      "title": "Consolidação de Configurações e Gestão de Usuários",
+      "summary": "Consolidate User Management into the Settings page using Tabs, restricted by RBAC.",
+      "linkedAt": "2026-01-25T19:31:54.231Z",
+      "status": "active"
     }
   ],
   "completed": [],
