@@ -1,0 +1,35 @@
+project:
+  name: "gestao-nucleos-hierarquica-completa"
+  scale: LARGE
+  started: "2026-01-22T14:24:51.501Z"
+  current_phase: R
+
+phases:
+  P:
+    status: filled
+    started_at: "2026-01-22T14:24:51.501Z"
+    completed_at: "2026-01-22T14:25:24.992Z"
+  R:
+    status: in_progress
+    started_at: "2026-01-22T14:25:24.993Z"
+  E:
+    status: pending
+  V:
+    status: pending
+  C:
+    status: pending
+
+execution:
+  history:
+    - timestamp: "2026-01-22T15:08:43.435Z"
+      phase: R
+      action: plan_phase_updated
+      plan: "sistema-usuarios-hierarquicos"
+      description: "Plan phase Phase 4: Validação e Testes updated to completed"
+  last_activity: "2026-01-22T15:08:43.435Z"
+  resume_context: "Fase do plano atualizada"
+
+approval:
+  plan_created: true
+  plan_approved: false
+

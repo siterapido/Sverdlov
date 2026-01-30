@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "gestao-nucleos-hierarquica-completa",
+      "path": "plans/gestao-nucleos-hierarquica-completa.md",
+      "title": "Plano de Implementação: Gestão Hierárquica de Núcleos e Filiados",
+      "summary": "Implementar o fluxo completo de criação, edição e organização de núcleos em múltiplos níveis (Estado, Cidade, Zona, Local), com atribuição de responsáveis e gestão de membros.",
+      "linkedAt": "2026-01-22T14:25:09.357Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "gestao-nucleos-hierarquica-completa"
+}

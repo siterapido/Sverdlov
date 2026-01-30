@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* === SVERDLOV DESIGN SYSTEM v3.0 === */
+
+:root {
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-sverdlov-red: #9B111E;
+  
+  --color-zinc-50: #F8F9FA;
+  --color-zinc-100: #F1F3F5;
+  --color-zinc-200: #E9ECEF;
+  --color-zinc-300: #DEE2E6;
+  --color-zinc-400: #ADB5BD;
+  --color-zinc-500: #6C757D;
+  --color-zinc-600: #495057;
+  --color-zinc-700: #343A40;
+  --color-zinc-800: #212529;
+  --color-zinc-900: #1A1D20;
+  --color-zinc-950: #121416;
+
+  --color-background: #FFFFFF;
+  --color-foreground: #000000;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8F9FA;
+  --color-surface-active: #F1F3F5;
+  --color-border: #E9ECEF;
+  --color-border-hover: #DEE2E6;
+  --color-primary: #9B111E;
+  --color-primary-foreground: #FFFFFF;
+  --color-muted: #6C757D;
+  --color-muted-foreground: #ADB5BD;
+
+  --color-success: #00A86B;
+  --color-warning: #FFBF00;
+  --color-danger: #D90429;
+  --color-info: #9B111E;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 9999px;
+
+  --transition-fast: 100ms ease;
+  --transition-normal: 200ms ease;
+  
+  color-scheme: light !important;
+}
+
+@theme {
+  --color-white: var(--color-white);
+  --color-black: var(--color-black);
+  --color-sverdlov-red: var(--color-sverdlov-red);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-surface-active: var(--color-surface-active);
+  --color-border: var(--color-border);
+  --color-border-hover: var(--color-border-hover);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
+
+/* === LIGHT MODE ONLY ENFORCEMENT === */
+.dark, [data-theme="dark"] {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+body, main, aside, header {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+/* Re-apply Primary Red */
+.bg-primary, .bg-sverdlov-red {
+  background-color: #9B111E !important;
+  color: #FFFFFF !important;
+}
+
+/* Base Styles */
+html {
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Focus Reset */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
