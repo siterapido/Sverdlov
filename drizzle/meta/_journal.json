@@ -36,6 +36,13 @@
       "when": 1769094052411,
       "tag": "0004_magenta_maginty",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1769832316789,
+      "tag": "0005_bizarre_eternity",
+      "breakpoints": true
     }
   ]
 }

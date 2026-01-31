@@ -3,6 +3,7 @@ import { relations } from 'drizzle-orm';
 import { users } from './users';
 import { nuclei } from './nuclei';
 import { members } from './members';
+import { projects } from './projects';
 
 // ==========================================
 // ESCALAS PRINCIPAIS
@@ -33,6 +34,7 @@ export const schedules = pgTable('schedules', {
     // Escopo Territorial
     territoryScope: text('territory_scope'), // e.g., "SP" ou "SP:São Paulo"
     nucleusId: uuid('nucleus_id').references(() => nuclei.id),
+    projectId: uuid('project_id').references(() => projects.id), // NEW: Link to project
 
     // Criação e Status
     createdById: uuid('created_by_id').references(() => users.id),
@@ -203,6 +205,11 @@ export const schedulesRelations = relations(schedules, ({ one, many }) => ({
     nucleus: one(nuclei, {
         fields: [schedules.nucleusId],
         references: [nuclei.id],
+    }),
+    // NEW: Link to project
+    project: one(projects, {
+        fields: [schedules.projectId],
+        references: [projects.id],
     }),
     slots: many(scheduleSlots),
 }));

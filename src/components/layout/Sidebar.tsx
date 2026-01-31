@@ -39,15 +39,15 @@ function QuickAction({
     icon,
     label,
     shortcut,
+    href,
 }: {
     icon: React.ReactNode;
     label: string;
     shortcut?: string;
+    href?: string;
 }) {
-    return (
-        <button
-            className="flex w-full items-center gap-2 rounded-none px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-zinc-900 transition-all active:scale-[0.98]"
-        >
+    const buttonContent = (
+        <>
             <div className="text-muted">
                 {icon}
             </div>
@@ -57,6 +57,22 @@ function QuickAction({
                     {shortcut}
                 </kbd>
             )}
+        </>
+    );
+
+    const className = "flex w-full items-center gap-2 rounded-none px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-zinc-900 transition-all active:scale-[0.98]";
+
+    if (href) {
+        return (
+            <Link href={href} className={className}>
+                {buttonContent}
+            </Link>
+        );
+    }
+
+    return (
+        <button className={className}>
+            {buttonContent}
         </button>
     );
 }
@@ -162,7 +178,23 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                             />
                             <QuickAction
                                 icon={<Plus className="h-4 w-4" />}
-                                label="Nova Ação"
+                                label="Novo Membro"
+                                href="/members/new"
+                            />
+                            <QuickAction
+                                icon={<Plus className="h-4 w-4" />}
+                                label="Novo Núcleo"
+                                href="/members/nucleos/new"
+                            />
+                            <QuickAction
+                                icon={<Plus className="h-4 w-4" />}
+                                label="Novo Projeto"
+                                href="/projects/new"
+                            />
+                            <QuickAction
+                                icon={<Plus className="h-4 w-4" />}
+                                label="Nova Escala"
+                                href="/escalas/nova"
                             />
                         </div>
                     )}

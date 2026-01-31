@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uuid, decimal } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const nuclei = pgTable('nuclei', {
     id: uuid('id').defaultRandom().primaryKey(),
@@ -12,3 +13,9 @@ export const nuclei = pgTable('nuclei', {
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+export const nucleiRelations = relations(nuclei, ({ many }) => ({
+    members: many(null as any), // Will be populated by members table reverse relation
+    projectLinks: many(null as any), // Will be populated by projectNuclei table
+    schedules: many(null as any), // Will be populated by schedules table
+}));

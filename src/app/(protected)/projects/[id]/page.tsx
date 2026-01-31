@@ -2,9 +2,11 @@ import React from 'react';
 import { getProjectById } from '@/app/actions/projects';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowLeft, Target, Calendar, CheckSquare, Briefcase } from 'lucide-react';
+import { ArrowLeft, Target, Calendar, CheckSquare, Briefcase, Users, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ProjectManagement } from '@/components/projects/ProjectManagement';
+import { ProjectMembersSection } from '@/components/projects/ProjectMembersSection';
+import { ProjectNucleiSection } from '@/components/projects/ProjectNucleiSection';
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -48,10 +50,10 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                             Início: {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'Não definido'}
                         </span>
                     </div>
-                    {project.nucleus && (
+                    {project.primaryNucleus && (
                         <div className="flex items-center gap-2">
                             <Briefcase className="w-4 h-4 text-primary" />
-                            <span className="text-xs font-bold uppercase text-zinc-500 tracking-wider">Núcleo: {project.nucleus.name}</span>
+                            <span className="text-xs font-bold uppercase text-zinc-500 tracking-wider">Núcleo: {project.primaryNucleus.name}</span>
                         </div>
                     )}
                 </div>
@@ -84,6 +86,20 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
                 {/* Work Schools / Tasks */}
                 <ProjectManagement project={project} />
+            </div>
+
+            {/* Project Team & Nuclei Sections */}
+            <div className="mt-8 space-y-8">
+                <ProjectMembersSection
+                    projectId={id}
+                    members={project.members || []}
+                    canManage={true}
+                />
+                <ProjectNucleiSection
+                    projectId={id}
+                    nuclei={project.nucleiLinks || []}
+                    canManage={true}
+                />
             </div>
         </div>
     );

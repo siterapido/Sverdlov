@@ -6,6 +6,23 @@ import { nuclei } from "@/lib/db/schema/nuclei";
 import { memberSchema, type MemberSchema } from '@/lib/schemas/member';
 import { eq, desc, sql, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auditCreate, auditUpdate, auditDelete, auditImport } from "@/lib/audit";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/jwt";
+
+async function getCurrentUserId(): Promise<string | undefined> {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("auth_token")?.value;
+        if (token) {
+            const user = await verifyToken(token);
+            return user?.id;
+        }
+    } catch {
+        return undefined;
+    }
+    return undefined;
+}
 
 export async function createMemberAction(data: MemberSchema) {
     try {
@@ -31,7 +48,7 @@ export async function createMemberAction(data: MemberSchema) {
             militancyLevel = 'militant';
         }
 
-        await db.insert(members).values({
+        const [newMember] = await db.insert(members).values({
             fullName: validated.fullName,
             socialName: validated.socialName,
             cpf: validated.cpf.replace(/\D/g, ''), // Store clean CPF
@@ -47,7 +64,11 @@ export async function createMemberAction(data: MemberSchema) {
             status: 'interested',
             militancyLevel: militancyLevel,
             notes: validated.howDidYouHear ? `Conheceu a UP via: ${validated.howDidYouHear}` : null,
-        });
+        }).returning();
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditCreate(userId, 'members', newMember.id, newMember as Record<string, unknown>);
 
         revalidatePath("/members");
         return { success: true };
@@ -93,6 +114,24 @@ export async function getMemberById(id: string) {
             with: {
                 nucleus: true,
                 politicalResponsible: true,
+                // NEW: Include project and schedule assignments
+                projectAssignments: {
+                    with: {
+                        project: true,
+                        assignedBy: true
+                    }
+                },
+                scheduleAssignments: {
+                    with: {
+                        slot: {
+                            with: {
+                                schedule: true
+                            }
+                        },
+                        assignedBy: true
+                    },
+                    limit: 10
+                }
             }
         });
 
@@ -135,6 +174,9 @@ export async function updateMemberStatus(
     politicalResponsibleId?: string
 ) {
     try {
+        // Get old values for audit
+        const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+
         const updateData: any = {
             status,
             updatedAt: new Date(),
@@ -148,9 +190,21 @@ export async function updateMemberStatus(
             updateData.politicalResponsibleId = politicalResponsibleId;
         }
 
-        await db.update(members)
+        const [updatedMember] = await db.update(members)
             .set(updateData)
-            .where(eq(members.id, id));
+            .where(eq(members.id, id))
+            .returning();
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'members',
+            id,
+            oldMember as Record<string, unknown>,
+            updatedMember as Record<string, unknown>,
+            { action: 'status_change', newStatus: status }
+        );
 
         revalidatePath("/members");
         revalidatePath("/members/requests");
@@ -171,12 +225,27 @@ export async function updateMemberOrg(
     }
 ) {
     try {
-        await db.update(members)
+        // Get old values for audit
+        const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+
+        const [updatedMember] = await db.update(members)
             .set({
                 ...data,
                 updatedAt: new Date(),
             })
-            .where(eq(members.id, id));
+            .where(eq(members.id, id))
+            .returning();
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'members',
+            id,
+            oldMember as Record<string, unknown>,
+            updatedMember as Record<string, unknown>,
+            { action: 'organization_update' }
+        );
 
         revalidatePath("/members");
         revalidatePath(`/members/${id}`);
@@ -295,6 +364,15 @@ export async function importMembers(membersList: any[], updateExisting: boolean 
             }
         }
 
+        // Audit log for import
+        const userId = await getCurrentUserId();
+        await auditImport(userId, 'members', {
+            imported: results.imported,
+            updated: results.updated,
+            skipped: results.skipped,
+            duplicatesCount: results.duplicates.length,
+        });
+
         revalidatePath("/members");
         return { success: true, results };
     } catch (error) {
@@ -304,9 +382,63 @@ export async function importMembers(membersList: any[], updateExisting: boolean 
     }
 }
 
+export async function checkDuplicates(data: {
+    cpf?: string;
+    email?: string;
+    phone?: string;
+    excludeId?: string;
+}): Promise<{ found: boolean; duplicates: any[] }> {
+    try {
+        const duplicates = [];
+
+        const conditions = [];
+        if (data.cpf) {
+            conditions.push(eq(members.cpf, data.cpf.replace(/\D/g, '')));
+        }
+        if (data.email) {
+            conditions.push(eq(members.email, data.email));
+        }
+        if (data.phone) {
+            conditions.push(eq(members.phone, data.phone.replace(/\D/g, '')));
+        }
+
+        if (conditions.length === 0) {
+            return { found: false, duplicates: [] };
+        }
+
+        const results = await db.select().from(members).where(or(...conditions));
+
+        results.forEach(result => {
+            if (result.id !== data.excludeId) {
+                duplicates.push({
+                    id: result.id,
+                    fullName: result.fullName,
+                    email: result.email,
+                    cpf: result.cpf,
+                    phone: result.phone,
+                    status: result.status,
+                });
+            }
+        });
+
+        return { found: duplicates.length > 0, duplicates };
+    } catch (error) {
+        console.error("Error checking duplicates:", error);
+        return { found: false, duplicates: [] };
+    }
+}
+
 export async function deleteMember(id: string) {
     try {
+        // Get old values for audit
+        const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+
         await db.delete(members).where(eq(members.id, id));
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditDelete(userId, 'members', id, oldMember as Record<string, unknown>);
+
         revalidatePath("/members");
         return { success: true };
     } catch (error) {

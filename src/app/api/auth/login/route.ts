@@ -4,6 +4,7 @@ import { users } from '@/lib/db/schema';
 import { verifyPassword } from '@/lib/auth/password';
 import { signToken } from '@/lib/auth/jwt';
 import { eq } from 'drizzle-orm';
+import { auditLogin } from '@/lib/audit';
 
 export async function POST(request: NextRequest) {
     try {
@@ -45,6 +46,9 @@ export async function POST(request: NextRequest) {
             role: user.role as any,
             territoryScope: user.territoryScope || undefined,
         });
+
+        // Audit login
+        await auditLogin(user.id, { email: user.email, role: user.role });
 
         // Set cookie
         const response = NextResponse.json({

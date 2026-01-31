@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 // Add paths that don't require authentication
 const publicPaths = [
     '/',
-    '/login',
+    // '/login', // Removed as login is now home
     '/filie-se',
     '/api/auth/login',
     '/api/public',
@@ -28,8 +28,8 @@ export async function middleware(request: NextRequest) {
     // Check if the path is public
     if (publicPaths.some(path => pathname.startsWith(path) && (path !== '/' || pathname === '/'))) {
 
-        // If user is already logged in and tries to access login, redirect to dashboard
-        if (pathname === '/login') {
+        // If user is already logged in and tries to access login (home), redirect to dashboard
+        if (pathname === '/') {
             const token = request.cookies.get('auth_token')?.value;
             if (token) {
                 const payload = await verifyToken(token);
@@ -54,8 +54,8 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('auth_token')?.value;
 
     if (!token) {
-        // Redirect to login if no token
-        const url = new URL('/login', request.url);
+        // Redirect to login (home) if no token
+        const url = new URL('/', request.url);
         url.searchParams.set('from', pathname);
         return NextResponse.redirect(url);
     }
@@ -63,8 +63,8 @@ export async function middleware(request: NextRequest) {
     const payload = await verifyToken(token);
 
     if (!payload) {
-        // Redirect to login if token is invalid
-        const url = new URL('/login', request.url);
+        // Redirect to login (home) if token is invalid
+        const url = new URL('/', request.url);
         return NextResponse.redirect(url);
     }
 

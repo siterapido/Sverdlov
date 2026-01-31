@@ -6,7 +6,7 @@ import { AppHeader } from "./AppHeader";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export function AppLayout({ children, userRole }: { children: React.ReactNode, userRole?: string }) {
+export function AppLayout({ children, userRole, userId }: { children: React.ReactNode, userRole?: string, userId?: string }) {
     const isMobile = useIsMobile();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -35,7 +35,7 @@ export function AppLayout({ children, userRole }: { children: React.ReactNode, u
                     isMobile ? "ml-0" : (isCollapsed ? "ml-[60px]" : "ml-64")
                 )}
             >
-                <AppHeader toggleSidebar={toggleSidebar} isMobile={isMobile} />
+                <AppHeader toggleSidebar={toggleSidebar} isMobile={isMobile} userId={userId} />
 
                 <main className="flex-1 overflow-auto p-10">
                     {children}

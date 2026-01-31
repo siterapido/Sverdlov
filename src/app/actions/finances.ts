@@ -6,6 +6,23 @@ import { members } from "@/lib/db/schema/members";
 import { subscriptionPlans } from "@/lib/db/schema/plans";
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auditCreate, auditUpdate } from "@/lib/audit";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/jwt";
+
+async function getCurrentUserId(): Promise<string | undefined> {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("auth_token")?.value;
+        if (token) {
+            const user = await verifyToken(token);
+            return user?.id;
+        }
+    } catch {
+        return undefined;
+    }
+    return undefined;
+}
 
 export async function getMemberFinancialHistory(memberId: string) {
     try {
@@ -59,7 +76,12 @@ export async function getAllFinances() {
 
 export async function registerPayment(data: typeof finances.$inferInsert) {
     try {
-        await db.insert(finances).values(data);
+        const [newPayment] = await db.insert(finances).values(data).returning();
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditCreate(userId, 'finances', newPayment.id, newPayment as Record<string, unknown>);
+
         revalidatePath(`/members/${data.memberId}`);
         return { success: true };
     } catch (error) {
@@ -70,14 +92,29 @@ export async function registerPayment(data: typeof finances.$inferInsert) {
 
 export async function updateMemberPlan(memberId: string, planId: string, startDate: string) {
     try {
-        await db.update(members)
-            .set({ 
-                planId, 
+        // Get old values for audit
+        const oldMember = await db.query.members.findFirst({ where: eq(members.id, memberId) });
+
+        const [updatedMember] = await db.update(members)
+            .set({
+                planId,
                 subscriptionStartDate: startDate,
-                financialStatus: 'up_to_date' 
+                financialStatus: 'up_to_date'
             })
-            .where(eq(members.id, memberId));
-        
+            .where(eq(members.id, memberId))
+            .returning();
+
+        // Audit log
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'members',
+            memberId,
+            oldMember as Record<string, unknown>,
+            updatedMember as Record<string, unknown>,
+            { action: 'plan_update', planId }
+        );
+
         revalidatePath(`/members/${memberId}`);
         return { success: true };
     } catch (error) {

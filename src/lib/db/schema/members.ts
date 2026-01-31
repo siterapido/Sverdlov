@@ -47,7 +47,7 @@ export const members = pgTable('members', {
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const membersRelations = relations(members, ({ one }) => ({
+export const membersRelations = relations(members, ({ one, many }) => ({
     nucleus: one(nuclei, {
         fields: [members.nucleusId],
         references: [nuclei.id],
@@ -60,4 +60,10 @@ export const membersRelations = relations(members, ({ one }) => ({
         fields: [members.planId],
         references: [subscriptionPlans.id],
     }),
+
+    // NEW: Reverse relations to junction tables and slot assignments
+    projectAssignments: many(null as any), // populated by projectMembers
+    scheduleAssignments: many(null as any), // populated by slotAssignments
+    availability: many(null as any), // populated by memberAvailability
+    exceptions: many(null as any), // populated by scheduleExceptions
 }));

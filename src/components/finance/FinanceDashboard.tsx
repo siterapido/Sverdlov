@@ -1,159 +1,246 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-    format 
-} from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { 
-    DollarSign, 
-    ArrowUpRight, 
-    ArrowDownLeft, 
-    Calendar, 
-    User, 
-    FileText, 
-    Filter,
-    Download
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, TrendingUp, Users, AlertCircle, DollarSign, Target } from 'lucide-react';
 
-interface Transaction {
+interface KPI {
+    monthlyCollected: number;
+    monthlyCount: number;
+    pendingAmount: number;
+    activeMembers: number;
+    delinquentCount: number;
+    delinquencyRate: string;
+    avgContribution: number;
+    medianContribution: number;
+}
+
+interface Trend {
+    month: string;
+    amount: number;
+    count: number;
+}
+
+interface DelinquentMember {
     id: string;
-    amount: string;
-    paymentDate: Date;
-    type: string;
-    status: string;
-    memberName: string | null;
-    planName: string | null;
+    fullName: string;
+    email: string;
+    phone: string;
+    daysOverdue: number;
 }
 
-interface FinanceDashboardProps {
-    initialTransactions: Transaction[];
+interface DashboardData {
+    kpis: KPI;
+    trends: Trend[];
+    delinquent: DelinquentMember[];
 }
 
-export function FinanceDashboard({ initialTransactions }: FinanceDashboardProps) {
-    const [transactions] = useState(initialTransactions);
+export function FinanceDashboard() {
+    const [data, setData] = useState<DashboardData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const totalRevenue = transactions
-        .filter(t => t.status === 'completed')
-        .reduce((acc, t) => acc + parseFloat(t.amount), 0);
+    useEffect(() => {
+        async function fetchDashboard() {
+            try {
+                const response = await fetch('/api/finances/dashboard');
+                if (!response.ok) throw new Error('Failed to fetch');
+                const result = await response.json();
+                setData(result);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Error loading dashboard');
+            } finally {
+                setLoading(false);
+            }
+        }
 
-    const pendingRevenue = transactions
-        .filter(t => t.status === 'pending')
-        .reduce((acc, t) => acc + parseFloat(t.amount), 0);
+        fetchDashboard();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="h-32 bg-gray-200 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="h-24 bg-gray-200 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !data) {
+        return (
+            <div className="border-2 border-red-500 bg-red-50 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                <div className="flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                    <p className="text-red-700 font-semibold">{error || 'Failed to load dashboard'}</p>
+                </div>
+            </div>
+        );
+    }
+
+    const { kpis, trends, delinquent } = data;
+    const monthlyCollectionAvg = trends.length > 0
+        ? trends.reduce((sum, t) => sum + t.amount, 0) / trends.length
+        : 0;
+    const projectedMonthlyRevenue = (monthlyCollectionAvg * 1.1).toFixed(2);
 
     return (
-        <div className="space-y-10">
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-2 border-zinc-900 divide-x-2 divide-zinc-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <div className="p-8 bg-white">
-                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Arrecadação Total</p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-4xl font-black text-zinc-900 tabular-nums leading-none">
-                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
-                        </span>
-                        <Badge className="bg-emerald-500 text-white rounded-none font-black uppercase text-[9px] mb-1">REALIZADO</Badge>
+        <div className="space-y-8">
+            {parseFloat(kpis.delinquencyRate) > 15 && (
+                <div className="border-2 border-yellow-600 bg-yellow-50 p-4 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 className="font-bold text-yellow-900">Alerta de Inadimplência</h3>
+                            <p className="text-sm text-yellow-800">
+                                {kpis.delinquentCount} membro(s) em atraso ({kpis.delinquencyRate}%)
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div className="p-8 bg-white">
-                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Previsão Pendente</p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-4xl font-black text-zinc-900 tabular-nums leading-none">
-                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pendingRevenue)}
-                        </span>
-                        <Badge className="bg-amber-500 text-white rounded-none font-black uppercase text-[9px] mb-1">EM ABERTO</Badge>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-sm text-gray-700">Arrecadação Mês</h3>
+                        <DollarSign className="w-4 h-4 text-gray-600" />
                     </div>
+                    <p className="text-2xl font-black">R$ {kpis.monthlyCollected.toFixed(2)}</p>
+                    <p className="text-xs text-gray-600">{kpis.monthlyCount} transações</p>
                 </div>
-                <div className="p-8 bg-zinc-50 flex flex-col justify-center">
-                    <Button className="w-full bg-zinc-900 text-white hover:bg-zinc-800 rounded-none font-black uppercase tracking-widest text-[10px] h-12">
-                        <Download className="h-4 w-4 mr-2" />
-                        EXPORTAR RELATÓRIO
-                    </Button>
+
+                <div className="border-2 border-red-600 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-sm text-gray-700">Pendente</h3>
+                        <AlertCircle className="w-4 h-4 text-red-600" />
+                    </div>
+                    <p className="text-2xl font-black text-red-600">R$ {kpis.pendingAmount.toFixed(2)}</p>
+                    <p className="text-xs text-gray-600">Aguardando pagamento</p>
+                </div>
+
+                <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-sm text-gray-700">Membros Ativos</h3>
+                        <Users className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <p className="text-2xl font-black">{kpis.activeMembers}</p>
+                    <p className="text-xs text-gray-600">{kpis.delinquentCount} em atraso</p>
+                </div>
+
+                <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-sm text-gray-700">Taxa Inadimplência</h3>
+                        <TrendingUp className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <p className="text-2xl font-black">{kpis.delinquencyRate}%</p>
+                    <p className="text-xs text-gray-600">De membros ativos</p>
                 </div>
             </div>
 
-            {/* Transactions List */}
-            <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                        <h3 className="text-xl font-black uppercase tracking-tighter text-zinc-900">Transações Recentes</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <h3 className="font-bold text-sm text-gray-700 mb-3">Média de Contribuição</h3>
+                    <div>
+                        <p className="text-xs text-gray-600 mb-1">Média</p>
+                        <p className="text-xl font-black">R$ {kpis.avgContribution.toFixed(2)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                         <Button variant="outline" className="border-2 border-zinc-900 rounded-none font-black uppercase tracking-widest text-[9px] h-8 px-4">
-                            <Filter className="h-3 w-3 mr-2" />
-                            FILTRAR
-                        </Button>
+                    <div className="border-t-2 border-gray-900 pt-3 mt-3">
+                        <p className="text-xs text-gray-600 mb-1">Mediana</p>
+                        <p className="text-lg font-bold">R$ {kpis.medianContribution.toFixed(2)}</p>
                     </div>
                 </div>
 
-                <div className="bg-white border-2 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)] overflow-hidden">
-                    <table className="w-full text-left">
-                        <thead className="bg-zinc-900 text-white text-[10px] font-black uppercase tracking-[0.2em]">
-                            <tr>
-                                <th className="px-6 py-4">Data</th>
-                                <th className="px-6 py-4">Filiado / Origem</th>
-                                <th className="px-6 py-4">Tipo</th>
-                                <th className="px-6 py-4">Valor</th>
-                                <th className="px-6 py-4">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y-2 divide-zinc-100">
-                            {transactions.map((t) => (
-                                <tr key={t.id} className="hover:bg-zinc-50 transition-colors">
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col">
-                                            <span className="text-[11px] font-black text-zinc-900 uppercase">
-                                                {format(new Date(t.paymentDate), "dd MMM yyyy", { locale: ptBR })}
-                                            </span>
-                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">
-                                                {format(new Date(t.paymentDate), "HH:mm")}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 bg-zinc-100 flex items-center justify-center border border-zinc-200">
-                                                <User className="h-4 w-4 text-zinc-400" />
-                                            </div>
-                                            <div>
-                                                <p className="font-black text-zinc-900 uppercase text-xs leading-none mb-1">{t.memberName || 'Contribuição Direta'}</p>
-                                                <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{t.planName || 'Extra/Doação'}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <Badge variant="outline" className="border-2 border-zinc-200 text-zinc-500 rounded-none font-black uppercase tracking-widest text-[8px]">
-                                            {t.type}
-                                        </Badge>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <span className="font-black text-zinc-900 tabular-nums">
-                                            R$ {parseFloat(t.amount).toFixed(2)}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <Badge className={`${
-                                            t.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 
-                                            t.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-                                        } rounded-none font-black uppercase tracking-widest text-[8px] border-none px-2 py-0.5`}>
-                                            {t.status}
-                                        </Badge>
-                                    </td>
-                                </tr>
-                            ))}
-                            {transactions.length === 0 && (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-400 font-bold uppercase tracking-widest text-[10px]">
-                                        Nenhuma transação registrada.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="border-2 border-green-600 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-bold text-sm text-gray-700">Projeção Próx. Mês</h3>
+                        <Target className="w-4 h-4 text-green-600" />
+                    </div>
+                    <p className="text-2xl font-black text-green-600">R$ {projectedMonthlyRevenue}</p>
+                    <p className="text-xs text-gray-600">+10% vs. média histórica</p>
+                </div>
+
+                <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <h3 className="font-bold text-sm text-gray-700 mb-3">Taxa de Coleta</h3>
+                    {trends.length > 0 && (
+                        <>
+                            <div>
+                                <p className="text-xs text-gray-600 mb-1">Este mês</p>
+                                <p className="text-xl font-black">{kpis.monthlyCount} coletas</p>
+                            </div>
+                            <div className="border-t-2 border-gray-900 pt-3 mt-3">
+                                <p className="text-xs text-gray-600 mb-1">Média histórica</p>
+                                <p className="text-lg font-bold">
+                                    {(trends.reduce((sum, t) => sum + t.count, 0) / trends.length).toFixed(0)} coletas
+                                </p>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
+
+            <div className="border-2 border-gray-900 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                <h3 className="font-bold text-lg mb-6">Arrecadação Últimos 12 Meses</h3>
+                {trends.length > 0 ? (
+                    <>
+                        <div className="flex items-end justify-between h-48 gap-1 mb-4">
+                            {trends.map((trend, i) => {
+                                const maxAmount = Math.max(...trends.map(t => t.amount)) || 1;
+                                const height = (trend.amount / maxAmount) * 100;
+                                return (
+                                    <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                        <div
+                                            className="w-full bg-gray-900 border-2 border-gray-900"
+                                            style={{ height: `${height}%`, minHeight: '4px' }}
+                                            title={trend.month}
+                                        />
+                                        <span className="text-xs text-gray-600">{trend.month.substring(5)}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="border-t-2 border-gray-900 pt-4 text-xs text-gray-600">
+                            <p>Total 12 meses: <span className="font-bold">R$ {trends.reduce((sum, t) => sum + t.amount, 0).toFixed(2)}</span></p>
+                            <p>Média mensal: <span className="font-bold">R$ {monthlyCollectionAvg.toFixed(2)}</span></p>
+                        </div>
+                    </>
+                ) : (
+                    <p className="text-gray-500 text-sm">Sem dados</p>
+                )}
+            </div>
+
+            {delinquent.length > 0 && (
+                <div className="border-2 border-red-600 p-6 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center gap-2 mb-6">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                        <h3 className="font-bold text-lg">Membros em Atraso ({delinquent.length})</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b-2 border-red-600">
+                                    <th className="text-left font-bold py-2 px-3">Nome</th>
+                                    <th className="text-left font-bold py-2 px-3">Email</th>
+                                    <th className="text-left font-bold py-2 px-3">Telefone</th>
+                                    <th className="text-right font-bold py-2 px-3">Dias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {delinquent.map((member) => (
+                                    <tr key={member.id} className="border-b border-gray-200">
+                                        <td className="py-3 px-3 font-semibold">{member.fullName}</td>
+                                        <td className="py-3 px-3 text-gray-600">{member.email}</td>
+                                        <td className="py-3 px-3 text-gray-600">{member.phone}</td>
+                                        <td className="py-3 px-3 text-right font-bold text-red-600">{member.daysOverdue}d</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

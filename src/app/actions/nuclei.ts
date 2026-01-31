@@ -7,6 +7,7 @@ import { eq, desc, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
+import { auditCreate, auditUpdate, auditDelete } from "@/lib/audit";
 
 async function getCurrentUser() {
     const cookieStore = await cookies();
@@ -131,14 +132,17 @@ export async function createNucleus(data: any) {
             return { success: false, error: "Sem permissão para criar núcleo nesta região." };
         }
 
-        await db.insert(nuclei).values({
+        const [newNucleus] = await db.insert(nuclei).values({
             name: data.name,
             type: data.type,
             state: data.state,
             city: data.city,
             zone: data.zone,
             status: data.status || 'in_formation',
-        });
+        }).returning();
+
+        // Audit log
+        await auditCreate(user.id, 'nuclei', newNucleus.id, newNucleus as Record<string, unknown>);
 
         revalidatePath("/members/nucleos");
         return { success: true };
@@ -163,12 +167,22 @@ export async function updateNucleus(id: string, data: any) {
             return { success: false, error: "Sem permissão para editar este núcleo." };
         }
 
-        await db.update(nuclei)
+        const [updatedNucleus] = await db.update(nuclei)
             .set({
                 ...data,
                 updatedAt: new Date(),
             })
-            .where(eq(nuclei.id, id));
+            .where(eq(nuclei.id, id))
+            .returning();
+
+        // Audit log
+        await auditUpdate(
+            user.id,
+            'nuclei',
+            id,
+            existing as Record<string, unknown>,
+            updatedNucleus as Record<string, unknown>
+        );
 
         revalidatePath("/members/nucleos");
         revalidatePath(`/members/nucleos/${id}`);
@@ -182,12 +196,28 @@ export async function updateNucleus(id: string, data: any) {
 
 export async function assignMemberToNucleus(memberId: string, nucleusId: string | null) {
     try {
-        await db.update(members)
+        const user = await getCurrentUser();
+
+        // Get old values for audit
+        const oldMember = await db.query.members.findFirst({ where: eq(members.id, memberId) });
+
+        const [updatedMember] = await db.update(members)
             .set({
                 nucleusId: nucleusId,
                 updatedAt: new Date(),
             })
-            .where(eq(members.id, memberId));
+            .where(eq(members.id, memberId))
+            .returning();
+
+        // Audit log
+        await auditUpdate(
+            user?.id,
+            'members',
+            memberId,
+            oldMember as Record<string, unknown>,
+            updatedMember as Record<string, unknown>,
+            { action: 'nucleus_assignment', nucleusId }
+        );
 
         revalidatePath("/members");
         revalidatePath(`/members/${memberId}`);

@@ -1,29 +1,39 @@
-import { PageTransition } from '@/components/ui/page-transition';
-import Link from 'next/link';
+import { LoginForm } from "@/components/auth/LoginForm";
+import { Metadata } from "next";
 
-export default function HomePage() {
-  return (
-    <PageTransition>
-      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 tracking-tight">Sverdlov</h1>
-        <p className="text-muted-foreground text-lg mb-8 max-w-md">
-          Plataforma de gestão de filiação, finanças e nucleação da Unidade Popular.
-        </p>
-        <div className="flex gap-4">
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-none font-medium hover:opacity-90 transition-opacity"
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/filie-se"
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-none font-medium hover:bg-accent transition-colors"
-          >
-            Filie-se
-          </Link>
+export const metadata: Metadata = {
+    title: "Login | Sverdlov",
+    description: "Acesse sua conta na plataforma Sverdlov",
+};
+
+export default function LoginPage() {
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white selection:bg-primary/20">
+            <div className="w-full flex flex-col items-center max-w-sm mb-12 space-y-6">
+                <div className="flex h-14 w-14 items-center justify-center rounded-none bg-primary text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                    <span className="text-xl font-black">UP</span>
+                </div>
+                <div className="text-center space-y-2">
+                    <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase">
+                        Sverdlov
+                    </h1>
+                    <p className="text-muted font-bold uppercase text-[11px] tracking-widest">
+                        Gestão unificada para militantes
+                    </p>
+                </div>
+            </div>
+
+            <LoginForm />
+
+            <div className="mt-12 text-center text-sm">
+                <p className="text-muted font-medium">Ainda não tem acesso?</p>
+                <a
+                    href="/filie-se"
+                    className="mt-2 inline-block font-black text-primary uppercase text-xs tracking-wider hover:underline underline-offset-4"
+                >
+                    Preencher formulário de filiação
+                </a>
+            </div>
         </div>
-      </div>
-    </PageTransition>
-  );
+    );
 }

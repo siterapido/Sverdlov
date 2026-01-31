@@ -34,13 +34,13 @@ export default function UserManagement({ initialUsers }: { initialUsers: any[] }
                 {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="border-b bg-zinc-50 dark:bg-zinc-900/50">
+                        <thead className="border-b bg-white dark:bg-white">
                             <tr>
-                                <th className="p-4 font-medium">Nome</th>
-                                <th className="p-4 font-medium">Email</th>
-                                <th className="p-4 font-medium">Cargo</th>
-                                <th className="p-4 font-medium">Escopo</th>
-                                <th className="p-4 font-medium text-right">Ações</th>
+                                <th className="p-4 font-medium text-zinc-900">Nome</th>
+                                <th className="p-4 font-medium text-zinc-900">Email</th>
+                                <th className="p-4 font-medium text-zinc-900">Cargo</th>
+                                <th className="p-4 font-medium text-zinc-900">Escopo</th>
+                                <th className="p-4 font-medium text-zinc-900 text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody>

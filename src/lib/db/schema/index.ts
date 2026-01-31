@@ -2,8 +2,10 @@ export * from './users';
 export * from './members';
 export * from './finances';
 export * from './nuclei';
+export * from './nucleus-coordination';
 export * from './schedules';
 export * from './escola';
 export * from './plans';
-
 export * from './projects';
+export * from './audit';
+export * from './notifications';

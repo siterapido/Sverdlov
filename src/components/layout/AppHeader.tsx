@@ -4,19 +4,19 @@ import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
     Menu,
-    Bell,
     Search,
-    ChevronRight,
     Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, IconButton } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/input";
 import { ThemeToggle } from "./ThemeProvider";
+import { NotificationBell } from "./NotificationBell";
 
 interface AppHeaderProps {
     toggleSidebar: () => void;
     isMobile: boolean;
+    userId?: string;
 }
 
 // Breadcrumb mapping
@@ -28,11 +28,10 @@ const breadcrumbMap: Record<string, { label: string; icon?: React.ReactNode }> =
     settings: { label: "Configurações" },
 };
 
-export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
+export function AppHeader({ toggleSidebar, isMobile, userId }: AppHeaderProps) {
     const pathname = usePathname();
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
 
     // Generate breadcrumbs from pathname
     const pathSegments = pathname.split("/").filter(Boolean);
@@ -145,51 +144,7 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                 <ThemeToggle />
 
                 {/* Notifications */}
-                <div className="relative">
-                    <IconButton
-                        icon={<Bell className="h-4 w-4" />}
-                        aria-label="Notifications"
-                        variant="ghost"
-                        onClick={() => setNotificationsOpen(!notificationsOpen)}
-                    />
-                    {/* Notification dot */}
-                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-600 shadow-sm" />
-
-                    {/* Notification dropdown */}
-                    {notificationsOpen && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-40"
-                                onClick={() => setNotificationsOpen(false)}
-                            />
-                            <div
-                                className={cn(
-                                    "absolute right-0 top-full mt-2 z-50",
-                                    "w-80 rounded-none border border-border",
-                                    "bg-white shadow-2xl"
-                                )}
-                            >
-                                <div className="px-5 py-4 border-b border-border">
-                                    <h3 className="font-black text-xs uppercase tracking-widest text-zinc-900">Notificações</h3>
-                                </div>
-                                <div className="max-h-80 overflow-y-auto divide-y divide-zinc-50">
-                                    <NotificationItem
-                                        title="Novo membro cadastrado"
-                                        description="João Silva foi adicionado ao sistema"
-                                        time="Há 5 minutos"
-                                        unread
-                                    />
-
-                                </div>
-                                <div className="px-3 py-2 border-t border-border">
-                                    <Button variant="ghost" size="sm" className="w-full text-muted font-bold uppercase text-[10px] tracking-widest">
-                                        Ver todas
-                                    </Button>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
+                {userId && <NotificationBell userId={userId} />}
 
                 {/* User Avatar (mobile only) */}
                 {isMobile && (
@@ -199,38 +154,5 @@ export function AppHeader({ toggleSidebar, isMobile }: AppHeaderProps) {
                 )}
             </div>
         </header>
-    );
-}
-
-// === Notification Item ===
-function NotificationItem({
-    title,
-    description,
-    time,
-    unread = false,
-}: {
-    title: string;
-    description: string;
-    time: string;
-    unread?: boolean;
-}) {
-    return (
-        <div
-            className={cn(
-                "flex gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-zinc-50",
-                unread && "bg-zinc-50"
-            )}
-        >
-            <div className="shrink-0 mt-1.5">
-                {unread && (
-                    <span className="block h-2 w-2 rounded-full bg-primary" />
-                )}
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className={cn("text-sm font-medium text-zinc-900", unread && "font-bold")}>{title}</p>
-                <p className="text-xs text-zinc-500 truncate">{description}</p>
-                <p className="text-[10px] text-zinc-400 mt-1 uppercase font-bold tracking-tight">{time}</p>
-            </div>
-        </div>
     );
 }

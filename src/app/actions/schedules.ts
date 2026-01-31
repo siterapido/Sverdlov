@@ -4,6 +4,10 @@ import { db } from '@/lib/db';
 import {
     schedules,
     scheduleSlots,
+    slotAssignments,
+    scheduleExceptions,
+    memberAvailability,
+    members,
     Schedule,
     NewSchedule,
     ScheduleSlot,
@@ -11,6 +15,23 @@ import {
 } from '@/lib/db/schema';
 import { eq, and, gte, lte, desc, asc, sql, inArray } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { auditCreate, auditUpdate } from '@/lib/audit';
+import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth/jwt';
+
+async function getCurrentUserId(): Promise<string | undefined> {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('auth_token')?.value;
+        if (token) {
+            const user = await verifyToken(token);
+            return user?.id;
+        }
+    } catch {
+        return undefined;
+    }
+    return undefined;
+}
 
 // ==========================================
 // TIPOS AUXILIARES
@@ -401,5 +422,376 @@ export async function getScheduleStats(territoryScope?: string): Promise<{
             completed: 0,
             byCategory: {},
         };
+    }
+}
+
+// ==========================================
+// AUTO-ASSIGNMENT E TROCAS DE TURNO
+// ==========================================
+
+/**
+ * Auto-assign members to a schedule slot based on their availability
+ */
+export async function autoAssignSlot(slotId: string) {
+    try {
+        const slot = await db.query.scheduleSlots.findFirst({
+            where: eq(scheduleSlots.id, slotId),
+        });
+
+        if (!slot) {
+            return { success: false, error: 'Turno não encontrado' };
+        }
+
+        const dayOfWeek = new Date(slot.date).getDay();
+
+        // Find members with availability matching this slot
+        const availableMembers = await db
+            .select({
+                memberId: members.id,
+                fullName: members.fullName,
+                email: members.email,
+            })
+            .from(members)
+            .innerJoin(
+                memberAvailability,
+                eq(members.id, memberAvailability.memberId)
+            )
+            .where(
+                and(
+                    eq(members.status, 'active'),
+                    eq(memberAvailability.dayOfWeek, dayOfWeek),
+                    eq(memberAvailability.isAvailable, true),
+                    sql`${memberAvailability.startTime} <= ${slot.startTime}`,
+                    sql`${memberAvailability.endTime} >= ${slot.endTime}`
+                )
+            )
+            .orderBy(() => sql`RANDOM()`)
+            .limit(slot.maxParticipants || 10);
+
+        const exceptions = await db
+            .select({ memberId: scheduleExceptions.memberId })
+            .from(scheduleExceptions)
+            .where(
+                and(
+                    eq(scheduleExceptions.type, 'unavailable'),
+                    sql`DATE(${scheduleExceptions.date}) = DATE(${slot.date})`
+                )
+            );
+
+        const unavailableMemberIds = new Set(exceptions.map((e) => e.memberId));
+        const membersToAssign = availableMembers.filter(
+            (m) => !unavailableMemberIds.has(m.memberId)
+        );
+
+        const assigned = [];
+        const userId = await getCurrentUserId();
+
+        for (const member of membersToAssign) {
+            const existing = await db
+                .select()
+                .from(slotAssignments)
+                .where(
+                    and(
+                        eq(slotAssignments.slotId, slotId),
+                        eq(slotAssignments.memberId, member.memberId)
+                    )
+                );
+
+            if (existing.length === 0) {
+                const [newAssignment] = await db
+                    .insert(slotAssignments)
+                    .values({
+                        slotId,
+                        memberId: member.memberId,
+                        assignedById: userId,
+                        status: 'pending',
+                    })
+                    .returning();
+
+                await auditCreate(
+                    userId,
+                    'slot_assignments',
+                    newAssignment.id,
+                    newAssignment as Record<string, unknown>
+                );
+
+                assigned.push(member);
+            }
+        }
+
+        revalidatePath('/escalas');
+        return { success: true, assigned, count: assigned.length };
+    } catch (error) {
+        console.error('Erro ao auto-atribuir turno:', error);
+        return { success: false, error: 'Erro ao auto-atribuir turno' };
+    }
+}
+
+/**
+ * Confirm attendance for a slot assignment
+ */
+export async function confirmAttendance(assignmentId: string) {
+    try {
+        const assignment = await db.query.slotAssignments.findFirst({
+            where: eq(slotAssignments.id, assignmentId),
+        });
+
+        if (!assignment) {
+            return { success: false, error: 'Atribuição não encontrada' };
+        }
+
+        const [updated] = await db
+            .update(slotAssignments)
+            .set({
+                status: 'confirmed',
+                confirmationDate: new Date(),
+            })
+            .where(eq(slotAssignments.id, assignmentId))
+            .returning();
+
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'slot_assignments',
+            assignmentId,
+            assignment as Record<string, unknown>,
+            updated as Record<string, unknown>,
+            { action: 'confirm_attendance' }
+        );
+
+        revalidatePath('/escalas');
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao confirmar presença:', error);
+        return { success: false, error: 'Erro ao confirmar presença' };
+    }
+}
+
+/**
+ * Mark member as attended
+ */
+export async function recordCheckIn(assignmentId: string, checkInTime: Date) {
+    try {
+        const assignment = await db.query.slotAssignments.findFirst({
+            where: eq(slotAssignments.id, assignmentId),
+        });
+
+        if (!assignment) {
+            return { success: false, error: 'Atribuição não encontrada' };
+        }
+
+        const [updated] = await db
+            .update(slotAssignments)
+            .set({
+                checkInTime,
+                status: 'attended',
+            })
+            .where(eq(slotAssignments.id, assignmentId))
+            .returning();
+
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'slot_assignments',
+            assignmentId,
+            assignment as Record<string, unknown>,
+            updated as Record<string, unknown>,
+            { action: 'check_in' }
+        );
+
+        revalidatePath('/escalas');
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao registrar check-in:', error);
+        return { success: false, error: 'Erro ao registrar check-in' };
+    }
+}
+
+/**
+ * Mark member as absent
+ */
+export async function markAbsent(assignmentId: string, reason?: string) {
+    try {
+        const assignment = await db.query.slotAssignments.findFirst({
+            where: eq(slotAssignments.id, assignmentId),
+        });
+
+        if (!assignment) {
+            return { success: false, error: 'Atribuição não encontrada' };
+        }
+
+        const [updated] = await db
+            .update(slotAssignments)
+            .set({
+                status: 'absent',
+                notes: reason || 'Ausência não justificada',
+            })
+            .where(eq(slotAssignments.id, assignmentId))
+            .returning();
+
+        const userId = await getCurrentUserId();
+        await auditUpdate(
+            userId,
+            'slot_assignments',
+            assignmentId,
+            assignment as Record<string, unknown>,
+            updated as Record<string, unknown>,
+            { action: 'mark_absent', reason }
+        );
+
+        revalidatePath('/escalas');
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao marcar ausência:', error);
+        return { success: false, error: 'Erro ao marcar ausência' };
+    }
+}
+
+/**
+ * Get attendance statistics for a member
+ */
+export async function getMemberAttendanceStats(memberId: string) {
+    try {
+        const stats = await db
+            .select({
+                attended: sql<number>`COUNT(CASE WHEN ${slotAssignments.status} = 'attended' THEN 1 END)`,
+                absent: sql<number>`COUNT(CASE WHEN ${slotAssignments.status} = 'absent' THEN 1 END)`,
+                excused: sql<number>`COUNT(CASE WHEN ${slotAssignments.status} = 'excused' THEN 1 END)`,
+                pending: sql<number>`COUNT(CASE WHEN ${slotAssignments.status} = 'pending' THEN 1 END)`,
+                total: sql<number>`COUNT(*)`,
+            })
+            .from(slotAssignments)
+            .where(eq(slotAssignments.memberId, memberId));
+
+        const record = stats[0];
+        const attendanceRate =
+            record && record.total > 0
+                ? ((record.attended / record.total) * 100).toFixed(1)
+                : '0';
+
+        return { success: true, stats: { ...record, attendanceRate } };
+    } catch (error) {
+        console.error('Erro ao buscar estatísticas de presença:', error);
+        return { success: false, error: 'Erro ao buscar estatísticas' };
+    }
+}
+
+// ==========================================
+// MANUAL SLOT ASSIGNMENT ACTIONS
+// ==========================================
+
+/**
+ * Manually assign a member to a slot
+ */
+export async function manualAssignSlot(
+    slotId: string,
+    memberId: string,
+    role: 'participant' | 'leader' | 'backup' = 'participant'
+) {
+    try {
+        const userId = await getCurrentUserId();
+        if (!userId) return { success: false, error: 'Não autorizado' };
+
+        // Check for duplicate assignment
+        const existing = await db.query.slotAssignments.findFirst({
+            where: and(
+                eq(slotAssignments.slotId, slotId),
+                eq(slotAssignments.memberId, memberId)
+            )
+        });
+
+        if (existing) {
+            return { success: false, error: 'Membro já está atribuído a este turno' };
+        }
+
+        // Get slot to find schedule for revalidation
+        const slot = await db.query.scheduleSlots.findFirst({
+            where: eq(scheduleSlots.id, slotId),
+            with: { schedule: true }
+        });
+
+        const [assignment] = await db.insert(slotAssignments).values({
+            slotId,
+            memberId,
+            role,
+            assignedById: userId,
+            status: 'pending'
+        }).returning();
+
+        if (slot?.schedule) {
+            revalidatePath(`/schedules/${slot.schedule.id}`);
+        }
+        revalidatePath(`/members/${memberId}`);
+
+        return { success: true, data: assignment };
+    } catch (error) {
+        console.error('Erro ao atribuir membro a turno:', error);
+        return { success: false, error: 'Falha ao atribuir membro ao turno' };
+    }
+}
+
+/**
+ * Remove a member from a slot
+ */
+export async function removeSlotAssignment(assignmentId: string) {
+    try {
+        const userId = await getCurrentUserId();
+        if (!userId) return { success: false, error: 'Não autorizado' };
+
+        const [assignment] = await db.delete(slotAssignments)
+            .where(eq(slotAssignments.id, assignmentId))
+            .returning();
+
+        if (assignment) {
+            const slot = await db.query.scheduleSlots.findFirst({
+                where: eq(scheduleSlots.id, assignment.slotId),
+                with: { schedule: true }
+            });
+
+            if (slot?.schedule) {
+                revalidatePath(`/schedules/${slot.schedule.id}`);
+            }
+            revalidatePath(`/members/${assignment.memberId}`);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao remover atribuição de turno:', error);
+        return { success: false, error: 'Falha ao remover atribuição' };
+    }
+}
+
+/**
+ * Update a member's role in a slot
+ */
+export async function updateSlotAssignmentRole(
+    assignmentId: string,
+    role: 'participant' | 'leader' | 'backup'
+) {
+    try {
+        const userId = await getCurrentUserId();
+        if (!userId) return { success: false, error: 'Não autorizado' };
+
+        const [assignment] = await db.update(slotAssignments)
+            .set({ role, updatedAt: new Date() })
+            .where(eq(slotAssignments.id, assignmentId))
+            .returning();
+
+        if (assignment) {
+            const slot = await db.query.scheduleSlots.findFirst({
+                where: eq(scheduleSlots.id, assignment.slotId),
+                with: { schedule: true }
+            });
+
+            if (slot?.schedule) {
+                revalidatePath(`/schedules/${slot.schedule.id}`);
+            }
+            revalidatePath(`/members/${assignment.memberId}`);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao atualizar papel no turno:', error);
+        return { success: false, error: 'Falha ao atualizar papel' };
     }
 }

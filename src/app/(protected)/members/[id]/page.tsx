@@ -6,9 +6,11 @@ import { getMembers, getMemberById } from "@/app/actions/members";
 import { MemberForm } from "@/components/members/member-form";
 import { MemberFinancialTab } from "@/components/members/MemberFinancialTab";
 import { MemberOrgTab } from "@/components/members/MemberOrgTab";
+import { MemberProjectsTab } from "@/components/members/MemberProjectsTab";
+import { MemberSchedulesTab } from "@/components/members/MemberSchedulesTab";
 import { PageTransition } from "@/components/ui/page-transition";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ChevronLeft, User, MapPin, Calendar, CreditCard, Shield } from "lucide-react";
+import { ChevronLeft, User, MapPin, Calendar, CreditCard, Shield, Briefcase, Clock } from "lucide-react";
 
 export default function MemberProfilePage() {
     const { id } = useParams();
@@ -72,9 +74,17 @@ export default function MemberProfilePage() {
                         </div>
 
                         <Tabs defaultValue="cadastro" className="w-full">
-                            <TabsList className="mb-8">
+                            <TabsList className="mb-8 flex flex-wrap">
                                 <TabsTrigger value="cadastro">DADOS CADASTRAIS</TabsTrigger>
                                 <TabsTrigger value="organizacao">ORGANIZAÇÃO</TabsTrigger>
+                                <TabsTrigger value="projetos" className="flex items-center gap-2">
+                                    <Briefcase className="h-4 w-4" />
+                                    PROJETOS
+                                </TabsTrigger>
+                                <TabsTrigger value="escalas" className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    ESCALAS
+                                </TabsTrigger>
                                 <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
                             </TabsList>
 
@@ -103,6 +113,34 @@ export default function MemberProfilePage() {
                                         militancyLevel: member.militancyLevel
                                     }}
                                 />
+                            </TabsContent>
+
+                            <TabsContent value="projetos">
+                                <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
+                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Projetos do Membro</h3>
+                                    </div>
+                                    <div className="p-10">
+                                        <MemberProjectsTab
+                                            memberId={member.id}
+                                            assignments={member.projectAssignments || []}
+                                        />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="escalas">
+                                <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
+                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Escalas e Turnos</h3>
+                                    </div>
+                                    <div className="p-10">
+                                        <MemberSchedulesTab
+                                            memberId={member.id}
+                                            assignments={member.scheduleAssignments || []}
+                                        />
+                                    </div>
+                                </div>
                             </TabsContent>
 
                             <TabsContent value="financeiro">

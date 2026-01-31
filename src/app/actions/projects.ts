@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { projects, projectTasks } from "@/lib/db/schema/projects";
+import { projects, projectTasks, projectMembers, projectNuclei } from "@/lib/db/schema/projects";
 import { et_projetos } from "@/lib/db/schema/escola";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, not } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
@@ -22,7 +22,17 @@ export async function getProjects() {
 
         const allProjects = await db.query.projects.findMany({
             with: {
-                nucleus: true,
+                primaryNucleus: true,
+                nucleiLinks: {
+                    with: {
+                        nucleus: true
+                    }
+                },
+                members: {
+                    with: {
+                        member: true
+                    }
+                },
                 tasks: true,
                 workSchools: true
             },
@@ -44,7 +54,18 @@ export async function getProjectById(id: string) {
         const project = await db.query.projects.findFirst({
             where: eq(projects.id, id),
             with: {
-                nucleus: true,
+                primaryNucleus: true,
+                nucleiLinks: {
+                    with: {
+                        nucleus: true
+                    }
+                },
+                members: {
+                    with: {
+                        member: true,
+                        assignedBy: true
+                    }
+                },
                 tasks: true,
                 workSchools: {
                     with: {
@@ -220,5 +241,329 @@ export async function deleteProjectTask(id: string) {
     } catch (error) {
         console.error("Error deleting project task:", error);
         return { success: false, error: "Falha ao excluir tarefa" };
+    }
+}
+
+// ==========================================
+// PROJECT MEMBERS ACTIONS
+// ==========================================
+
+export async function assignMemberToProject(
+    projectId: string,
+    memberId: string,
+    role: 'coordinator' | 'member' | 'contributor' | 'observer' = 'member',
+    notes?: string
+) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Check for duplicate assignment
+        const existing = await db.query.projectMembers.findFirst({
+            where: and(
+                eq(projectMembers.projectId, projectId),
+                eq(projectMembers.memberId, memberId)
+            )
+        });
+
+        if (existing) {
+            return { success: false, error: "Membro já está vinculado a este projeto" };
+        }
+
+        const [assignment] = await db.insert(projectMembers).values({
+            projectId,
+            memberId,
+            role,
+            assignedById: user.id,
+            notes
+        }).returning();
+
+        revalidatePath(`/projects/${projectId}`);
+        revalidatePath(`/members/${memberId}`);
+        return { success: true, data: assignment };
+    } catch (error) {
+        console.error("Error assigning member to project:", error);
+        return { success: false, error: "Falha ao atribuir membro ao projeto" };
+    }
+}
+
+export async function removeMemberFromProject(assignmentId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const [assignment] = await db.delete(projectMembers)
+            .where(eq(projectMembers.id, assignmentId))
+            .returning();
+
+        if (assignment) {
+            revalidatePath(`/projects/${assignment.projectId}`);
+            revalidatePath(`/members/${assignment.memberId}`);
+        }
+        return { success: true };
+    } catch (error) {
+        console.error("Error removing member from project:", error);
+        return { success: false, error: "Falha ao remover membro do projeto" };
+    }
+}
+
+export async function updateProjectMemberRole(
+    assignmentId: string,
+    role: 'coordinator' | 'member' | 'contributor' | 'observer'
+) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const [assignment] = await db.update(projectMembers)
+            .set({ role, updatedAt: new Date() })
+            .where(eq(projectMembers.id, assignmentId))
+            .returning();
+
+        if (assignment) {
+            revalidatePath(`/projects/${assignment.projectId}`);
+            revalidatePath(`/members/${assignment.memberId}`);
+        }
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating project member role:", error);
+        return { success: false, error: "Falha ao atualizar papel do membro" };
+    }
+}
+
+export async function getProjectMembers(projectId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const members = await db.query.projectMembers.findMany({
+            where: eq(projectMembers.projectId, projectId),
+            with: {
+                member: true,
+                assignedBy: true
+            },
+            orderBy: [desc(projectMembers.assignedAt)]
+        });
+
+        return { success: true, data: members };
+    } catch (error) {
+        console.error("Error fetching project members:", error);
+        return { success: false, error: "Falha ao buscar membros do projeto" };
+    }
+}
+
+export async function bulkAssignMembersToProject(
+    projectId: string,
+    memberIds: string[],
+    role: 'coordinator' | 'member' | 'contributor' | 'observer' = 'member'
+) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Get existing assignments to avoid duplicates
+        const existing = await db.query.projectMembers.findMany({
+            where: eq(projectMembers.projectId, projectId)
+        });
+        const existingMemberIds = new Set(existing.map(a => a.memberId));
+
+        // Filter out already assigned members
+        const newMemberIds = memberIds.filter(id => !existingMemberIds.has(id));
+
+        if (newMemberIds.length === 0) {
+            return { success: false, error: "Todos os membros já estão vinculados" };
+        }
+
+        const values = newMemberIds.map(memberId => ({
+            projectId,
+            memberId,
+            role,
+            assignedById: user.id
+        }));
+
+        await db.insert(projectMembers).values(values);
+
+        revalidatePath(`/projects/${projectId}`);
+        memberIds.forEach(memberId => {
+            revalidatePath(`/members/${memberId}`);
+        });
+
+        return { success: true, message: `${newMemberIds.length} membros atribuídos com sucesso` };
+    } catch (error) {
+        console.error("Error bulk assigning members:", error);
+        return { success: false, error: "Falha ao atribuir membros em lote" };
+    }
+}
+
+// ==========================================
+// PROJECT NUCLEI ACTIONS
+// ==========================================
+
+export async function linkProjectToNucleus(
+    projectId: string,
+    nucleusId: string,
+    isPrimary: boolean = false
+) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Check for duplicate link
+        const existing = await db.query.projectNuclei.findFirst({
+            where: and(
+                eq(projectNuclei.projectId, projectId),
+                eq(projectNuclei.nucleusId, nucleusId)
+            )
+        });
+
+        if (existing) {
+            return { success: false, error: "Núcleo já está vinculado a este projeto" };
+        }
+
+        // If setting as primary, unset other primary links first
+        if (isPrimary) {
+            await db.update(projectNuclei)
+                .set({ isPrimary: false })
+                .where(eq(projectNuclei.projectId, projectId));
+        }
+
+        const [link] = await db.insert(projectNuclei).values({
+            projectId,
+            nucleusId,
+            isPrimary
+        }).returning();
+
+        // Also update projects.nucleusId for backward compatibility
+        await db.update(projects)
+            .set({ nucleusId: nucleusId, updatedAt: new Date() })
+            .where(eq(projects.id, projectId));
+
+        revalidatePath(`/projects/${projectId}`);
+        return { success: true, data: link };
+    } catch (error) {
+        console.error("Error linking project to nucleus:", error);
+        return { success: false, error: "Falha ao vincular projeto ao núcleo" };
+    }
+}
+
+export async function unlinkProjectFromNucleus(linkId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const [link] = await db.delete(projectNuclei)
+            .where(eq(projectNuclei.id, linkId))
+            .returning();
+
+        if (link) revalidatePath(`/projects/${link.projectId}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error unlinking project from nucleus:", error);
+        return { success: false, error: "Falha ao desvincular projeto do núcleo" };
+    }
+}
+
+export async function setPrimaryNucleus(projectId: string, nucleusId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Unset all previous primary links
+        await db.update(projectNuclei)
+            .set({ isPrimary: false })
+            .where(eq(projectNuclei.projectId, projectId));
+
+        // Set the new primary
+        const [link] = await db.update(projectNuclei)
+            .set({ isPrimary: true })
+            .where(and(
+                eq(projectNuclei.projectId, projectId),
+                eq(projectNuclei.nucleusId, nucleusId)
+            ))
+            .returning();
+
+        // Update projects.nucleusId for backward compatibility
+        await db.update(projects)
+            .set({ nucleusId: nucleusId, updatedAt: new Date() })
+            .where(eq(projects.id, projectId));
+
+        revalidatePath(`/projects/${projectId}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error setting primary nucleus:", error);
+        return { success: false, error: "Falha ao definir núcleo primário" };
+    }
+}
+
+export async function getProjectNuclei(projectId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const nucleiLinks = await db.query.projectNuclei.findMany({
+            where: eq(projectNuclei.projectId, projectId),
+            with: {
+                nucleus: true
+            },
+            orderBy: [desc(projectNuclei.isPrimary)]
+        });
+
+        return { success: true, data: nucleiLinks };
+    } catch (error) {
+        console.error("Error fetching project nuclei:", error);
+        return { success: false, error: "Falha ao buscar núcleos do projeto" };
+    }
+}
+
+export async function bulkLinkNucleiToProject(
+    projectId: string,
+    nucleusIds: string[],
+    primaryNucleusId?: string
+) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Get existing links
+        const existing = await db.query.projectNuclei.findMany({
+            where: eq(projectNuclei.projectId, projectId)
+        });
+        const existingNucleusIds = new Set(existing.map(l => l.nucleusId));
+
+        // Filter new nucleus IDs
+        const newNucleusIds = nucleusIds.filter(id => !existingNucleusIds.has(id));
+
+        if (newNucleusIds.length === 0) {
+            return { success: false, error: "Todos os núcleos já estão vinculados" };
+        }
+
+        // Unset existing primary if needed
+        if (primaryNucleusId) {
+            await db.update(projectNuclei)
+                .set({ isPrimary: false })
+                .where(eq(projectNuclei.projectId, projectId));
+        }
+
+        // Insert new links
+        const values = newNucleusIds.map((nucleusId, index) => ({
+            projectId,
+            nucleusId,
+            isPrimary: primaryNucleusId ? nucleusId === primaryNucleusId : index === 0
+        }));
+
+        await db.insert(projectNuclei).values(values);
+
+        // Update primary nucleus in projects table
+        if (primaryNucleusId) {
+            await db.update(projects)
+                .set({ nucleusId: primaryNucleusId, updatedAt: new Date() })
+                .where(eq(projects.id, projectId));
+        }
+
+        revalidatePath(`/projects/${projectId}`);
+        return { success: true, message: `${newNucleusIds.length} núcleos vinculados com sucesso` };
+    } catch (error) {
+        console.error("Error bulk linking nuclei to project:", error);
+        return { success: false, error: "Falha ao vincular núcleos em lote" };
     }
 }
