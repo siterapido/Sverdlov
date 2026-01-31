@@ -357,7 +357,7 @@ function MemberCard({ member, onClick, isDragging }: MemberCardProps) {
         >
             <div className="flex items-start gap-3">
                 <Avatar
-                    name={displayName}
+                    fallback={displayName}
                     size="sm"
                     className="shrink-0"
                 />

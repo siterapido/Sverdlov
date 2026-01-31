@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
 import { nuclei } from './nuclei';
 
 export const users = pgTable('users', {
@@ -15,6 +15,16 @@ export const users = pgTable('users', {
     scopeCity: text('scope_city'),
     scopeZone: text('scope_zone'),
     scopeNucleusId: uuid('scope_nucleus_id').references(() => nuclei.id),
+
+    // User Profile & Preferences
+    profilePhoto: text('profile_photo'),
+    theme: text('theme', {
+        enum: ['light', 'dark', 'system']
+    }).notNull().default('system'),
+    language: text('language', {
+        enum: ['pt', 'es', 'en']
+    }).notNull().default('pt'),
+    notificationsEnabled: boolean('notifications_enabled').notNull().default(true),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
             fullName,
             email,
             passwordHash,
-            role,
-            territoryScope,
+            role: role === 'member' ? 'LOCAL_COORD' : role as any, // Default to LOCAL_COORD if role is 'member'
         }).returning();
 
         // Generate JWT token
@@ -45,7 +44,6 @@ export async function POST(request: NextRequest) {
             userId: newUser.id,
             email: newUser.email,
             role: newUser.role as any,
-            territoryScope: newUser.territoryScope || undefined,
         });
 
         // Set cookie

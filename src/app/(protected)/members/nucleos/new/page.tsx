@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/input';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import type { NucleusSchema } from '@/lib/schemas/nucleus';
 
 const BRAZILIAN_STATES = [
     { code: 'AC', name: 'Acre' },
@@ -43,10 +44,14 @@ export default function NewNucleusPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { register, handleSubmit, formState: { errors }, watch } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<NucleusSchema>({
         defaultValues: {
+            name: '',
             type: 'territorial',
             status: 'in_formation',
+            state: '',
+            city: '',
+            zone: '',
         }
     });
 

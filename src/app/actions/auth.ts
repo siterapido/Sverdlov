@@ -13,8 +13,8 @@ export async function logout() {
     if (token) {
         try {
             const user = await verifyToken(token);
-            if (user?.id) {
-                await auditLogout(user.id);
+            if (user?.userId) {
+                await auditLogout(user.userId);
             }
         } catch {
             // Continue with logout even if audit fails

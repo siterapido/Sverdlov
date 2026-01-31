@@ -274,7 +274,7 @@ export async function assignMemberToProject(
             projectId,
             memberId,
             role,
-            assignedById: user.id,
+            assignedById: user.userId,
             notes
         }).returning();
 
@@ -378,7 +378,7 @@ export async function bulkAssignMembersToProject(
             projectId,
             memberId,
             role,
-            assignedById: user.id
+            assignedById: user.userId
         }));
 
         await db.insert(projectMembers).values(values);

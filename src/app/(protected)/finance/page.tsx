@@ -42,7 +42,7 @@ export default async function FinancePage() {
                     </div>
                 </div>
 
-                <FinanceDashboard initialTransactions={transactions as any[]} />
+                <FinanceDashboard />
             </div>
         </PageTransition>
     );

@@ -16,7 +16,7 @@ async function getCurrentUserId(): Promise<string | undefined> {
         const token = cookieStore.get("auth_token")?.value;
         if (token) {
             const user = await verifyToken(token);
-            return user?.id;
+            return user?.userId;
         }
     } catch {
         return undefined;
@@ -114,24 +114,7 @@ export async function getMemberById(id: string) {
             with: {
                 nucleus: true,
                 politicalResponsible: true,
-                // NEW: Include project and schedule assignments
-                projectAssignments: {
-                    with: {
-                        project: true,
-                        assignedBy: true
-                    }
-                },
-                scheduleAssignments: {
-                    with: {
-                        slot: {
-                            with: {
-                                schedule: true
-                            }
-                        },
-                        assignedBy: true
-                    },
-                    limit: 10
-                }
+                plan: true,
             }
         });
 
@@ -389,9 +372,9 @@ export async function checkDuplicates(data: {
     excludeId?: string;
 }): Promise<{ found: boolean; duplicates: any[] }> {
     try {
-        const duplicates = [];
+        const duplicates: any[] = [];
 
-        const conditions = [];
+        const conditions: any[] = [];
         if (data.cpf) {
             conditions.push(eq(members.cpf, data.cpf.replace(/\D/g, '')));
         }

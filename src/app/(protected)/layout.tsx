@@ -17,7 +17,7 @@ export default async function ProtectedLayout({
         const user = await verifyToken(token);
         if (user) {
             userRole = user.role;
-            userId = user.id;
+            userId = user.userId;
         }
     }
 

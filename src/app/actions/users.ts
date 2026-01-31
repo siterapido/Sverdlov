@@ -17,11 +17,17 @@ async function getCurrentUser() {
 }
 
 export async function getUsers() {
-    const currentUser = await getCurrentUser();
-    if (!hasRole(currentUser, ['ADMIN'])) {
-        throw new Error('Unauthorized');
+    try {
+        const currentUser = await getCurrentUser();
+        if (!hasRole(currentUser, ['ADMIN'])) {
+            throw new Error('Unauthorized');
+        }
+        const result = await db.select().from(users).orderBy(users.createdAt);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return { success: false, error: "Unauthorized" };
     }
-    return await db.select().from(users).orderBy(users.createdAt);
 }
 
 export type CreateUserData = {

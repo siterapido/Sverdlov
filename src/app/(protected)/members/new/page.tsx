@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/input';
 import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import type { MemberSchema } from '@/lib/schemas/member';
 
 const BRAZILIAN_STATES = [
     { code: 'AC', name: 'Acre' },
@@ -43,8 +44,21 @@ export default function NewMemberPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { register, handleSubmit, formState: { errors }, watch } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<MemberSchema>({
         defaultValues: {
+            fullName: '',
+            socialName: '',
+            cpf: '',
+            dateOfBirth: '',
+            gender: '',
+            voterTitle: '',
+            email: '',
+            phone: '',
+            state: '',
+            city: '',
+            neighborhood: '',
+            zone: '',
+            howDidYouHear: '',
             interest: 'support',
         }
     });

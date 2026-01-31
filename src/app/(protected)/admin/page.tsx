@@ -2,14 +2,7 @@ import { getUsers } from '@/app/actions/users';
 import UserManagement from '@/components/admin/UserManagement';
 
 export default async function AdminPage() {
-    let users = [];
-    try {
-        users = await getUsers();
-    } catch (e) {
-        // If unauthorized, basic error handling or redirect should happen in middleware/action
-        // But throwing here will show error page
-        throw e;
-    }
+    const usersResult = await getUsers();
 
     return (
         <div className="space-y-6">
@@ -21,7 +14,7 @@ export default async function AdminPage() {
                     Gerencie coordenadores e permissões de acesso ao sistema.
                 </p>
             </div>
-            <UserManagement initialUsers={users} />
+            <UserManagement initialUsers={usersResult.success ? (usersResult.data || []) : []} />
         </div>
     );
 }

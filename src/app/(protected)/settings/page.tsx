@@ -1,7 +1,21 @@
 import { Settings } from "lucide-react";
 import { PageTransition } from "@/components/ui/page-transition";
+import { SettingsClient } from "@/components/settings/SettingsClient";
+import { getUserSettings } from "@/app/actions/settings";
+import { redirect } from "next/navigation";
 
-export default function SettingsPage() {
+export const metadata = {
+    title: 'Configurações',
+    description: 'Gerencie seu perfil, preferências e segurança da conta',
+};
+
+export default async function SettingsPage() {
+    const settingsResult = await getUserSettings();
+
+    if (!settingsResult.success || !settingsResult.data) {
+        redirect('/');
+    }
+
     return (
         <PageTransition>
             <div className="max-w-6xl">
@@ -22,13 +36,7 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div className="border-2 border-dashed border-zinc-200 bg-zinc-50/50 py-24 text-center">
-                    <div className="h-16 w-16 bg-white border-2 border-zinc-100 flex items-center justify-center mx-auto mb-6">
-                        <Settings className="h-8 w-8 text-zinc-300" />
-                    </div>
-                    <p className="text-xl font-black uppercase tracking-tight text-zinc-900">Módulo em construção</p>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2">Ajustes de sistema em desenvolvimento.</p>
-                </div>
+                <SettingsClient initialSettings={settingsResult.data} />
             </div>
         </PageTransition>
     );

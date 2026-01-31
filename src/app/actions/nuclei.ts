@@ -142,7 +142,7 @@ export async function createNucleus(data: any) {
         }).returning();
 
         // Audit log
-        await auditCreate(user.id, 'nuclei', newNucleus.id, newNucleus as Record<string, unknown>);
+        await auditCreate(user.userId, 'nuclei', newNucleus.id, newNucleus as Record<string, unknown>);
 
         revalidatePath("/members/nucleos");
         return { success: true };
@@ -177,7 +177,7 @@ export async function updateNucleus(id: string, data: any) {
 
         // Audit log
         await auditUpdate(
-            user.id,
+            user.userId,
             'nuclei',
             id,
             existing as Record<string, unknown>,
@@ -211,7 +211,7 @@ export async function assignMemberToNucleus(memberId: string, nucleusId: string 
 
         // Audit log
         await auditUpdate(
-            user?.id,
+            user?.userId,
             'members',
             memberId,
             oldMember as Record<string, unknown>,

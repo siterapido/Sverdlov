@@ -25,56 +25,12 @@ import {
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
 
-
 interface SidebarProps {
     isOpen: boolean;
     isCollapsed: boolean;
     isMobile: boolean;
     toggleSidebar: () => void;
     userRole?: string;
-}
-
-// === Quick Action Button ===
-function QuickAction({
-    icon,
-    label,
-    shortcut,
-    href,
-}: {
-    icon: React.ReactNode;
-    label: string;
-    shortcut?: string;
-    href?: string;
-}) {
-    const buttonContent = (
-        <>
-            <div className="text-muted">
-                {icon}
-            </div>
-            <span className="flex-1 text-left">{label}</span>
-            {shortcut && (
-                <kbd className="hidden md:inline-flex items-center rounded-none bg-zinc-50 px-1.5 py-0.5 text-[10px] font-bold text-muted border border-border dark:bg-zinc-900">
-                    {shortcut}
-                </kbd>
-            )}
-        </>
-    );
-
-    const className = "flex w-full items-center gap-2 rounded-none px-2 py-2 text-[13px] font-medium text-muted hover:bg-surface-hover hover:text-zinc-900 transition-all active:scale-[0.98]";
-
-    if (href) {
-        return (
-            <Link href={href} className={className}>
-                {buttonContent}
-            </Link>
-        );
-    }
-
-    return (
-        <button className={className}>
-            {buttonContent}
-        </button>
-    );
 }
 
 export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole }: SidebarProps) {
@@ -92,10 +48,10 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
             title: "Gestão",
             items: [
                 { name: "Início", href: "/dashboard", icon: Home },
-                { name: "Pessoas", href: "/members", icon: Users },
-                { name: "Núcleos", href: "/members/nucleos", icon: Layers },
-                { name: "Projetos", href: "/projects", icon: FolderKanban },
-                { name: "Escalas", href: "/escalas", icon: ClipboardList },
+                { name: "Pessoas", href: "/members", icon: Users, newHref: "/members/new" },
+                { name: "Núcleos", href: "/members/nucleos", icon: Layers, newHref: "/members/nucleos/new" },
+                { name: "Projetos", href: "/projects", icon: FolderKanban, newHref: "/projects/new" },
+                { name: "Escalas", href: "/escalas", icon: ClipboardList, newHref: "/escalas/nova" },
             ],
         },
     ];
@@ -168,37 +124,6 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                         </button>
                     </div>
 
-                    {/* Quick Actions */}
-                    {!isCollapsed && (
-                        <div className="px-3 py-4 space-y-1">
-                            <QuickAction
-                                icon={<Search className="h-4 w-4" />}
-                                label="Buscar"
-                                shortcut="⌘K"
-                            />
-                            <QuickAction
-                                icon={<Plus className="h-4 w-4" />}
-                                label="Novo Membro"
-                                href="/members/new"
-                            />
-                            <QuickAction
-                                icon={<Plus className="h-4 w-4" />}
-                                label="Novo Núcleo"
-                                href="/members/nucleos/new"
-                            />
-                            <QuickAction
-                                icon={<Plus className="h-4 w-4" />}
-                                label="Novo Projeto"
-                                href="/projects/new"
-                            />
-                            <QuickAction
-                                icon={<Plus className="h-4 w-4" />}
-                                label="Nova Escala"
-                                href="/escalas/nova"
-                            />
-                        </div>
-                    )}
-
                     {/* Navigation */}
                     <nav className="flex-1 overflow-y-auto px-3 py-2">
                         {navSections.map((section) => (
@@ -229,6 +154,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                                                     (pathname === otherItem.href || pathname.startsWith(`${otherItem.href}/`))
                                                 )
                                             );
+                                            const hasNewLink = "newHref" in item && item.newHref;
                                             return (
                                                 <li key={item.href}>
                                                     <Link
@@ -247,6 +173,19 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                                                         {!isCollapsed && (
                                                             <>
                                                                 <span className="flex-1">{item.name}</span>
+                                                                {hasNewLink && (
+                                                                    <Link
+                                                                        href={item.newHref}
+                                                                        className={cn(
+                                                                            "flex items-center justify-center rounded-none h-5 w-5 text-[13px] transition-all hover:scale-110",
+                                                                            isActive ? "bg-white text-primary" : "bg-primary text-primary-foreground"
+                                                                        )}
+                                                                        title={`Novo ${item.name}`}
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        <Plus className="h-3 w-3" />
+                                                                    </Link>
+                                                                )}
                                                                 {"badge" in item && typeof item.badge === "number" && item.badge > 0 && (
                                                                     <span className={cn(
                                                                         "flex h-4 min-w-4 items-center justify-center rounded-none text-[9px] font-black px-1 shadow-sm",

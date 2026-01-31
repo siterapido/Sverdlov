@@ -14,7 +14,7 @@ async function getCurrentUserId(): Promise<string | undefined> {
         const token = cookieStore.get("auth_token")?.value;
         if (token) {
             const user = await verifyToken(token);
-            return user?.id;
+            return user?.userId;
         }
     } catch {
         return undefined;
@@ -104,9 +104,12 @@ export async function updateFinancialStatus(
             where: eq(members.id, memberId)
         });
 
+        // Map business logic statuses to database schema values
+        const dbStatus = status === 'up_to_date' ? 'up_to_date' : 'late';
+
         const [updatedMember] = await db.update(members)
             .set({
-                financialStatus: status,
+                financialStatus: dbStatus,
                 updatedAt: new Date(),
             })
             .where(eq(members.id, memberId))

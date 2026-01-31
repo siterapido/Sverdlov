@@ -16,7 +16,7 @@ async function getCurrentUserId(): Promise<string | undefined> {
         const token = cookieStore.get("auth_token")?.value;
         if (token) {
             const user = await verifyToken(token);
-            return user?.id;
+            return user?.userId;
         }
     } catch {
         return undefined;

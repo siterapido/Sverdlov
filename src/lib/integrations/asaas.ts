@@ -51,6 +51,15 @@ interface AsaasSubscription {
     description?: string;
 }
 
+interface AsaasResponse {
+    id: string;
+    status?: string;
+    value?: number;
+    dueDate?: string;
+    invoiceUrl?: string;
+    cycle?: string;
+}
+
 /**
  * Helper function to make API requests to Asaas
  */
@@ -88,7 +97,7 @@ async function asaasRequest<T>(
  */
 export async function createAsaasCustomer(customer: AsaasCustomer) {
     try {
-        const response = await asaasRequest('/customers', {
+        const response = await asaasRequest('POST', '/customers', {
             name: customer.name,
             email: customer.email,
             phone: customer.phone,
@@ -102,7 +111,8 @@ export async function createAsaasCustomer(customer: AsaasCustomer) {
             postalCode: customer.address.postalCode.replace(/\D/g, ''),
         });
 
-        return { success: true, customerId: response.id };
+        const responseData = response as AsaasResponse;
+        return { success: true, customerId: responseData.id };
     } catch (error) {
         console.error('Error creating Asaas customer:', error);
         return {
@@ -117,7 +127,7 @@ export async function createAsaasCustomer(customer: AsaasCustomer) {
  */
 export async function getAsaasCustomer(customerId: string) {
     try {
-        const response = await asaasRequest(`/customers/${customerId}`, undefined);
+        const response = await asaasRequest('GET', `/customers/${customerId}`);
         return { success: true, customer: response };
     } catch (error) {
         console.error('Error fetching Asaas customer:', error);
@@ -130,7 +140,7 @@ export async function getAsaasCustomer(customerId: string) {
  */
 export async function createAsaasPayment(payment: AsaasPayment) {
     try {
-        const response = await asaasRequest('/payments', {
+        const response = await asaasRequest('POST', '/payments', {
             customerId: payment.customerId,
             billingType: payment.billingType,
             value: payment.value,
@@ -140,7 +150,8 @@ export async function createAsaasPayment(payment: AsaasPayment) {
             installmentCount: payment.installmentCount || 1,
         });
 
-        return { success: true, paymentId: response.id, invoiceUrl: response.invoiceUrl };
+        const responseData = response as AsaasResponse;
+        return { success: true, paymentId: responseData.id, invoiceUrl: responseData.invoiceUrl };
     } catch (error) {
         console.error('Error creating Asaas payment:', error);
         return {
@@ -155,7 +166,7 @@ export async function createAsaasPayment(payment: AsaasPayment) {
  */
 export async function createAsaasSubscription(subscription: AsaasSubscription) {
     try {
-        const response = await asaasRequest('/subscriptions', {
+        const response = await asaasRequest('POST', '/subscriptions', {
             customerId: subscription.customerId,
             billingType: subscription.billingType,
             value: subscription.value,
@@ -164,7 +175,8 @@ export async function createAsaasSubscription(subscription: AsaasSubscription) {
             description: subscription.description || 'Subscription',
         });
 
-        return { success: true, subscriptionId: response.id };
+        const responseData = response as AsaasResponse;
+        return { success: true, subscriptionId: responseData.id };
     } catch (error) {
         console.error('Error creating Asaas subscription:', error);
         return {
@@ -179,15 +191,16 @@ export async function createAsaasSubscription(subscription: AsaasSubscription) {
  */
 export async function getAsaasPayment(paymentId: string) {
     try {
-        const response = await asaasRequest(`/payments/${paymentId}`, undefined);
+        const responseData = await asaasRequest('GET', `/payments/${paymentId}`);
+        const payment = responseData as any;
         return {
             success: true,
             payment: {
-                id: response.id,
-                status: response.status,
-                value: response.value,
-                dueDate: response.dueDate,
-                paidDate: response.paidDate,
+                id: payment.id,
+                status: payment.status,
+                value: payment.value,
+                dueDate: payment.dueDate,
+                paidDate: payment.paidDate,
             },
         };
     } catch (error) {
