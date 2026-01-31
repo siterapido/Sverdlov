@@ -14,8 +14,7 @@ export const nuclei = pgTable('nuclei', {
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const nucleiRelations = relations(nuclei, ({ many }) => ({
-    members: many(null as any), // Will be populated by members table reverse relation
-    projectLinks: many(null as any), // Will be populated by projectNuclei table
-    schedules: many(null as any), // Will be populated by schedules table
-}));
+// Note: Relations for nuclei are defined in their related tables:
+// - members table has nucleusId foreign key (forward relation)
+// - projectNuclei table has nucleusId foreign key (forward relation)
+// - schedules table has nucleusId foreign key (forward relation)
