@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useCallback } from "react";
 import {
-    Upload,
     FileSpreadsheet,
-    CheckCircle2,
-    AlertCircle,
     ChevronRight,
     ChevronLeft,
+    Check,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import * as XLSX from "xlsx";
-import { importMembers } from "@/app/actions/members";
+import { AnimatePresence } from "framer-motion";
 import {
     Modal,
     ModalContent,
@@ -21,7 +17,16 @@ import {
     ModalFooter
 } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/toast";
+
+import { useImportState } from "./import/useImportState";
+import { ImportStepUpload } from "./import/ImportStepUpload";
+import { ImportStepMapping } from "./import/ImportStepMapping";
+import { ImportStepPreview } from "./import/ImportStepPreview";
+import { ImportStepResults } from "./import/ImportStepResults";
+import { validateImportData, executeImport } from "@/app/actions/members-import";
+import type { SpreadsheetData, ColumnMapping, ImportStep } from "./import/types";
+import { STEP_LABELS, IMPORT_STEPS } from "./import/types";
 
 interface ImportModalProps {
     isOpen: boolean;
@@ -30,96 +35,165 @@ interface ImportModalProps {
 }
 
 export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
-    const [step, setStep] = useState(1);
-    const [file, setFile] = useState<File | null>(null);
-    const [data, setData] = useState<any[]>([]);
-    const [headers, setHeaders] = useState<string[]>([]);
-    const [mapping, setMapping] = useState<Record<string, string>>({});
-    const [isImporting, setIsImporting] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { addToast } = useToast();
+    const {
+        state,
+        dispatch,
+        currentStepIndex,
+        canGoBack,
+        canGoNext,
+        previewStats,
+        setFile,
+        setMapping,
+        setValidatedRows,
+        setUpdateDuplicates,
+        setResults,
+        setError,
+        setProcessing,
+        nextStep,
+        prevStep,
+        reset,
+    } = useImportState();
 
-    const dbFields = [
-        { key: "fullName", label: "NOME", required: true },
-        { key: "cpf", label: "CPF", required: false },
-        { key: "voterTitle", label: "TITULO ELEITOR", required: false },
-        { key: "gender", label: "GENERO", required: false },
-        { key: "affiliationDate", label: "DATA FILIACAO", required: false },
-        { key: "state", label: "UF", required: false },
-        { key: "city", label: "MUNICIPIO", required: false },
-        { key: "zone", label: "ZONA", required: false },
-        { key: "party", label: "PARTIDO", required: false },
-        { key: "situation", label: "SITUACAO", required: false },
-        { key: "disaffiliationReason", label: "MOTIVO DESFILIACAO", required: false },
-        { key: "communicationPending", label: "PENDENCIA DE COMUNICACAO", required: false },
-    ];
+    // Handle file upload and processing
+    const handleFileProcessed = useCallback((file: File, data: SpreadsheetData, autoMapping: ColumnMapping) => {
+        setFile(file, data);
+        setMapping(autoMapping);
+        nextStep();
+    }, [setFile, setMapping, nextStep]);
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const uploadedFile = e.target.files?.[0];
-        if (!uploadedFile) return;
+    // Handle mapping change
+    const handleMappingChange = useCallback((mapping: ColumnMapping) => {
+        setMapping(mapping);
+    }, [setMapping]);
 
-        setFile(uploadedFile);
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const bstr = event.target?.result;
-            const wb = XLSX.read(bstr, { type: "binary" });
-            const wsname = wb.SheetNames[0];
-            const ws = wb.Sheets[wsname];
-            const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    // Handle proceeding from mapping to preview (runs validation)
+    const handleValidateAndPreview = useCallback(async () => {
+        if (!state.spreadsheetData) return;
 
-            const sheetHeaders = rawData[0] as string[];
-            setHeaders(sheetHeaders);
-            setData(XLSX.utils.sheet_to_json(ws));
+        setProcessing(true);
 
-            // Auto mapping
-            const newMapping: Record<string, string> = {};
-            dbFields.forEach(field => {
-                const match = sheetHeaders.find(h =>
-                    h.toUpperCase() === field.label.toUpperCase() ||
-                    h.toUpperCase().includes(field.label.toUpperCase()) ||
-                    h.toLowerCase().includes(field.key.toLowerCase())
-                );
-                if (match) newMapping[field.key] = match;
-            });
-            setMapping(newMapping);
-            setStep(2);
-        };
-        reader.readAsBinaryString(uploadedFile);
-    };
+        try {
+            const result = await validateImportData(
+                state.spreadsheetData.rows,
+                state.mapping
+            );
 
-    const [importResults, setImportResults] = useState<any>(null);
-
-    const handleImport = async (updateExisting = false) => {
-        setIsImporting(true);
-        const formattedData = data.map(row => {
-            const member: any = {};
-            Object.entries(mapping).forEach(([dbKey, sheetKey]) => {
-                member[dbKey] = row[sheetKey];
-            });
-            return member;
-        });
-
-        const result = await importMembers(formattedData, updateExisting);
-        setIsImporting(false);
-
-        if (result.success && result.results) {
-            if (result.results.duplicates.length > 0 && !updateExisting) {
-                setImportResults(result.results);
-                setStep(3); // Result/Duplicate handling step
+            if (result.success && result.rows) {
+                setValidatedRows(result.rows);
+                nextStep();
             } else {
-                onSuccess();
-                onClose();
-                // Reset state
-                setStep(1);
-                setFile(null);
-                setImportResults(null);
+                setError(result.error || 'Erro na validação');
+                addToast({
+                    type: 'error',
+                    title: 'Erro na Validação',
+                    description: result.error,
+                });
             }
-        } else {
-            alert(result.error);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+            setError(msg);
+            addToast({
+                type: 'error',
+                title: 'Erro na Validação',
+                description: msg,
+            });
+        } finally {
+            setProcessing(false);
+        }
+    }, [state.spreadsheetData, state.mapping, setProcessing, setValidatedRows, setError, nextStep, addToast]);
+
+    // Handle executing import
+    const handleExecuteImport = useCallback(async () => {
+        setProcessing(true);
+
+        try {
+            const result = await executeImport(
+                state.validatedRows,
+                { updateDuplicates: state.updateDuplicates }
+            );
+
+            if (result.success && result.results) {
+                setResults(result.results);
+                nextStep();
+                addToast({
+                    type: 'success',
+                    title: 'Importação Concluída',
+                    description: `${result.results.imported} importados, ${result.results.updated} atualizados`,
+                });
+            } else {
+                setError(result.error || 'Erro na importação');
+                addToast({
+                    type: 'error',
+                    title: 'Erro na Importação',
+                    description: result.error,
+                });
+            }
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+            setError(msg);
+            addToast({
+                type: 'error',
+                title: 'Erro na Importação',
+                description: msg,
+            });
+        } finally {
+            setProcessing(false);
+        }
+    }, [state.validatedRows, state.updateDuplicates, setProcessing, setResults, setError, nextStep, addToast]);
+
+    // Handle completion
+    const handleComplete = useCallback(() => {
+        reset();
+        onSuccess();
+        onClose();
+    }, [reset, onSuccess, onClose]);
+
+    // Handle close
+    const handleClose = useCallback(() => {
+        reset();
+        onClose();
+    }, [reset, onClose]);
+
+    // Handle next button click
+    const handleNextClick = useCallback(() => {
+        switch (state.step) {
+            case 'mapping':
+                handleValidateAndPreview();
+                break;
+            case 'preview':
+                handleExecuteImport();
+                break;
+            default:
+                nextStep();
+        }
+    }, [state.step, handleValidateAndPreview, handleExecuteImport, nextStep]);
+
+    // Get next button text
+    const getNextButtonText = () => {
+        if (state.isProcessing) {
+            switch (state.step) {
+                case 'mapping':
+                    return 'Validando...';
+                case 'preview':
+                    return 'Importando...';
+                default:
+                    return 'Processando...';
+            }
+        }
+
+        switch (state.step) {
+            case 'mapping':
+                return 'Validar Dados';
+            case 'preview':
+                return 'Importar';
+            default:
+                return 'Próximo';
         }
     };
 
     return (
-        <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
             <ModalContent size="lg">
                 <ModalHeader>
                     <ModalTitle className="flex items-center gap-2">
@@ -129,181 +203,133 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                         Importar Filiados
                     </ModalTitle>
                 </ModalHeader>
+
                 <ModalBody>
+                    {/* Steps Progress */}
+                    <div className="flex items-center justify-between mb-6 px-4">
+                        {IMPORT_STEPS.map((step, index) => (
+                            <React.Fragment key={step}>
+                                <div className="flex flex-col items-center">
+                                    <div
+                                        className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                                            index < currentStepIndex
+                                                ? 'bg-success-500 text-white'
+                                                : index === currentStepIndex
+                                                  ? 'bg-primary-500 text-white'
+                                                  : 'bg-bg-tertiary text-fg-tertiary'
+                                        }`}
+                                    >
+                                        {index < currentStepIndex ? (
+                                            <Check className="h-4 w-4" />
+                                        ) : (
+                                            index + 1
+                                        )}
+                                    </div>
+                                    <span className={`mt-1 text-[10px] uppercase tracking-wider font-semibold ${
+                                        index <= currentStepIndex ? 'text-fg-primary' : 'text-fg-tertiary'
+                                    }`}>
+                                        {STEP_LABELS[step]}
+                                    </span>
+                                </div>
+                                {index < IMPORT_STEPS.length - 1 && (
+                                    <div
+                                        className={`flex-1 h-0.5 mx-2 ${
+                                            index < currentStepIndex
+                                                ? 'bg-success-500'
+                                                : 'bg-bg-tertiary'
+                                        }`}
+                                    />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+
+                    {/* Error Display */}
+                    {state.error && (
+                        <div className="mb-4 p-3 bg-danger-500/10 border border-danger-500/20 rounded-none text-sm text-danger-600">
+                            {state.error}
+                        </div>
+                    )}
+
+                    {/* Step Content */}
                     <AnimatePresence mode="wait">
-                        {step === 1 ? (
-                            <motion.div
-                                key="step1"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                onClick={() => fileInputRef.current?.click()}
-                                className="border-2 border-dashed border-border-subtle rounded-none p-12 flex flex-col items-center gap-4 hover:bg-bg-hover hover:border-primary-500/50 cursor-pointer transition-all group relative overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="bg-bg-hover p-5 rounded-none group-hover:bg-primary-500/10 group-hover:scale-110 transition-all shadow-sm">
-                                    <Upload className="h-8 w-8 text-fg-secondary group-hover:text-primary-500" />
-                                </div>
-                                <div className="text-center relative z-10">
-                                    <p className="font-semibold text-fg-primary text-lg">Clique ou arraste sua planilha aqui</p>
-                                    <p className="text-sm text-fg-tertiary mt-2">Suporta .xlsx, .csv ou .ods</p>
-                                </div>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                    accept=".xlsx,.xls,.csv"
-                                />
-
-                                <div className="mt-4 flex gap-2">
-                                    <Badge variant="gray">Excel</Badge>
-                                    <Badge variant="gray">CSV</Badge>
-                                    <Badge variant="gray">Google Sheets</Badge>
-                                </div>
-                            </motion.div>
-                        ) : step === 2 ? (
-                            <motion.div
-                                key="step2"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-6"
-                            >
-                                <div className="bg-bg-tertiary/50 border border-border-subtle p-4 rounded-none flex items-start gap-3">
-                                    <div className="h-5 w-5 mt-0.5 rounded-full bg-primary-500 flex items-center justify-center">
-                                        <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm text-fg-primary font-semibold">Relacionar campos</p>
-                                        <p className="text-xs text-fg-tertiary mt-1">Combine as colunas da sua planilha com os campos oficiais do sistema para garantir uma importação correta.</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {dbFields.map(field => (
-                                        <div key={field.key} className="flex items-center justify-between p-3 rounded-none border border-border-subtle hover:border-primary-500/30 hover:bg-bg-hover/50 transition-all group">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-semibold text-fg-primary flex items-center gap-1.5">
-                                                    {field.label}
-                                                    {field.required && <span className="text-danger-500">*</span>}
-                                                </span>
-                                            </div>
-                                            <select
-                                                value={mapping[field.key] || ""}
-                                                onChange={(e) => setMapping({ ...mapping, [field.key]: e.target.value })}
-                                                className="text-sm border border-border-subtle rounded-none px-3 py-1.5 bg-bg-primary min-w-[220px] focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer group-hover:border-primary-500/50"
-                                            >
-                                                <option value="">Não importar</option>
-                                                {headers.map(h => (
-                                                    <option key={h} value={h}>{h}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="step3"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="space-y-6"
-                            >
-                                <div className="bg-warning-500/10 border border-warning-500/20 p-6 rounded-none flex flex-col items-center text-center gap-4">
-                                    <div className="h-12 w-12 rounded-full bg-warning-500/20 flex items-center justify-center">
-                                        <AlertCircle className="h-6 w-6 text-warning-600" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h3 className="font-bold text-fg-primary text-lg">Duplicatas Encontradas</h3>
-                                        <p className="text-sm text-fg-secondary">
-                                            Identificamos {importResults?.duplicates?.length} pessoas que já possuem cadastro no sistema (CPF ou Título de Eleitor já cadastrados).
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="max-h-[300px] overflow-y-auto border border-border-subtle rounded-none divide-y divide-border-subtle">
-                                    {importResults?.duplicates?.map((dup: any, i: number) => (
-                                        <div key={i} className="p-3 bg-bg-secondary/30 flex justify-between items-center">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-fg-primary">{dup.fullName || dup.NOME}</span>
-                                                <span className="text-xs text-fg-tertiary">CPF/Título: {dup.cpf || dup.voterTitle || "N/A"}</span>
-                                            </div>
-                                            <Badge variant="yellow">Já cadastrado</Badge>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="p-4 bg-primary-500/5 border border-primary-500/20 rounded-none">
-                                    <p className="text-sm text-fg-primary font-medium mb-1">Deseja atualizar os dados destes cadastros?</p>
-                                    <p className="text-xs text-fg-tertiary">Se você escolher sim, as informações da planilha substituirão os dados atuais destes filiados.</p>
-                                </div>
-                            </motion.div>
+                        {state.step === 'upload' && (
+                            <ImportStepUpload
+                                key="upload"
+                                state={state}
+                                dispatch={dispatch}
+                                onClose={handleClose}
+                                onFileProcessed={handleFileProcessed}
+                            />
+                        )}
+                        {state.step === 'mapping' && (
+                            <ImportStepMapping
+                                key="mapping"
+                                state={state}
+                                dispatch={dispatch}
+                                onClose={handleClose}
+                                onMappingChange={handleMappingChange}
+                            />
+                        )}
+                        {state.step === 'preview' && (
+                            <ImportStepPreview
+                                key="preview"
+                                state={state}
+                                dispatch={dispatch}
+                                onClose={handleClose}
+                                stats={previewStats}
+                                onUpdateDuplicatesChange={setUpdateDuplicates}
+                            />
+                        )}
+                        {state.step === 'results' && state.results && (
+                            <ImportStepResults
+                                key="results"
+                                state={state}
+                                dispatch={dispatch}
+                                onClose={handleClose}
+                                results={state.results}
+                                onComplete={handleComplete}
+                            />
                         )}
                     </AnimatePresence>
                 </ModalBody>
-                <ModalFooter className="justify-between">
-                    <div>
-                        {(step === 2 || step === 3) && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setStep(step - 1)}
-                                className="flex items-center gap-2"
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                Voltar
-                            </Button>
-                        )}
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={onClose}>
-                            Cancelar
-                        </Button>
-                        {step === 2 && (
-                            <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() => handleImport(false)}
-                                disabled={isImporting}
-                                className="shadow-none"
-                            >
-                                {isImporting ? "Importando..." : (
-                                    <>
-                                        Finalizar Importação
-                                        <ChevronRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
-                            </Button>
-                        )}
-                        {step === 3 && (
-                            <>
+
+                {state.step !== 'results' && (
+                    <ModalFooter className="justify-between">
+                        <div>
+                            {canGoBack && (
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => {
-                                        onSuccess();
-                                        onClose();
-                                    }}
-                                    disabled={isImporting}
+                                    onClick={prevStep}
+                                    disabled={state.isProcessing}
+                                    className="flex items-center gap-2"
                                 >
-                                    Ignorar e Concluir
+                                    <ChevronLeft className="h-4 w-4" />
+                                    Voltar
                                 </Button>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={handleClose}>
+                                Cancelar
+                            </Button>
+                            {state.step !== 'upload' && (
                                 <Button
                                     variant="default"
                                     size="sm"
-                                    onClick={() => handleImport(true)}
-                                    disabled={isImporting}
+                                    onClick={handleNextClick}
+                                    disabled={!canGoNext || state.isProcessing}
                                     className="shadow-none"
                                 >
-                                    {isImporting ? "Atualizando..." : "Sim, Atualizar Dados"}
+                                    {getNextButtonText()}
+                                    {!state.isProcessing && <ChevronRight className="ml-2 h-4 w-4" />}
                                 </Button>
-                            </>
-                        )}
-                    </div>
-                </ModalFooter>
+                            )}
+                        </div>
+                    </ModalFooter>
+                )}
             </ModalContent>
         </Modal>
     );
 }
-

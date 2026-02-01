@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MembersTable } from "./MembersTable";
 import { ImportModal } from "./ImportModal";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from "@/components/ui/modal";
 import { MemberForm } from "./member-form";
 import { PageTransition } from "@/components/ui/page-transition";
+import { useToast } from "@/components/ui/toast";
 
 import { Plus, Users, FileUp, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,20 +33,23 @@ interface MembersClientProps {
 }
 
 export function MembersClient({ initialMembers, initialRequests }: MembersClientProps) {
+    const router = useRouter();
+    const { addToast } = useToast();
     const [activeTab, setActiveTab] = useState<'members' | 'requests'>('members');
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isNewMemberModalOpen, setIsNewMemberModalOpen] = useState(false);
 
-    // This would ideally revalidate or refresh data after success
+    // Refresh data after successful operations
     const handleSuccess = () => {
-        // In a real app, we might use router.refresh() 
-        // to update server components data
-        window.location.reload();
+        router.refresh();
     };
 
     const handleExport = () => {
-        // Placeholder for export logic
-        alert("Funcionalidade de exportação em breve.");
+        addToast({
+            type: 'info',
+            title: 'Em Breve',
+            description: 'Funcionalidade de exportação será implementada em breve.',
+        });
     };
 
     return (
