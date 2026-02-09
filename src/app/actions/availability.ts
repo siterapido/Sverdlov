@@ -82,30 +82,28 @@ export async function submitAvailability(token: string, availabilityData: any[])
         // Prompt says "availability for next 7, 15 or 30 days". This implies specific date exceptions or confirmations.
         // We will store as 'scheduleExceptions' type 'available' for specific dates, or 'unavailable'.
 
-        await db.transaction(async (tx) => {
-            for (const item of availabilityData) {
-                // Remove existing for same day
-                await tx.delete(scheduleExceptions)
-                    .where(and(
-                        eq(scheduleExceptions.memberId, request.memberId),
-                        eq(scheduleExceptions.date, item.date)
-                    ));
+        for (const item of availabilityData) {
+            // Remove existing for same day
+            await db.delete(scheduleExceptions)
+                .where(and(
+                    eq(scheduleExceptions.memberId, request.memberId),
+                    eq(scheduleExceptions.date, item.date)
+                ));
 
-                await tx.insert(scheduleExceptions).values({
-                    memberId: request.memberId,
-                    date: item.date, // string 'YYYY-MM-DD'
-                    type: item.type, // 'available', 'unavailable'
-                    startTime: item.startTime || null,
-                    endTime: item.endTime || null,
-                    reason: 'Preenchimento via link',
-                });
-            }
+            await db.insert(scheduleExceptions).values({
+                memberId: request.memberId,
+                date: item.date, // string 'YYYY-MM-DD'
+                type: item.type, // 'available', 'unavailable'
+                startTime: item.startTime || null,
+                endTime: item.endTime || null,
+                reason: 'Preenchimento via link',
+            });
+        }
 
-            // Update request status
-            await tx.update(availabilityRequests)
-                .set({ status: 'completed', completedAt: new Date() })
-                .where(eq(availabilityRequests.id, request.id));
-        });
+        // Update request status
+        await db.update(availabilityRequests)
+            .set({ status: 'completed', completedAt: new Date() })
+            .where(eq(availabilityRequests.id, request.id));
 
         return { success: true };
     } catch (error) {
@@ -119,25 +117,23 @@ export async function submitAvailabilityDirect(memberId: string, availabilityDat
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        await db.transaction(async (tx) => {
-            for (const item of availabilityData) {
-                // Remove existing for same day
-                await tx.delete(scheduleExceptions)
-                    .where(and(
-                        eq(scheduleExceptions.memberId, memberId),
-                        eq(scheduleExceptions.date, item.date)
-                    ));
+        for (const item of availabilityData) {
+            // Remove existing for same day
+            await db.delete(scheduleExceptions)
+                .where(and(
+                    eq(scheduleExceptions.memberId, memberId),
+                    eq(scheduleExceptions.date, item.date)
+                ));
 
-                await tx.insert(scheduleExceptions).values({
-                    memberId: memberId,
-                    date: item.date,
-                    type: item.type,
-                    startTime: item.startTime || null,
-                    endTime: item.endTime || null,
-                    reason: 'Cadastro direto pelo administrador',
-                });
-            }
-        });
+            await db.insert(scheduleExceptions).values({
+                memberId: memberId,
+                date: item.date,
+                type: item.type,
+                startTime: item.startTime || null,
+                endTime: item.endTime || null,
+                reason: 'Cadastro direto pelo administrador',
+            });
+        }
 
         revalidatePath('/escalas');
         return { success: true };
