@@ -12,7 +12,8 @@ import {
     Eye,
     Edit2,
     Trash2,
-    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,11 +46,13 @@ interface MembersSpreadsheetProps {
 
 type FilterField = "status" | "nucleus" | "state" | "city" | "militancy";
 
+const PAGE_SIZE = 20;
+
 const statusConfig: Record<string, { label: string; color: string }> = {
-    active: { label: "Ativo", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-    interested: { label: "Interessado", color: "bg-blue-100 text-blue-700 border-blue-200" },
-    in_formation: { label: "Em formação", color: "bg-amber-100 text-amber-700 border-amber-200" },
-    inactive: { label: "Inativo", color: "bg-zinc-100 text-zinc-600 border-zinc-200" },
+    active: { label: "Ativo", color: "bg-emerald-500 text-white border-emerald-600" },
+    interested: { label: "Interessado", color: "bg-blue-500 text-white border-blue-600" },
+    in_formation: { label: "Em formação", color: "bg-amber-500 text-white border-amber-600" },
+    inactive: { label: "Inativo", color: "bg-zinc-500 text-white border-zinc-600" },
 };
 
 const statusOptions = [
@@ -132,6 +135,7 @@ function ActionMenu({ memberId, router }: { memberId: string; router: ReturnType
 export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadsheetProps) {
     const router = useRouter();
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
     const [filters, setFilters] = useState<Record<FilterField, string>>({
         status: "all",
         nucleus: "all",
@@ -174,6 +178,16 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
         });
     }, [members, search, filters]);
 
+    const totalPages = Math.ceil(filteredMembers.length / PAGE_SIZE);
+    const paginatedMembers = useMemo(() => {
+        const start = (page - 1) * PAGE_SIZE;
+        return filteredMembers.slice(start, start + PAGE_SIZE);
+    }, [filteredMembers, page]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [search, filters]);
+
     const activeFiltersCount = Object.values(filters).filter((v) => v !== "all").length;
 
     const clearFilters = () => {
@@ -209,10 +223,26 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
         ...uniqueNuclei.map((n) => ({ value: n, label: n })),
     ];
 
+    const getPageNumbers = () => {
+        const pages: (number | "...")[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (page > 3) pages.push("...");
+            for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+                pages.push(i);
+            }
+            if (page < totalPages - 2) pages.push("...");
+            pages.push(totalPages);
+        }
+        return pages;
+    };
+
     return (
         <div className="flex flex-col h-full bg-white">
             {/* Toolbar */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-200 bg-zinc-50/50">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-200 bg-zinc-900">
                 {/* Search */}
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
@@ -221,12 +251,12 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                         placeholder="Buscar por nome, CPF, email..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9 h-9 bg-white border-zinc-200 focus:border-zinc-400 rounded-none"
+                        className="pl-9 h-9 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400 focus:border-zinc-500 rounded-none"
                     />
                     {search && (
                         <button
                             onClick={() => setSearch("")}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
                         >
                             <X className="h-4 w-4" />
                         </button>
@@ -272,7 +302,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                             variant="ghost"
                             size="sm"
                             onClick={clearFilters}
-                            className="h-9 text-zinc-600 hover:text-zinc-900"
+                            className="h-9 text-zinc-400 hover:text-white"
                         >
                             <X className="h-4 w-4 mr-1" />
                             Limpar ({activeFiltersCount})
@@ -283,7 +313,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                         variant="outline"
                         size="sm"
                         onClick={onExportClick}
-                        className="h-9 border-zinc-200 rounded-none gap-1.5"
+                        className="h-9 border-zinc-700 text-white bg-zinc-800 hover:bg-zinc-700 rounded-none gap-1.5"
                     >
                         <Download className="h-4 w-4" />
                         Exportar
@@ -300,7 +330,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
             {/* Spreadsheet Table */}
             <div className="flex-1 overflow-auto">
                 <table className="w-full border-collapse text-sm">
-                    <thead className="sticky top-0 z-10 bg-zinc-100">
+                    <thead className="sticky top-0 z-10 bg-zinc-50">
                         <tr>
                             <th className="w-12 px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-200">
                                 #
@@ -334,7 +364,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
-                        {filteredMembers.length === 0 ? (
+                        {paginatedMembers.length === 0 ? (
                             <tr>
                                 <td colSpan={10} className="px-3 py-16 text-center">
                                     <div className="flex flex-col items-center gap-2 text-zinc-400">
@@ -349,14 +379,14 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                                 </td>
                             </tr>
                         ) : (
-                            filteredMembers.map((member, index) => (
+                            paginatedMembers.map((member, index) => (
                                 <tr
                                     key={member.id}
                                     className="hover:bg-zinc-50 cursor-pointer transition-colors group"
                                     onClick={() => router.push(`/members/${member.id}`)}
                                 >
                                     <td className="px-3 py-2 text-xs text-zinc-400 font-mono">
-                                        {String(index + 1).padStart(3, "0")}
+                                        {String((page - 1) * PAGE_SIZE + index + 1).padStart(3, "0")}
                                     </td>
                                     <td className="px-3 py-2">
                                         <div className="font-medium text-zinc-900 hover:text-primary">
@@ -419,14 +449,54 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                 </table>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between px-4 py-2 border-t border-zinc-200 bg-zinc-50 text-xs text-zinc-500">
-                <span>
-                    Mostrando {filteredMembers.length} de {members.length} registros
-                </span>
-                <span>
-                    Página 1 de 1
-                </span>
+            {/* Pagination Footer */}
+            <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-200 bg-white">
+                <div className="flex items-center gap-4">
+                    <span className="text-xs text-zinc-500">
+                        Mostrando {((page - 1) * PAGE_SIZE) + 1} a {Math.min(page * PAGE_SIZE, filteredMembers.length)} de {filteredMembers.length}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 border-zinc-200 rounded-none"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+
+                    {getPageNumbers().map((pageNum, idx) =>
+                        pageNum === "..." ? (
+                            <span key={`ellipsis-${idx}`} className="px-2 text-zinc-400">...</span>
+                        ) : (
+                            <Button
+                                key={pageNum}
+                                variant={page === pageNum ? "default" : "outline"}
+                                size="sm"
+                                className={cn(
+                                    "h-8 w-8 p-0 rounded-none",
+                                    page === pageNum && "bg-zinc-900 text-white hover:bg-zinc-800 border-zinc-900"
+                                )}
+                                onClick={() => setPage(pageNum)}
+                            >
+                                {pageNum}
+                            </Button>
+                        )
+                    )}
+
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 border-zinc-200 rounded-none"
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
         </div>
     );
