@@ -291,6 +291,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                         value={filters.state}
                         onChange={(v) => setFilters((f) => ({ ...f, state: v as string, city: "all" }))}
                         dark
+                        searchable
                     />
 
                     {uniqueCities.length > 0 && (
@@ -300,6 +301,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                             onChange={(v) => setFilters((f) => ({ ...f, city: v as string }))}
                             disabled={filters.state === "all"}
                             dark
+                            searchable
                         />
                     )}
 
@@ -309,6 +311,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                             value={filters.nucleus}
                             onChange={(v) => setFilters((f) => ({ ...f, nucleus: v as string }))}
                             dark
+                            searchable
                         />
                     )}
                 </div>
