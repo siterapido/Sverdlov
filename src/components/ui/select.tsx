@@ -46,6 +46,7 @@ export interface SelectProps extends VariantProps<typeof selectVariants> {
     className?: string;
     name?: string;
     id?: string;
+    dark?: boolean;
 }
 
 const Select = React.forwardRef<HTMLDivElement, SelectProps>(
@@ -63,6 +64,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         selectSize,
         name,
         id,
+        dark = false,
     }, ref) => {
         const [isOpen, setIsOpen] = React.useState(false);
         const [searchTerm, setSearchTerm] = React.useState("");
@@ -163,7 +165,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
         const displayValue = getDisplayValue();
 
-        const renderOption = (option: SelectOption) => (
+        const renderOption = (option: SelectOption, darkTheme = false) => (
             <button
                 key={option.value}
                 type="button"
@@ -171,8 +173,10 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                 onClick={() => handleSelect(option.value)}
                 className={cn(
                     "w-full px-3 py-2 text-left text-sm flex items-center justify-between transition-colors",
-                    "hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                    isSelected(option.value) && "bg-primary/10 text-primary",
+                    darkTheme
+                        ? "text-white hover:bg-zinc-700"
+                        : "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+                    isSelected(option.value) && (darkTheme ? "bg-primary/20 text-white" : "bg-primary/10 text-primary"),
                     option.disabled && "opacity-50 cursor-not-allowed"
                 )}
             >
@@ -205,12 +209,14 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                         className={cn(
                             selectVariants({ variant: computedVariant, selectSize }),
                             "flex items-center justify-between gap-2",
+                            dark && "bg-zinc-800 border-zinc-700 text-white",
                             className
                         )}
                     >
                         <span className={cn(
                             "truncate",
-                            !displayValue && "text-zinc-400"
+                            !displayValue && "text-zinc-400",
+                            dark && !displayValue && "text-zinc-500"
                         )}>
                             {displayValue || placeholder}
                         </span>
@@ -222,7 +228,10 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                                     tabIndex={0}
                                     onClick={handleClear}
                                     onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
-                                    className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors p-0.5"
+                                    className={cn(
+                                        "transition-colors p-0.5",
+                                        dark ? "text-zinc-400 hover:text-white" : "text-zinc-400 hover:text-zinc-600"
+                                    )}
                                 >
                                     <X className="h-4 w-4" />
                                 </span>
@@ -236,10 +245,16 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
                     {/* Dropdown */}
                     {isOpen && (
-                        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] max-h-60 overflow-auto">
+                        <div className={cn(
+                            "absolute z-50 mt-1 w-full border shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] max-h-60 overflow-auto",
+                            dark ? "bg-zinc-800 border-zinc-700" : "bg-white border-zinc-200"
+                        )}>
                             {/* Search input */}
                             {searchable && (
-                                <div className="p-2 border-b border-zinc-200 dark:border-zinc-700 sticky top-0 bg-white dark:bg-zinc-900">
+                                <div className={cn(
+                                    "p-2 border-b sticky top-0",
+                                    dark ? "border-zinc-700 bg-zinc-800" : "border-zinc-200 bg-white"
+                                )}>
                                     <div className="relative">
                                         <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                         <input
@@ -248,7 +263,10 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             placeholder="Buscar..."
-                                            className="w-full h-8 pl-8 pr-3 text-sm border border-zinc-200 dark:border-zinc-700 rounded-none bg-transparent focus:outline-none focus:ring-1 focus:ring-primary"
+                                            className={cn(
+                                                "w-full h-8 pl-8 pr-3 text-sm border rounded-none bg-transparent focus:outline-none focus:ring-1 focus:ring-primary",
+                                                dark ? "border-zinc-600 text-white placeholder:text-zinc-500" : "border-zinc-200"
+                                            )}
                                         />
                                     </div>
                                 </div>
@@ -257,21 +275,27 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                             {/* Options list */}
                             <div className="py-1">
                                 {/* Ungrouped options */}
-                                {groupedOptions.ungrouped.map(renderOption)}
+                                {groupedOptions.ungrouped.map((option) => renderOption(option, dark))}
 
                                 {/* Grouped options */}
                                 {Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
                                     <div key={groupName}>
-                                        <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800">
+                                        <div className={cn(
+                                            "px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em]",
+                                            dark ? "text-zinc-400 bg-zinc-700/50" : "text-zinc-500 bg-zinc-50"
+                                        )}>
                                             {groupName}
                                         </div>
-                                        {groupOptions.map(renderOption)}
+                                        {groupOptions.map((option) => renderOption(option, dark))}
                                     </div>
                                 ))}
 
                                 {/* No results */}
                                 {filteredOptions.length === 0 && (
-                                    <div className="px-3 py-6 text-sm text-zinc-500 dark:text-zinc-400 text-center">
+                                    <div className={cn(
+                                        "px-3 py-6 text-sm text-center",
+                                        dark ? "text-zinc-400" : "text-zinc-500"
+                                    )}>
                                         Nenhuma opção encontrada
                                     </div>
                                 )}

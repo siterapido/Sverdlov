@@ -269,12 +269,14 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                         options={statusSelectOptions}
                         value={filters.status}
                         onChange={(v) => setFilters((f) => ({ ...f, status: v as string }))}
+                        dark
                     />
 
                     <Select
                         options={stateSelectOptions}
                         value={filters.state}
                         onChange={(v) => setFilters((f) => ({ ...f, state: v as string, city: "all" }))}
+                        dark
                     />
 
                     {uniqueCities.length > 0 && (
@@ -283,6 +285,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                             value={filters.city}
                             onChange={(v) => setFilters((f) => ({ ...f, city: v as string }))}
                             disabled={filters.state === "all"}
+                            dark
                         />
                     )}
 
@@ -291,6 +294,7 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
                             options={nucleusSelectOptions}
                             value={filters.nucleus}
                             onChange={(v) => setFilters((f) => ({ ...f, nucleus: v as string }))}
+                            dark
                         />
                     )}
                 </div>
