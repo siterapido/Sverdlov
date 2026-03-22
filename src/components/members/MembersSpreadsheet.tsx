@@ -63,7 +63,21 @@ const statusOptions = [
     { value: "inactive", label: "Inativo" },
 ];
 
-const stateOptions = ["SP", "RJ", "MG", "RS", "PR", "SC", "BA", "PE", "CE", "PA", "MA", "GO", "DF"];
+const stateOptions = [
+    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
+    "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+];
+
+const stateNames: Record<string, string> = {
+    AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia",
+    CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás",
+    MA: "Maranhão", MT: "Mato Grosso", MS: "Mato Grosso do Sul", MG: "Minas Gerais",
+    PA: "Pará", PB: "Paraíba", PR: "Paraná", PE: "Pernambuco", PI: "Piauí",
+    RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RS: "Rio Grande do Sul",
+    RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina", SP: "São Paulo",
+    SE: "Sergipe", TO: "Tocantins"
+};
 
 function ActionMenu({ memberId, router }: { memberId: string; router: ReturnType<typeof useRouter> }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -209,8 +223,8 @@ export function MembersSpreadsheet({ members, onExportClick }: MembersSpreadshee
 
     const statusSelectOptions: SelectOption[] = statusOptions;
     const stateSelectOptions: SelectOption[] = [
-        { value: "all", label: "Todas UFs" },
-        ...stateOptions.map((uf) => ({ value: uf, label: uf })),
+        { value: "all", label: "Todos os estados" },
+        ...stateOptions.map((uf) => ({ value: uf, label: `${stateNames[uf]} (${uf})` })),
     ];
     const citySelectOptions: SelectOption[] = [
         { value: "all", label: "Todas" },
