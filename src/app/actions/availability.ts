@@ -112,6 +112,93 @@ export async function submitAvailability(token: string, availabilityData: any[])
     }
 }
 
+// ==========================================
+// SHIFT AVAILABILITY (weekly pattern)
+// ==========================================
+
+export async function getShiftAvailability(memberId: string) {
+    try {
+        const rows = await db.query.memberAvailability.findMany({
+            where: eq(memberAvailability.memberId, memberId),
+        });
+        return { success: true, data: rows };
+    } catch (error) {
+        console.error("Error getting shift availability:", error);
+        return { success: false, error: "Falha ao buscar disponibilidade", data: [] };
+    }
+}
+
+export async function saveShiftAvailability(memberId: string, shifts: { dayOfWeek: number; shift: string; startTime: string; endTime: string; isAvailable: boolean }[]) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        // Delete all existing weekly availability for this member
+        await db.delete(memberAvailability)
+            .where(eq(memberAvailability.memberId, memberId));
+
+        // Insert new shift availability entries
+        if (shifts.length > 0) {
+            await db.insert(memberAvailability).values(
+                shifts.map(s => ({
+                    memberId,
+                    dayOfWeek: s.dayOfWeek,
+                    shift: s.shift as 'manha' | 'tarde' | 'noite',
+                    startTime: s.startTime,
+                    endTime: s.endTime,
+                    isAvailable: s.isAvailable,
+                }))
+            );
+        }
+
+        revalidatePath(`/members/${memberId}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error saving shift availability:", error);
+        return { success: false, error: "Falha ao salvar disponibilidade" };
+    }
+}
+
+export async function saveShiftAvailabilityPublic(token: string, shifts: { dayOfWeek: number; shift: string; startTime: string; endTime: string; isAvailable: boolean }[]) {
+    try {
+        const request = await db.query.availabilityRequests.findFirst({
+            where: eq(availabilityRequests.token, token),
+        });
+
+        if (!request || request.status !== 'pending') {
+            return { success: false, error: "Solicitação inválida" };
+        }
+
+        // Delete existing weekly availability
+        await db.delete(memberAvailability)
+            .where(eq(memberAvailability.memberId, request.memberId));
+
+        // Insert new
+        if (shifts.length > 0) {
+            await db.insert(memberAvailability).values(
+                shifts.map(s => ({
+                    memberId: request.memberId,
+                    dayOfWeek: s.dayOfWeek,
+                    shift: s.shift as 'manha' | 'tarde' | 'noite',
+                    startTime: s.startTime,
+                    endTime: s.endTime,
+                    isAvailable: s.isAvailable,
+                }))
+            );
+        }
+
+        // Mark request as completed
+        await db.update(availabilityRequests)
+            .set({ status: 'completed', completedAt: new Date() })
+            .where(eq(availabilityRequests.id, request.id));
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error saving public shift availability:", error);
+        return { success: false, error: "Falha ao salvar disponibilidade" };
+    }
+}
+
 export async function submitAvailabilityDirect(memberId: string, availabilityData: any[]) {
     try {
         const user = await getCurrentUser();

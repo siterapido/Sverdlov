@@ -7,24 +7,18 @@ import { revalidatePath } from "next/cache";
 import { auditImport } from "@/lib/audit";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
+import { canManageMember } from "@/lib/auth/rbac";
 import {
     memberImportRowSchema,
     type MemberImportRow,
 } from "@/lib/schemas/member-import";
 import type { ValidatedRow, ImportResults } from "@/components/members/import/types";
 
-async function getCurrentUserId(): Promise<string | undefined> {
-    try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth_token")?.value;
-        if (token) {
-            const user = await verifyToken(token);
-            return user?.userId;
-        }
-    } catch {
-        return undefined;
-    }
-    return undefined;
+async function getCurrentUser() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth_token')?.value;
+    if (!token) return null;
+    return await verifyToken(token);
 }
 
 /**
@@ -169,7 +163,10 @@ export async function validateImportData(
             existingMembers.filter(m => m.email).map(m => [m.email, m])
         );
 
-        // Step 3: Build final validated rows
+        // Step 3: Build final validated rows (DB duplicates + intra-batch duplicates)
+        const seenCpfs = new Map<string, number>();
+        const seenVoterTitles = new Map<string, number>();
+
         const validatedRows: ValidatedRow[] = parsedRows.map(row => {
             if (row.errors) {
                 return {
@@ -180,6 +177,7 @@ export async function validateImportData(
                 };
             }
 
+            // Check DB duplicates
             let existingMember = null;
             let matchedField: 'cpf' | 'voterTitle' | 'email' | undefined;
 
@@ -207,6 +205,40 @@ export async function validateImportData(
                 };
             }
 
+            // Check intra-batch duplicates (CPF and voterTitle with UNIQUE constraints)
+            const cpf = row.data.cpf?.trim();
+            const voterTitle = row.data.voterTitle?.trim();
+
+            if (cpf && seenCpfs.has(cpf)) {
+                return {
+                    index: row.index,
+                    data: row.data,
+                    status: 'duplicate' as const,
+                    duplicateInfo: {
+                        existingId: '',
+                        existingName: `Linha ${seenCpfs.get(cpf)! + 1} da planilha`,
+                        matchedField: 'cpf',
+                    },
+                };
+            }
+
+            if (voterTitle && seenVoterTitles.has(voterTitle)) {
+                return {
+                    index: row.index,
+                    data: row.data,
+                    status: 'duplicate' as const,
+                    duplicateInfo: {
+                        existingId: '',
+                        existingName: `Linha ${seenVoterTitles.get(voterTitle)! + 1} da planilha`,
+                        matchedField: 'voterTitle',
+                    },
+                };
+            }
+
+            // Track this row's unique fields for subsequent rows
+            if (cpf) seenCpfs.set(cpf, row.index);
+            if (voterTitle) seenVoterTitles.set(voterTitle, row.index);
+
             return {
                 index: row.index,
                 data: row.data,
@@ -228,21 +260,21 @@ export async function validateImportData(
 function buildMemberData(row: ValidatedRow) {
     return {
         fullName: row.data.fullName,
-        cpf: row.data.cpf || '',
-        voterTitle: row.data.voterTitle,
-        email: row.data.email || '',
-        phone: row.data.phone || '',
+        cpf: row.data.cpf || null,
+        voterTitle: row.data.voterTitle || null,
+        email: row.data.email || null,
+        phone: row.data.phone || null,
         state: row.data.state || '',
         city: row.data.city || '',
-        zone: row.data.zone,
-        neighborhood: row.data.neighborhood || '',
-        dateOfBirth: row.data.dateOfBirth || new Date().toISOString().split('T')[0],
-        gender: row.data.gender,
-        affiliationDate: row.data.affiliationDate,
-        party: row.data.party,
-        situation: row.data.situation,
-        disaffiliationReason: row.data.disaffiliationReason,
-        communicationPending: row.data.communicationPending,
+        zone: row.data.zone || null,
+        neighborhood: row.data.neighborhood || null,
+        dateOfBirth: row.data.dateOfBirth || null,
+        gender: row.data.gender || null,
+        affiliationDate: row.data.affiliationDate || null,
+        party: row.data.party || null,
+        situation: row.data.situation || null,
+        disaffiliationReason: row.data.disaffiliationReason || null,
+        communicationPending: row.data.communicationPending || null,
         updatedAt: new Date(),
     };
 }
@@ -263,6 +295,9 @@ export async function executeImport(
     error?: string;
 }> {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         const results: ImportResults = {
             imported: 0,
             updated: 0,
@@ -271,7 +306,18 @@ export async function executeImport(
         };
 
         // Separate rows by status
-        const validRows = validatedRows.filter(r => r.status === 'valid');
+        const allValidRows = validatedRows.filter(r => r.status === 'valid');
+
+        // Filter by jurisdiction
+        const validRows = allValidRows.filter(row =>
+            canManageMember(user, {
+                state: row.data.state || '',
+                city: row.data.city || '',
+                zone: row.data.zone || null,
+                nucleusId: null,
+            })
+        );
+        results.skipped += (allValidRows.length - validRows.length);
         const duplicateRows = validatedRows.filter(r => r.status === 'duplicate');
         const invalidRows = validatedRows.filter(r => r.status === 'invalid');
 
@@ -293,6 +339,7 @@ export async function executeImport(
             const valuesToInsert = batch.map(row => ({
                 ...buildMemberData(row),
                 status: 'active' as const,
+                militancyLevel: 'supporter' as const,
             }));
 
             try {
@@ -305,6 +352,7 @@ export async function executeImport(
                         await db.insert(members).values({
                             ...buildMemberData(row),
                             status: 'active' as const,
+                            militancyLevel: 'supporter' as const,
                         });
                         results.imported++;
                     } catch (err) {
@@ -347,8 +395,7 @@ export async function executeImport(
         }
 
         // Audit log
-        const userId = await getCurrentUserId();
-        await auditImport(userId, 'members', {
+        await auditImport(user.userId, 'members', {
             imported: results.imported,
             updated: results.updated,
             skipped: results.skipped,

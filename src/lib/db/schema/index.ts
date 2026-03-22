@@ -9,3 +9,5 @@ export * from './plans';
 export * from './projects';
 export * from './audit';
 export * from './notifications';
+export * from './cities';
+

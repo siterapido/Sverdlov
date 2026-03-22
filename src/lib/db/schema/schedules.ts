@@ -132,6 +132,9 @@ export const memberAvailability = pgTable('member_availability', {
     // Dia da semana (0 = Domingo, 6 = Sábado)
     dayOfWeek: integer('day_of_week').notNull(),
 
+    // Turno (se preenchido, startTime/endTime derivados das constantes)
+    shift: text('shift', { enum: ['manha', 'tarde', 'noite'] }),
+
     // Horário
     startTime: time('start_time').notNull(),
     endTime: time('end_time').notNull(),

@@ -1,9 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { projects, projectTasks, projectMembers, projectNuclei } from "@/lib/db/schema/projects";
-import { et_projetos } from "@/lib/db/schema/escola";
-import { eq, desc, and, not } from "drizzle-orm";
+import { projects, projectTasks, projectMembers, projectNuclei, taskAssignees } from "@/lib/db/schema/projects";
+import { eq, desc, and, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
@@ -33,8 +32,15 @@ export async function getProjects() {
                         member: true
                     }
                 },
-                tasks: true,
-                workSchools: true
+                tasks: {
+                    with: {
+                        assignees: {
+                            with: {
+                                member: true
+                            }
+                        }
+                    }
+                },
             },
             orderBy: [desc(projects.createdAt)]
         });
@@ -66,12 +72,16 @@ export async function getProjectById(id: string) {
                         assignedBy: true
                     }
                 },
-                tasks: true,
-                workSchools: {
+                tasks: {
                     with: {
-                        tarefas: true
-                    }
-                }
+                        assignees: {
+                            with: {
+                                member: true
+                            }
+                        }
+                    },
+                    orderBy: [asc(projectTasks.sortOrder)]
+                },
             }
         });
 
@@ -129,76 +139,63 @@ export async function updateProject(id: string, data: any) {
     }
 }
 
-export async function createWorkSchool(projectId: string, name: string) {
+// ==========================================
+// PROJECT TASK ACTIONS
+// ==========================================
+
+export async function createProjectTask(data: {
+    projectId: string;
+    title: string;
+    description?: string;
+    status?: string;
+    priority?: string;
+    category?: string;
+    turno?: string;
+    dayOfWeek?: number;
+    frequency?: string;
+    location?: string;
+    color?: string;
+    tags?: string[];
+    startTime?: string;
+    endTime?: string;
+    dueDate?: string;
+    assigneeIds?: string[];
+}) {
     try {
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        await db.insert(et_projetos).values({
-            nome: name,
-            projectId: projectId,
-            cor: '#3b82f6'
-        });
-
-        revalidatePath(`/projects/${projectId}`);
-        return { success: true };
-    } catch (error) {
-        console.error("Error creating work school:", error);
-        return { success: false, error: "Falha ao criar escola de trabalho" };
-    }
-}
-
-export async function updateWorkSchool(id: string, name: string) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) return { success: false, error: "Não autorizado" };
-
-        const [school] = await db.update(et_projetos)
-            .set({ nome: name, updatedAt: new Date() })
-            .where(eq(et_projetos.id, id))
-            .returning();
-
-        revalidatePath(`/projects/${school.projectId}`);
-        return { success: true };
-    } catch (error) {
-        console.error("Error updating work school:", error);
-        return { success: false, error: "Falha ao atualizar escola" };
-    }
-}
-
-export async function deleteWorkSchool(id: string) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) return { success: false, error: "Não autorizado" };
-
-        const [school] = await db.delete(et_projetos)
-            .where(eq(et_projetos.id, id))
-            .returning();
-
-        if (school) revalidatePath(`/projects/${school.projectId}`);
-        return { success: true };
-    } catch (error) {
-        console.error("Error deleting work school:", error);
-        return { success: false, error: "Falha ao excluir escola" };
-    }
-}
-
-export async function createProjectTask(data: any) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) return { success: false, error: "Não autorizado" };
-
-        await db.insert(projectTasks).values({
+        const [task] = await db.insert(projectTasks).values({
             projectId: data.projectId,
             title: data.title,
             description: data.description,
-            status: data.status,
-            priority: data.priority,
+            status: data.status as any,
+            priority: data.priority as any,
+            category: data.category as any,
+            turno: data.turno as any,
+            dayOfWeek: data.dayOfWeek,
+            frequency: data.frequency as any,
+            location: data.location,
+            color: data.color,
+            tags: data.tags || [],
+            startTime: data.startTime,
+            endTime: data.endTime,
             dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        });
+        }).returning();
+
+        // Create assignees if provided
+        if (data.assigneeIds && data.assigneeIds.length > 0) {
+            const assigneeValues = data.assigneeIds.map(memberId => ({
+                taskId: task.id,
+                memberId,
+                assignedById: user.userId,
+            }));
+            await db.insert(taskAssignees).values(assigneeValues);
+        }
 
         revalidatePath(`/projects/${data.projectId}`);
-        return { success: true };
+        revalidatePath('/tarefas');
+        return { success: true, data: task };
     } catch (error) {
         console.error("Error creating project task:", error);
         return { success: false, error: "Falha ao criar tarefa" };
@@ -210,20 +207,92 @@ export async function updateProjectTask(id: string, data: any) {
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
+        const updateData: any = {
+            updatedAt: new Date()
+        };
+
+        // Only set fields that are provided
+        if (data.title !== undefined) updateData.title = data.title;
+        if (data.description !== undefined) updateData.description = data.description;
+        if (data.status !== undefined) updateData.status = data.status;
+        if (data.priority !== undefined) updateData.priority = data.priority;
+        if (data.category !== undefined) updateData.category = data.category;
+        if (data.turno !== undefined) updateData.turno = data.turno;
+        if (data.dayOfWeek !== undefined) updateData.dayOfWeek = data.dayOfWeek;
+        if (data.frequency !== undefined) updateData.frequency = data.frequency;
+        if (data.location !== undefined) updateData.location = data.location;
+        if (data.color !== undefined) updateData.color = data.color;
+        if (data.tags !== undefined) updateData.tags = data.tags;
+        if (data.startTime !== undefined) updateData.startTime = data.startTime;
+        if (data.endTime !== undefined) updateData.endTime = data.endTime;
+        if (data.sortOrder !== undefined) updateData.sortOrder = data.sortOrder;
+        if (data.dueDate !== undefined) updateData.dueDate = data.dueDate ? new Date(data.dueDate) : null;
+
         const [task] = await db.update(projectTasks)
-            .set({
-                ...data,
-                dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-                updatedAt: new Date()
-            })
+            .set(updateData)
             .where(eq(projectTasks.id, id))
             .returning();
 
-        if (task) revalidatePath(`/projects/${task.projectId}`);
-        return { success: true };
+        // Sync assignees if provided
+        if (data.assigneeIds !== undefined) {
+            // Get current assignees
+            const currentAssignees = await db.query.taskAssignees.findMany({
+                where: eq(taskAssignees.taskId, id)
+            });
+            const currentIds = new Set(currentAssignees.map(a => a.memberId));
+            const newIds = new Set(data.assigneeIds as string[]);
+
+            // Remove those no longer assigned
+            const toRemove = currentAssignees.filter(a => !newIds.has(a.memberId));
+            for (const a of toRemove) {
+                await db.delete(taskAssignees).where(eq(taskAssignees.id, a.id));
+            }
+
+            // Add new ones
+            const toAdd = (data.assigneeIds as string[]).filter(id => !currentIds.has(id));
+            if (toAdd.length > 0) {
+                await db.insert(taskAssignees).values(
+                    toAdd.map(memberId => ({
+                        taskId: id,
+                        memberId,
+                        assignedById: user.userId,
+                    }))
+                );
+            }
+        }
+
+        if (task) {
+            revalidatePath(`/projects/${task.projectId}`);
+            revalidatePath('/tarefas');
+        }
+        return { success: true, data: task };
     } catch (error) {
         console.error("Error updating project task:", error);
         return { success: false, error: "Falha ao atualizar tarefa" };
+    }
+}
+
+export async function updateTaskStatus(taskId: string, status: string, sortOrder?: number) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const updateData: any = { status, updatedAt: new Date() };
+        if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+
+        const [task] = await db.update(projectTasks)
+            .set(updateData)
+            .where(eq(projectTasks.id, taskId))
+            .returning();
+
+        if (task) {
+            revalidatePath(`/projects/${task.projectId}`);
+            revalidatePath('/tarefas');
+        }
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating task status:", error);
+        return { success: false, error: "Falha ao atualizar status" };
     }
 }
 
@@ -236,11 +305,62 @@ export async function deleteProjectTask(id: string) {
             .where(eq(projectTasks.id, id))
             .returning();
 
-        if (task) revalidatePath(`/projects/${task.projectId}`);
+        if (task) {
+            revalidatePath(`/projects/${task.projectId}`);
+            revalidatePath('/tarefas');
+        }
         return { success: true };
     } catch (error) {
         console.error("Error deleting project task:", error);
         return { success: false, error: "Falha ao excluir tarefa" };
+    }
+}
+
+export async function getProjectTasks(projectId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const tasks = await db.query.projectTasks.findMany({
+            where: eq(projectTasks.projectId, projectId),
+            with: {
+                assignees: {
+                    with: {
+                        member: true
+                    }
+                }
+            },
+            orderBy: [asc(projectTasks.sortOrder)]
+        });
+
+        return { success: true, data: tasks };
+    } catch (error) {
+        console.error("Error fetching project tasks:", error);
+        return { success: false, error: "Falha ao buscar tarefas" };
+    }
+}
+
+export async function getAllTasks() {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const tasks = await db.query.projectTasks.findMany({
+            with: {
+                project: true,
+                assignees: {
+                    with: {
+                        member: true
+                    }
+                }
+            },
+            orderBy: [asc(projectTasks.sortOrder)]
+        });
+
+        return { success: true, data: tasks };
+    } catch (error) {
+        console.error("Error fetching all tasks:", error);
+        return { success: false, error: "Falha ao buscar tarefas" };
     }
 }
 
@@ -258,7 +378,6 @@ export async function assignMemberToProject(
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        // Check for duplicate assignment
         const existing = await db.query.projectMembers.findFirst({
             where: and(
                 eq(projectMembers.projectId, projectId),
@@ -361,13 +480,10 @@ export async function bulkAssignMembersToProject(
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        // Get existing assignments to avoid duplicates
         const existing = await db.query.projectMembers.findMany({
             where: eq(projectMembers.projectId, projectId)
         });
         const existingMemberIds = new Set(existing.map(a => a.memberId));
-
-        // Filter out already assigned members
         const newMemberIds = memberIds.filter(id => !existingMemberIds.has(id));
 
         if (newMemberIds.length === 0) {
@@ -408,7 +524,6 @@ export async function linkProjectToNucleus(
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        // Check for duplicate link
         const existing = await db.query.projectNuclei.findFirst({
             where: and(
                 eq(projectNuclei.projectId, projectId),
@@ -420,7 +535,6 @@ export async function linkProjectToNucleus(
             return { success: false, error: "Núcleo já está vinculado a este projeto" };
         }
 
-        // If setting as primary, unset other primary links first
         if (isPrimary) {
             await db.update(projectNuclei)
                 .set({ isPrimary: false })
@@ -433,7 +547,6 @@ export async function linkProjectToNucleus(
             isPrimary
         }).returning();
 
-        // Also update projects.nucleusId for backward compatibility
         await db.update(projects)
             .set({ nucleusId: nucleusId, updatedAt: new Date() })
             .where(eq(projects.id, projectId));
@@ -468,21 +581,17 @@ export async function setPrimaryNucleus(projectId: string, nucleusId: string) {
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        // Unset all previous primary links
         await db.update(projectNuclei)
             .set({ isPrimary: false })
             .where(eq(projectNuclei.projectId, projectId));
 
-        // Set the new primary
-        const [link] = await db.update(projectNuclei)
+        await db.update(projectNuclei)
             .set({ isPrimary: true })
             .where(and(
                 eq(projectNuclei.projectId, projectId),
                 eq(projectNuclei.nucleusId, nucleusId)
-            ))
-            .returning();
+            ));
 
-        // Update projects.nucleusId for backward compatibility
         await db.update(projects)
             .set({ nucleusId: nucleusId, updatedAt: new Date() })
             .where(eq(projects.id, projectId));
@@ -524,36 +633,30 @@ export async function bulkLinkNucleiToProject(
         const user = await getCurrentUser();
         if (!user) return { success: false, error: "Não autorizado" };
 
-        // Get existing links
         const existing = await db.query.projectNuclei.findMany({
             where: eq(projectNuclei.projectId, projectId)
         });
         const existingNucleusIds = new Set(existing.map(l => l.nucleusId));
-
-        // Filter new nucleus IDs
         const newNucleusIds = nucleusIds.filter(id => !existingNucleusIds.has(id));
 
         if (newNucleusIds.length === 0) {
             return { success: false, error: "Todos os núcleos já estão vinculados" };
         }
 
-        // Unset existing primary if needed
         if (primaryNucleusId) {
             await db.update(projectNuclei)
                 .set({ isPrimary: false })
                 .where(eq(projectNuclei.projectId, projectId));
         }
 
-        // Insert new links
-        const values = newNucleusIds.map((nucleusId, index) => ({
+        const values = newNucleusIds.map((nucleusId) => ({
             projectId,
             nucleusId,
-            isPrimary: primaryNucleusId ? nucleusId === primaryNucleusId : index === 0
+            isPrimary: primaryNucleusId ? nucleusId === primaryNucleusId : false
         }));
 
         await db.insert(projectNuclei).values(values);
 
-        // Update primary nucleus in projects table
         if (primaryNucleusId) {
             await db.update(projects)
                 .set({ nucleusId: primaryNucleusId, updatedAt: new Date() })

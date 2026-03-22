@@ -68,7 +68,8 @@ export function ImportStepUpload({ state, onFileProcessed }: ImportStepUploadPro
                 }
 
                 // Get rows as objects
-                const rows = XLSX.utils.sheet_to_json(ws) as Record<string, unknown>[];
+                // Use raw: false to prevent Date object creation (keeps as strings/numbers)
+                const rows = XLSX.utils.sheet_to_json(ws, { raw: false }) as Record<string, unknown>[];
 
                 // Validate row count
                 if (rows.length > IMPORT_LIMITS.MAX_ROWS) {
@@ -174,31 +175,31 @@ export function ImportStepUpload({ state, onFileProcessed }: ImportStepUploadPro
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                className={`border-2 border-dashed rounded-none p-12 flex flex-col items-center gap-4 hover:bg-bg-hover hover:border-primary-500/50 cursor-pointer transition-all group relative overflow-hidden ${
+                className={`border-2 border-dashed p-12 flex flex-col items-center gap-4 hover:bg-primary/5 hover:border-primary cursor-pointer transition-all group relative overflow-hidden ${
                     isDragging
-                        ? 'border-primary-500 bg-primary-500/5'
+                        ? 'border-primary bg-primary/5'
                         : error
-                          ? 'border-danger-500/50'
-                          : 'border-border-subtle'
+                          ? 'border-primary'
+                          : 'border-zinc-900'
                 }`}
             >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div className={`p-5 rounded-none transition-all shadow-sm ${
+                <div className={`p-5 transition-all border-2 ${
                     isDragging
-                        ? 'bg-primary-500/10 scale-110'
-                        : 'bg-bg-hover group-hover:bg-primary-500/10 group-hover:scale-110'
+                        ? 'bg-primary/10 scale-110 border-primary'
+                        : 'bg-white border-zinc-900 group-hover:bg-primary/10 group-hover:scale-110 group-hover:border-primary'
                 }`}>
                     <Upload className={`h-8 w-8 ${
-                        isDragging ? 'text-primary-500' : 'text-fg-secondary group-hover:text-primary-500'
+                        isDragging ? 'text-primary' : 'text-zinc-900 group-hover:text-primary'
                     }`} />
                 </div>
 
                 <div className="text-center relative z-10">
-                    <p className="font-semibold text-fg-primary text-lg">
+                    <p className="font-black text-zinc-900 text-lg uppercase tracking-wide">
                         {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste sua planilha aqui'}
                     </p>
-                    <p className="text-sm text-fg-tertiary mt-2">
+                    <p className="text-sm text-zinc-600 mt-2 font-medium">
                         Suporta .xlsx, .csv ou .xls (máx. {IMPORT_LIMITS.MAX_FILE_SIZE_MB}MB, {IMPORT_LIMITS.MAX_ROWS.toLocaleString()} linhas)
                     </p>
                 </div>
@@ -223,20 +224,20 @@ export function ImportStepUpload({ state, onFileProcessed }: ImportStepUploadPro
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-3 p-4 bg-danger-500/10 border border-danger-500/20 rounded-none"
+                    className="flex items-center gap-3 p-4 bg-primary/5 border-2 border-primary"
                 >
-                    <AlertCircle className="h-5 w-5 text-danger-500 shrink-0" />
-                    <p className="text-sm text-danger-600">{error}</p>
+                    <AlertCircle className="h-5 w-5 text-primary shrink-0" />
+                    <p className="text-sm text-primary font-semibold">{error}</p>
                 </motion.div>
             )}
 
             {/* Template Download */}
-            <div className="flex items-center justify-between p-4 bg-bg-tertiary/50 border border-border-subtle rounded-none">
+            <div className="flex items-center justify-between p-4 bg-white border-2 border-zinc-900">
                 <div className="flex items-center gap-3">
-                    <FileSpreadsheet className="h-5 w-5 text-fg-secondary" />
+                    <FileSpreadsheet className="h-5 w-5 text-primary" />
                     <div>
-                        <p className="text-sm font-semibold text-fg-primary">Modelo de Planilha</p>
-                        <p className="text-xs text-fg-tertiary">Baixe um modelo com as colunas corretas</p>
+                        <p className="text-sm font-black text-zinc-900 uppercase tracking-wide">Modelo de Planilha</p>
+                        <p className="text-xs text-zinc-600 font-medium">Baixe um modelo com as colunas corretas</p>
                     </div>
                 </div>
                 <Button
@@ -246,7 +247,7 @@ export function ImportStepUpload({ state, onFileProcessed }: ImportStepUploadPro
                         e.stopPropagation();
                         downloadTemplate();
                     }}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 border-2 border-zinc-900 rounded-none font-bold uppercase tracking-wider"
                 >
                     <Download className="h-4 w-4" />
                     Baixar Modelo

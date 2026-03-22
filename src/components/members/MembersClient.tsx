@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MembersTable } from "./MembersTable";
-import { ImportModal } from "./ImportModal";
+import { MembersSpreadsheet } from "./MembersSpreadsheet";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from "@/components/ui/modal";
 import { MemberForm } from "./member-form";
 import { PageTransition } from "@/components/ui/page-transition";
@@ -17,14 +16,16 @@ import { cn } from "@/lib/utils";
 interface Member {
     id: string;
     fullName: string;
-    cpf: string;
+    cpf: string | null;
     voterTitle: string | null;
-    state: string;
-    city: string;
+    state: string | null;
+    city: string | null;
     zone: string | null;
     status: string;
     nucleusName: string | null;
     createdAt: Date;
+    email?: string | null;
+    phone?: string | null;
 }
 
 interface MembersClientProps {
@@ -36,7 +37,6 @@ export function MembersClient({ initialMembers, initialRequests }: MembersClient
     const router = useRouter();
     const { addToast } = useToast();
     const [activeTab, setActiveTab] = useState<'members' | 'requests'>('members');
-    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isNewMemberModalOpen, setIsNewMemberModalOpen] = useState(false);
 
     // Refresh data after successful operations
@@ -50,6 +50,10 @@ export function MembersClient({ initialMembers, initialRequests }: MembersClient
             title: 'Em Breve',
             description: 'Funcionalidade de exportação será implementada em breve.',
         });
+    };
+
+    const handleImport = () => {
+        router.push('/importacao');
     };
 
     return (
@@ -83,7 +87,7 @@ export function MembersClient({ initialMembers, initialRequests }: MembersClient
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => setIsImportModalOpen(true)}
+                                    onClick={handleImport}
                                     className="hidden sm:flex items-center gap-2 border-2 border-zinc-900 rounded-none font-black uppercase tracking-widest text-[10px]"
                                 >
                                     <FileUp className="h-4 w-4" />
@@ -138,20 +142,13 @@ export function MembersClient({ initialMembers, initialRequests }: MembersClient
                 </div>
 
                 {activeTab === 'members' ? (
-                    <MembersTable
-                        initialMembers={initialMembers}
+                    <MembersSpreadsheet
+                        members={initialMembers}
                         onExportClick={handleExport}
-                        onNewClick={() => setIsNewMemberModalOpen(true)}
                     />
                 ) : (
                     <RequestsClient initialRequests={initialRequests} />
                 )}
-
-                <ImportModal
-                    isOpen={isImportModalOpen}
-                    onClose={() => setIsImportModalOpen(false)}
-                    onSuccess={handleSuccess}
-                />
 
                 <Modal open={isNewMemberModalOpen} onOpenChange={setIsNewMemberModalOpen}>
                     <ModalContent size="xl">

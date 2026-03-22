@@ -325,7 +325,7 @@ export async function getAssignmentsByMember(
         return filtered.map((a) => ({
             ...a,
             memberName: a.member?.fullName || 'Membro',
-            memberPhone: a.member?.phone,
+            memberPhone: a.member?.phone ?? undefined,
             slotName: a.slot?.name || '',
             slotDate: a.slot?.date || '',
             slotTime: `${a.slot?.startTime} - ${a.slot?.endTime}`,
@@ -360,7 +360,7 @@ export async function getAssignmentsBySlot(
         return result.map((a) => ({
             ...a,
             memberName: a.member?.fullName || 'Membro',
-            memberPhone: a.member?.phone,
+            memberPhone: a.member?.phone ?? undefined,
             slotName: a.slot?.name || '',
             slotDate: a.slot?.date || '',
             slotTime: `${a.slot?.startTime} - ${a.slot?.endTime}`,

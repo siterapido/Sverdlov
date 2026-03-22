@@ -39,21 +39,21 @@ export function ImportStepPreview({
         switch (status) {
             case 'valid':
                 return (
-                    <Badge variant="green" className="flex items-center gap-1">
+                    <Badge className="flex items-center gap-1 bg-primary/10 text-primary border-primary border font-black uppercase tracking-wider">
                         <CheckCircle2 className="h-3 w-3" />
                         Válido
                     </Badge>
                 );
             case 'invalid':
                 return (
-                    <Badge variant="red" className="flex items-center gap-1">
+                    <Badge className="flex items-center gap-1 bg-primary/10 text-primary border-primary border font-black uppercase tracking-wider">
                         <AlertCircle className="h-3 w-3" />
                         Erro
                     </Badge>
                 );
             case 'duplicate':
                 return (
-                    <Badge variant="yellow" className="flex items-center gap-1">
+                    <Badge className="flex items-center gap-1 bg-zinc-100 text-zinc-900 border-zinc-900 border font-black uppercase tracking-wider">
                         <AlertTriangle className="h-3 w-3" />
                         Duplicata
                     </Badge>
@@ -77,26 +77,26 @@ export function ImportStepPreview({
             className="space-y-6"
         >
             {/* Stats Cards */}
-            <div className="grid grid-cols-4 gap-3">
-                <div className="p-4 bg-bg-tertiary/50 border border-border-subtle rounded-none text-center">
-                    <Users className="h-5 w-5 mx-auto text-fg-secondary mb-2" />
-                    <p className="text-2xl font-bold text-fg-primary">{stats.total}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-fg-tertiary font-semibold">Total</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                <div className="p-3 sm:p-4 bg-white border-2 border-zinc-900 text-center">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 mx-auto text-zinc-900 mb-2" />
+                    <p className="text-xl sm:text-2xl font-black text-zinc-900">{stats.total}</p>
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-zinc-900 font-black">Total</p>
                 </div>
-                <div className="p-4 bg-success-500/5 border border-success-500/20 rounded-none text-center">
-                    <CheckCircle2 className="h-5 w-5 mx-auto text-success-500 mb-2" />
-                    <p className="text-2xl font-bold text-success-600">{stats.valid}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-success-600 font-semibold">Válidos</p>
+                <div className="p-3 sm:p-4 bg-primary/5 border-2 border-primary text-center">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 mx-auto text-primary mb-2" />
+                    <p className="text-xl sm:text-2xl font-black text-primary">{stats.valid}</p>
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-black">Válidos</p>
                 </div>
-                <div className="p-4 bg-warning-500/5 border border-warning-500/20 rounded-none text-center">
-                    <AlertTriangle className="h-5 w-5 mx-auto text-warning-500 mb-2" />
-                    <p className="text-2xl font-bold text-warning-600">{stats.duplicates}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-warning-600 font-semibold">Duplicatas</p>
+                <div className="p-3 sm:p-4 bg-zinc-100 border-2 border-zinc-900 text-center">
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 mx-auto text-zinc-900 mb-2" />
+                    <p className="text-xl sm:text-2xl font-black text-zinc-900">{stats.duplicates}</p>
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-zinc-900 font-black">Duplicatas</p>
                 </div>
-                <div className="p-4 bg-danger-500/5 border border-danger-500/20 rounded-none text-center">
-                    <AlertCircle className="h-5 w-5 mx-auto text-danger-500 mb-2" />
-                    <p className="text-2xl font-bold text-danger-600">{stats.invalid}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-danger-600 font-semibold">Erros</p>
+                <div className="p-3 sm:p-4 bg-primary/5 border-2 border-primary text-center">
+                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 mx-auto text-primary mb-2" />
+                    <p className="text-xl sm:text-2xl font-black text-primary">{stats.invalid}</p>
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-black">Erros</p>
                 </div>
             </div>
 
@@ -105,21 +105,21 @@ export function ImportStepPreview({
                 <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="p-4 bg-warning-500/5 border border-warning-500/20 rounded-none"
+                    className="p-3 sm:p-4 bg-zinc-100 border-2 border-zinc-900"
                 >
                     <label className="flex items-start gap-3 cursor-pointer">
                         <input
                             type="checkbox"
                             checked={updateDuplicates}
                             onChange={(e) => onUpdateDuplicatesChange(e.target.checked)}
-                            className="mt-1 h-4 w-4 rounded-none border-2 border-warning-500 text-warning-500 focus:ring-warning-500/20"
+                            className="mt-1 h-4 w-4 border-2 border-zinc-900 text-primary focus:ring-primary/20"
                         />
                         <div>
-                            <p className="text-sm font-semibold text-fg-primary flex items-center gap-2">
-                                <RefreshCw className="h-4 w-4 text-warning-500" />
+                            <p className="text-xs sm:text-sm font-black text-zinc-900 flex items-center gap-2 uppercase tracking-wide">
+                                <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                                 Atualizar duplicatas
                             </p>
-                            <p className="text-xs text-fg-tertiary mt-1">
+                            <p className="text-xs text-zinc-600 mt-1 font-medium">
                                 Os dados da planilha substituirão os dados existentes dos {stats.duplicates} cadastros duplicados.
                             </p>
                         </div>
@@ -128,16 +128,16 @@ export function ImportStepPreview({
             )}
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-2 border-b border-border-subtle">
-                <Filter className="h-4 w-4 text-fg-tertiary" />
+            <div className="flex items-center gap-2 border-b-2 border-zinc-900">
+                <Filter className="h-4 w-4 text-zinc-900" />
                 {filterButtons.map(btn => (
                     <button
                         key={btn.type}
                         onClick={() => setFilter(btn.type)}
-                        className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${
+                        className={`px-2 py-1.5 sm:px-3 sm:py-2 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${
                             filter === btn.type
-                                ? 'border-primary-500 text-primary-500'
-                                : 'border-transparent text-fg-tertiary hover:text-fg-secondary'
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-zinc-500 hover:text-zinc-900'
                         }`}
                     >
                         {btn.label} ({btn.count})
@@ -146,35 +146,35 @@ export function ImportStepPreview({
             </div>
 
             {/* Data Table */}
-            <div className="border border-border-subtle rounded-none overflow-hidden">
-                <div className="max-h-[300px] overflow-y-auto">
+            <div className="border-2 border-zinc-900 overflow-hidden">
+                <div className="max-h-[200px] sm:max-h-[300px] overflow-y-auto overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-bg-tertiary/50 sticky top-0">
+                        <thead className="bg-zinc-900 sticky top-0">
                             <tr>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     #
                                 </th>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     Nome
                                 </th>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="hidden sm:table-cell px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     CPF
                                 </th>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     Email
                                 </th>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     Status
                                 </th>
-                                <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                <th className="hidden md:table-cell px-2 py-1.5 sm:px-4 sm:py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                     Detalhes
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border-subtle">
+                        <tbody className="divide-y-2 divide-zinc-900">
                             {filteredRows.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-fg-tertiary">
+                                    <td colSpan={6} className="px-2 py-8 sm:px-4 text-center text-zinc-500 font-semibold">
                                         Nenhum registro encontrado com este filtro
                                     </td>
                                 </tr>
@@ -184,44 +184,44 @@ export function ImportStepPreview({
                                         key={row.index}
                                         className={`${
                                             row.status === 'invalid'
-                                                ? 'bg-danger-500/5'
+                                                ? 'bg-primary/5'
                                                 : row.status === 'duplicate'
-                                                  ? 'bg-warning-500/5'
-                                                  : ''
+                                                  ? 'bg-zinc-100'
+                                                  : 'bg-white'
                                         }`}
                                     >
-                                        <td className="px-4 py-2 text-fg-tertiary">
+                                        <td className="px-2 py-1.5 sm:px-4 sm:py-2 text-zinc-600 font-semibold">
                                             {row.index + 1}
                                         </td>
-                                        <td className="px-4 py-2 font-medium text-fg-primary truncate max-w-[150px]">
+                                        <td className="px-2 py-1.5 sm:px-4 sm:py-2 font-bold text-zinc-900 truncate max-w-[120px] sm:max-w-[150px]">
                                             {row.data.fullName || '-'}
                                         </td>
-                                        <td className="px-4 py-2 text-fg-secondary">
+                                        <td className="hidden sm:table-cell px-2 py-1.5 sm:px-4 sm:py-2 text-zinc-700 font-medium">
                                             {row.data.cpf
                                                 ? `${row.data.cpf.slice(0, 3)}.${row.data.cpf.slice(3, 6)}.${row.data.cpf.slice(6, 9)}-${row.data.cpf.slice(9)}`
                                                 : '-'}
                                         </td>
-                                        <td className="px-4 py-2 text-fg-secondary truncate max-w-[150px]">
+                                        <td className="px-2 py-1.5 sm:px-4 sm:py-2 text-zinc-700 truncate max-w-[120px] sm:max-w-[150px] font-medium">
                                             {row.data.email || '-'}
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-2 py-1.5 sm:px-4 sm:py-2">
                                             <StatusBadge status={row.status} />
                                         </td>
-                                        <td className="px-4 py-2 text-xs text-fg-tertiary max-w-[200px]">
+                                        <td className="hidden md:table-cell px-2 py-1.5 sm:px-4 sm:py-2 text-xs text-zinc-700 max-w-[200px] font-medium">
                                             {row.status === 'invalid' && row.errors && (
-                                                <span className="text-danger-500">
+                                                <span className="text-primary font-semibold">
                                                     {row.errors.map(e => e.message).join(', ')}
                                                 </span>
                                             )}
                                             {row.status === 'duplicate' && row.duplicateInfo && (
-                                                <span className="text-warning-600">
+                                                <span className="text-zinc-900 font-semibold">
                                                     Já existe: {row.duplicateInfo.existingName}
                                                     {' '}({row.duplicateInfo.matchedField === 'cpf' ? 'mesmo CPF' :
                                                         row.duplicateInfo.matchedField === 'email' ? 'mesmo Email' : 'mesmo Título'})
                                                 </span>
                                             )}
                                             {row.status === 'valid' && (
-                                                <span className="text-success-500">Pronto para importar</span>
+                                                <span className="text-primary font-semibold">Pronto para importar</span>
                                             )}
                                         </td>
                                     </tr>
@@ -231,18 +231,18 @@ export function ImportStepPreview({
                     </table>
                 </div>
                 {filteredRows.length > 100 && (
-                    <div className="px-4 py-2 bg-bg-tertiary/50 border-t border-border-subtle text-xs text-fg-tertiary text-center">
+                    <div className="px-2 py-2 sm:px-4 bg-zinc-100 border-t-2 border-zinc-900 text-xs text-zinc-900 text-center font-semibold">
                         Mostrando 100 de {filteredRows.length} registros
                     </div>
                 )}
             </div>
 
             {/* Import Summary */}
-            <div className="p-4 bg-primary-500/5 border border-primary-500/20 rounded-none">
-                <p className="text-sm text-fg-primary font-semibold mb-1">
+            <div className="p-3 sm:p-4 bg-primary/5 border-2 border-primary">
+                <p className="text-sm text-zinc-900 font-black mb-1 uppercase tracking-wide">
                     Resumo da importação
                 </p>
-                <p className="text-xs text-fg-tertiary">
+                <p className="text-xs text-zinc-900 font-semibold">
                     {stats.valid} novos cadastros serão criados
                     {updateDuplicates && stats.duplicates > 0 && (
                         <>, {stats.duplicates} serão atualizados</>

@@ -19,10 +19,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Member {
     id: string;
     fullName: string;
-    cpf: string;
+    cpf: string | null;
     voterTitle: string | null;
-    state: string;
-    city: string;
+    state: string | null;
+    city: string | null;
     zone: string | null;
     status: string;
     nucleusName: string | null;
@@ -83,7 +83,7 @@ export function MembersTable({ initialMembers, onExportClick, onNewClick }: Memb
     const filteredMembers = initialMembers.filter(member => {
         const matchesSearch =
             member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            member.cpf.includes(searchTerm) ||
+            (member.cpf && member.cpf.includes(searchTerm)) ||
             (member.city && member.city.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesStatus = !filterStatus || member.status === filterStatus;
@@ -206,7 +206,7 @@ export function MembersTable({ initialMembers, onExportClick, onNewClick }: Memb
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center gap-2 text-[13px] font-bold text-zinc-900">
                                                     <MapPin className="h-4 w-4 text-primary" />
-                                                    {member.city}, {member.state}
+                                                    {member.city || '-'}, {member.state || '-'}
                                                 </div>
                                                 {member.zone && (
                                                     <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider ml-6">

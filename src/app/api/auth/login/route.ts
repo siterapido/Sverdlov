@@ -72,8 +72,15 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Erro no login:', error);
+
+        // Provide helpful error message in development
+        const isDev = process.env.NODE_ENV === 'development';
+        const errorMessage = isDev && error instanceof Error
+            ? error.message
+            : 'Erro ao fazer login';
+
         return NextResponse.json(
-            { error: 'Erro ao fazer login' },
+            { error: errorMessage },
             { status: 500 }
         );
     }

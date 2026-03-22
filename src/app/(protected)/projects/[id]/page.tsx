@@ -1,10 +1,9 @@
 import React from 'react';
 import { getProjectById } from '@/app/actions/projects';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowLeft, Target, Calendar, CheckSquare, Briefcase, Users, MapPin } from 'lucide-react';
+import { ArrowLeft, Target, Calendar, Briefcase } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { ProjectManagement } from '@/components/projects/ProjectManagement';
+import { TaskKanbanBoard } from '@/components/projects/TaskKanbanBoard';
 import { ProjectMembersSection } from '@/components/projects/ProjectMembersSection';
 import { ProjectNucleiSection } from '@/components/projects/ProjectNucleiSection';
 
@@ -17,12 +16,13 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6">
             <Link href="/projects" className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 mb-8 font-bold uppercase tracking-wider">
                 <ArrowLeft className="w-4 h-4" />
                 Voltar para Projetos
             </Link>
 
+            {/* Project Header */}
             <div className="bg-white border border-zinc-200 shadow-sm p-8 mb-8">
                 <div className="flex justify-between items-start mb-6">
                     <div>
@@ -59,8 +59,18 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Tasks & Goals */}
+            {/* Full-width Kanban Board */}
+            <div className="mb-8">
+                <h2 className="text-xl font-black uppercase tracking-tight mb-4">Tarefas</h2>
+                <TaskKanbanBoard
+                    tasks={project.tasks || []}
+                    projectId={id}
+                    projectMembers={project.members || []}
+                />
+            </div>
+
+            {/* Objectives */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div className="space-y-6">
                     <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
                         <Target className="w-5 h-5 text-zinc-400" />
@@ -79,17 +89,13 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                             {(!project.goals || (project.goals as any[]).length === 0) && (
                                 <p className="text-xs text-zinc-400 italic">Nenhuma meta definida.</p>
                             )}
-                            {/* Goals Rendering Placeholder */}
                         </div>
                     </div>
                 </div>
-
-                {/* Work Schools / Tasks */}
-                <ProjectManagement project={project} />
             </div>
 
             {/* Project Team & Nuclei Sections */}
-            <div className="mt-8 space-y-8">
+            <div className="space-y-8">
                 <ProjectMembersSection
                     projectId={id}
                     members={project.members || []}

@@ -119,7 +119,7 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
     return (
         <div
             className={cn(
-                "flex items-center justify-between p-8 pb-4 border-b border-zinc-100 mb-4",
+                "flex items-center justify-between p-4 pb-3 sm:p-6 sm:pb-4 md:p-8 md:pb-4 border-b border-zinc-100 mb-4",
                 className
             )}
         >
@@ -170,7 +170,7 @@ interface ModalBodyProps {
 }
 
 export function ModalBody({ children, className }: ModalBodyProps) {
-    return <div className={cn("p-10 pt-0", className)}>{children}</div>;
+    return <div className={cn("p-4 pt-0 sm:p-6 md:p-8 lg:p-10", className)}>{children}</div>;
 }
 
 interface ModalFooterProps {
@@ -182,7 +182,7 @@ export function ModalFooter({ children, className }: ModalFooterProps) {
     return (
         <div
             className={cn(
-                "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4 p-8 pt-4 border-t border-zinc-100 bg-zinc-50",
+                "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4 p-4 pt-3 sm:p-6 sm:pt-4 md:p-8 md:pt-4 border-t border-zinc-100 bg-zinc-50",
                 className
             )}
         >

@@ -74,8 +74,26 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
         setProcessing(true);
 
         try {
+            // Serialize rows to ensure all values are plain objects (no Date instances, etc.)
+            const serializedRows = state.spreadsheetData.rows.map(row => {
+                const serialized: Record<string, unknown> = {};
+                for (const [key, value] of Object.entries(row)) {
+                    if (value instanceof Date) {
+                        // Convert Date to ISO string
+                        serialized[key] = value.toISOString();
+                    } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+                        // Convert other objects to JSON string (fallback)
+                        serialized[key] = JSON.stringify(value);
+                    } else {
+                        // Primitive values (string, number, boolean, null) are fine
+                        serialized[key] = value;
+                    }
+                }
+                return serialized;
+            });
+
             const result = await validateImportData(
-                state.spreadsheetData.rows,
+                serializedRows,
                 state.mapping
             );
 
@@ -194,7 +212,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
 
     return (
         <Modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-            <ModalContent size="lg">
+            <ModalContent size="2xl">
                 <ModalHeader>
                     <ModalTitle className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-none bg-success-500/10 flex items-center justify-center">
@@ -206,12 +224,12 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
 
                 <ModalBody>
                     {/* Steps Progress */}
-                    <div className="flex items-center justify-between mb-6 px-4">
+                    <div className="flex items-center justify-between mb-6 px-2 sm:px-4">
                         {IMPORT_STEPS.map((step, index) => (
                             <React.Fragment key={step}>
                                 <div className="flex flex-col items-center">
                                     <div
-                                        className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                                        className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-colors ${
                                             index < currentStepIndex
                                                 ? 'bg-success-500 text-white'
                                                 : index === currentStepIndex
@@ -220,12 +238,12 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                         }`}
                                     >
                                         {index < currentStepIndex ? (
-                                            <Check className="h-4 w-4" />
+                                            <Check className="h-3 w-3 sm:h-4 sm:w-4" />
                                         ) : (
                                             index + 1
                                         )}
                                     </div>
-                                    <span className={`mt-1 text-[10px] uppercase tracking-wider font-semibold ${
+                                    <span className={`mt-1 text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold ${
                                         index <= currentStepIndex ? 'text-fg-primary' : 'text-fg-tertiary'
                                     }`}>
                                         {STEP_LABELS[step]}
@@ -233,7 +251,7 @@ export function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
                                 </div>
                                 {index < IMPORT_STEPS.length - 1 && (
                                     <div
-                                        className={`flex-1 h-0.5 mx-2 ${
+                                        className={`flex-1 h-0.5 mx-1 sm:mx-2 ${
                                             index < currentStepIndex
                                                 ? 'bg-success-500'
                                                 : 'bg-bg-tertiary'

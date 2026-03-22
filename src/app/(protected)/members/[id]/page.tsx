@@ -8,9 +8,10 @@ import { MemberFinancialTab } from "@/components/members/MemberFinancialTab";
 import { MemberOrgTab } from "@/components/members/MemberOrgTab";
 import { MemberProjectsTab } from "@/components/members/MemberProjectsTab";
 import { MemberSchedulesTab } from "@/components/members/MemberSchedulesTab";
+import { MemberAvailabilityTab } from "@/components/members/MemberAvailabilityTab";
 import { PageTransition } from "@/components/ui/page-transition";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ChevronLeft, User, MapPin, Calendar, CreditCard, Shield, Briefcase, Clock } from "lucide-react";
+import { ChevronLeft, User, MapPin, Calendar, CreditCard, Shield, Briefcase, Clock, CalendarDays } from "lucide-react";
 
 export default function MemberProfilePage() {
     const { id } = useParams();
@@ -69,7 +70,7 @@ export default function MemberProfilePage() {
                             </div>
                             <div className="p-6 bg-white">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">LOCALIDADE TÉCNICA</p>
-                                <p className="text-sm font-black uppercase">{member.city} / {member.state}</p>
+                                <p className="text-sm font-black uppercase">{member.city || '-'} / {member.state || '-'}</p>
                             </div>
                         </div>
 
@@ -83,7 +84,11 @@ export default function MemberProfilePage() {
                                 </TabsTrigger>
                                 <TabsTrigger value="escalas" className="flex items-center gap-2">
                                     <Clock className="h-4 w-4" />
-                                    ESCALAS
+                                    TAREFAS
+                                </TabsTrigger>
+                                <TabsTrigger value="disponibilidade" className="flex items-center gap-2">
+                                    <CalendarDays className="h-4 w-4" />
+                                    DISPONIBILIDADE
                                 </TabsTrigger>
                                 <TabsTrigger value="financeiro">FINANCEIRO</TabsTrigger>
                             </TabsList>
@@ -132,13 +137,24 @@ export default function MemberProfilePage() {
                             <TabsContent value="escalas">
                                 <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
                                     <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
-                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Escalas e Turnos</h3>
+                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Tarefas e Escalamentos</h3>
                                     </div>
                                     <div className="p-10">
                                         <MemberSchedulesTab
                                             memberId={member.id}
                                             assignments={member.scheduleAssignments || []}
                                         />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="disponibilidade">
+                                <div className="border-2 border-zinc-900 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <div className="px-8 py-5 border-b-2 border-zinc-900 bg-zinc-900">
+                                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Disponibilidade Semanal</h3>
+                                    </div>
+                                    <div className="p-10">
+                                        <MemberAvailabilityTab memberId={member.id} />
                                     </div>
                                 </div>
                             </TabsContent>

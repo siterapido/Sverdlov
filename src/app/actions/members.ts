@@ -4,30 +4,32 @@ import { db } from "@/lib/db";
 import { members } from "@/lib/db/schema/members";
 import { nuclei } from "@/lib/db/schema/nuclei";
 import { memberSchema, type MemberSchema } from '@/lib/schemas/member';
-import { eq, desc, sql, or } from "drizzle-orm";
+import { eq, desc, or, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auditCreate, auditUpdate, auditDelete, auditImport } from "@/lib/audit";
+import { auditCreate, auditUpdate, auditDelete } from "@/lib/audit";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
+import { canManageMember, buildMemberScopeFilter } from "@/lib/auth/rbac";
 
-async function getCurrentUserId(): Promise<string | undefined> {
-    try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth_token")?.value;
-        if (token) {
-            const user = await verifyToken(token);
-            return user?.userId;
-        }
-    } catch {
-        return undefined;
-    }
-    return undefined;
+async function getCurrentUser() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth_token')?.value;
+    if (!token) return null;
+    return await verifyToken(token);
 }
 
 export async function createMemberAction(data: MemberSchema) {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         // Validate with Zod
         const validated = memberSchema.parse(data);
+
+        // Check jurisdiction
+        if (!canManageMember(user, { state: validated.state, city: validated.city, zone: validated.zone, nucleusId: null })) {
+            return { success: false, error: "Sem permissão para cadastrar filiados nesta região." };
+        }
 
         // Check if CPF or Email already exists
         const [existingMember] = await db.select().from(members).where(or(
@@ -67,8 +69,7 @@ export async function createMemberAction(data: MemberSchema) {
         }).returning();
 
         // Audit log
-        const userId = await getCurrentUserId();
-        await auditCreate(userId, 'members', newMember.id, newMember as Record<string, unknown>);
+        await auditCreate(user.userId, 'members', newMember.id, newMember as Record<string, unknown>);
 
         revalidatePath("/members");
         return { success: true };
@@ -83,6 +84,12 @@ export async function createMemberAction(data: MemberSchema) {
 
 export async function getMembers() {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const scopeFilter = buildMemberScopeFilter(user);
+        if (scopeFilter === null) return { success: true, data: [] };
+
         const result = await db
             .select({
                 id: members.id,
@@ -95,9 +102,12 @@ export async function getMembers() {
                 status: members.status,
                 nucleusName: nuclei.name,
                 createdAt: members.createdAt,
+                email: members.email,
+                phone: members.phone,
             })
             .from(members)
             .leftJoin(nuclei, eq(members.nucleusId, nuclei.id))
+            .where(scopeFilter)
             .orderBy(desc(members.createdAt));
 
         return { success: true, data: result };
@@ -109,6 +119,9 @@ export async function getMembers() {
 
 export async function getMemberById(id: string) {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         const result = await db.query.members.findFirst({
             where: eq(members.id, id),
             with: {
@@ -119,6 +132,11 @@ export async function getMemberById(id: string) {
         });
 
         if (!result) return { success: false, error: "Membro não encontrado" };
+
+        if (!canManageMember(user, result)) {
+            return { success: false, error: "Acesso negado" };
+        }
+
         return { success: true, data: result };
     } catch (error) {
         console.error("Error fetching member by id:", error);
@@ -128,6 +146,16 @@ export async function getMemberById(id: string) {
 
 export async function getPendingMembers() {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
+        const scopeFilter = buildMemberScopeFilter(user);
+        if (scopeFilter === null) return { success: true, data: [] };
+
+        const whereClause = scopeFilter
+            ? and(eq(members.status, 'interested'), scopeFilter)
+            : eq(members.status, 'interested');
+
         const result = await db
             .select({
                 id: members.id,
@@ -141,7 +169,7 @@ export async function getPendingMembers() {
                 createdAt: members.createdAt,
             })
             .from(members)
-            .where(eq(members.status, 'interested'))
+            .where(whereClause)
             .orderBy(desc(members.createdAt));
 
         return { success: true, data: result };
@@ -157,8 +185,16 @@ export async function updateMemberStatus(
     politicalResponsibleId?: string
 ) {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         // Get old values for audit
         const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+        if (!oldMember) return { success: false, error: "Membro não encontrado" };
+
+        if (!canManageMember(user, oldMember)) {
+            return { success: false, error: "Sem permissão para alterar este membro." };
+        }
 
         const updateData: any = {
             status,
@@ -179,9 +215,8 @@ export async function updateMemberStatus(
             .returning();
 
         // Audit log
-        const userId = await getCurrentUserId();
         await auditUpdate(
-            userId,
+            user.userId,
             'members',
             id,
             oldMember as Record<string, unknown>,
@@ -208,8 +243,16 @@ export async function updateMemberOrg(
     }
 ) {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         // Get old values for audit
         const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+        if (!oldMember) return { success: false, error: "Membro não encontrado" };
+
+        if (!canManageMember(user, oldMember)) {
+            return { success: false, error: "Sem permissão para alterar este membro." };
+        }
 
         const [updatedMember] = await db.update(members)
             .set({
@@ -220,9 +263,8 @@ export async function updateMemberOrg(
             .returning();
 
         // Audit log
-        const userId = await getCurrentUserId();
         await auditUpdate(
-            userId,
+            user.userId,
             'members',
             id,
             oldMember as Record<string, unknown>,
@@ -236,132 +278,6 @@ export async function updateMemberOrg(
     } catch (error) {
         console.error("Error updating member organization:", error);
         return { success: false, error: "Erro ao atualizar organização do membro" };
-    }
-}
-
-// Helper to parse dates from various formats (Excel serial, DD/MM/YYYY, ISO)
-function parseImportDate(value: any): string | null {
-    if (!value) return null;
-
-    try {
-        // Excel serial number (approximate)
-        if (typeof value === 'number') {
-            // Excel starts dates from Dec 30 1899
-            const date = new Date((value - 25569) * 86400 * 1000);
-            return date.toISOString().split('T')[0];
-        }
-
-        if (typeof value === 'string') {
-            // DD/MM/YYYY
-            if (value.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
-                const [day, month, year] = value.split('/');
-                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            }
-
-            // Try standard parser
-            const date = new Date(value);
-            if (!isNaN(date.getTime())) {
-                return date.toISOString().split('T')[0];
-            }
-        }
-    } catch (e) {
-        console.error("Date parsing error for value:", value, e);
-        return null;
-    }
-
-    return null;
-}
-
-export async function importMembers(membersList: any[], updateExisting: boolean = false) {
-    try {
-        const results = {
-            imported: 0,
-            updated: 0,
-            skipped: 0,
-            duplicates: [] as any[]
-        };
-
-        for (const m of membersList) {
-            const birthDate = m.dateOfBirth ? parseImportDate(m.dateOfBirth) : null;
-            // CPF is cleaned to digits only
-            const cleanCpf = m.cpf ? String(m.cpf).replace(/\D/g, '') : null;
-            const voterTitle = m.voterTitle ? String(m.voterTitle).trim() : null;
-
-            // Check if member exists
-            let existingMember;
-            const searchConditions = [];
-            if (cleanCpf) searchConditions.push(eq(members.cpf, cleanCpf));
-            if (voterTitle) searchConditions.push(eq(members.voterTitle, voterTitle));
-
-            if (searchConditions.length > 0) {
-                const rows = await db.select().from(members).where(or(...searchConditions)).limit(1);
-                existingMember = rows[0];
-            }
-
-            const memberData: any = {
-                fullName: m.fullName,
-                cpf: cleanCpf || '',
-                voterTitle: voterTitle,
-                email: m.email || '',
-                phone: m.phone ? String(m.phone).replace(/\D/g, '') : '',
-                state: m.state,
-                city: m.city,
-                zone: m.zone ? String(m.zone) : null,
-                neighborhood: m.neighborhood || '',
-                dateOfBirth: birthDate,
-                gender: m.gender || null,
-                affiliationDate: parseImportDate(m.affiliationDate),
-                party: m.party || null,
-                situation: m.situation || null,
-                disaffiliationReason: m.disaffiliationReason || null,
-                communicationPending: m.communicationPending || null,
-                updatedAt: new Date(),
-            };
-
-            if (existingMember) {
-                if (updateExisting) {
-                    await db.update(members)
-                        .set(memberData)
-                        .where(eq(members.id, existingMember.id));
-                    results.updated++;
-                } else {
-                    results.duplicates.push({
-                        ...m,
-                        existingId: existingMember.id,
-                        existingName: existingMember.fullName
-                    });
-                    results.skipped++;
-                }
-            } else {
-                if (!birthDate && !m.fullName) {
-                    // Skip empty rows or rows without minimum data
-                    results.skipped++;
-                    continue;
-                }
-
-                await db.insert(members).values({
-                    ...memberData,
-                    status: 'active', // Imported members are usually active
-                });
-                results.imported++;
-            }
-        }
-
-        // Audit log for import
-        const userId = await getCurrentUserId();
-        await auditImport(userId, 'members', {
-            imported: results.imported,
-            updated: results.updated,
-            skipped: results.skipped,
-            duplicatesCount: results.duplicates.length,
-        });
-
-        revalidatePath("/members");
-        return { success: true, results };
-    } catch (error) {
-        console.error("Error importing members:", error);
-        const msg = error instanceof Error ? error.message : "Erro desconhecido";
-        return { success: false, error: `Erro ao importar: ${msg}` };
     }
 }
 
@@ -413,14 +329,21 @@ export async function checkDuplicates(data: {
 
 export async function deleteMember(id: string) {
     try {
+        const user = await getCurrentUser();
+        if (!user) return { success: false, error: "Não autorizado" };
+
         // Get old values for audit
         const oldMember = await db.query.members.findFirst({ where: eq(members.id, id) });
+        if (!oldMember) return { success: false, error: "Membro não encontrado" };
+
+        if (!canManageMember(user, oldMember)) {
+            return { success: false, error: "Sem permissão para excluir este membro." };
+        }
 
         await db.delete(members).where(eq(members.id, id));
 
         // Audit log
-        const userId = await getCurrentUserId();
-        await auditDelete(userId, 'members', id, oldMember as Record<string, unknown>);
+        await auditDelete(user.userId, 'members', id, oldMember as Record<string, unknown>);
 
         revalidatePath("/members");
         return { success: true };

@@ -231,8 +231,8 @@ export function FinanceDashboard() {
                                 {delinquent.map((member) => (
                                     <tr key={member.id} className="border-b border-gray-200">
                                         <td className="py-3 px-3 font-semibold">{member.fullName}</td>
-                                        <td className="py-3 px-3 text-gray-600">{member.email}</td>
-                                        <td className="py-3 px-3 text-gray-600">{member.phone}</td>
+                                        <td className="py-3 px-3 text-gray-600">{member.email || '-'}</td>
+                                        <td className="py-3 px-3 text-gray-600">{member.phone || '-'}</td>
                                         <td className="py-3 px-3 text-right font-bold text-red-600">{member.daysOverdue}d</td>
                                     </tr>
                                 ))}

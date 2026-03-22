@@ -8,18 +8,18 @@ export const members = pgTable('members', {
     id: uuid('id').defaultRandom().primaryKey(),
     fullName: text('full_name').notNull(),
     socialName: text('social_name'),
-    cpf: text('cpf').notNull().unique(),
+    cpf: text('cpf').unique(),
     voterTitle: text('voter_title').unique(),
-    dateOfBirth: date('date_of_birth').notNull(),
+    dateOfBirth: date('date_of_birth'),
     gender: text('gender'),
-    phone: text('phone').notNull(),
-    email: text('email').notNull(),
+    phone: text('phone'),
+    email: text('email'),
 
     // Territorial
     state: text('state').notNull(),
     city: text('city').notNull(),
     zone: text('zone'),
-    neighborhood: text('neighborhood').notNull(),
+    neighborhood: text('neighborhood'),
     nucleusId: uuid('nucleus_id').references(() => nuclei.id),
 
     // Political

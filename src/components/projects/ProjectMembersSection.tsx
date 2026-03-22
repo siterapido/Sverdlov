@@ -19,7 +19,7 @@ interface ProjectMember {
     member?: {
         id: string;
         fullName: string;
-        email: string;
+        email: string | null;
         militancyLevel: string;
     };
     assignedBy?: {

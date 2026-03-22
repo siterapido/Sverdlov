@@ -59,60 +59,60 @@ export function ImportStepResults({ results, onComplete }: ImportStepResultsProp
             className="space-y-6"
         >
             {/* Success Header */}
-            <div className={`p-8 rounded-none flex flex-col items-center text-center ${
+            <div className={`p-8 flex flex-col items-center text-center border-2 ${
                 hasErrors
-                    ? 'bg-warning-500/10 border border-warning-500/20'
-                    : 'bg-success-500/10 border border-success-500/20'
+                    ? 'bg-zinc-100 border-zinc-900'
+                    : 'bg-primary/5 border-primary'
             }`}>
                 <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                    className={`h-16 w-16 rounded-full flex items-center justify-center mb-4 ${
-                        hasErrors ? 'bg-warning-500/20' : 'bg-success-500/20'
+                    className={`h-16 w-16 flex items-center justify-center mb-4 border-2 ${
+                        hasErrors ? 'bg-white border-zinc-900' : 'bg-primary border-primary'
                     }`}
                 >
                     {hasErrors ? (
-                        <AlertCircle className="h-8 w-8 text-warning-500" />
+                        <AlertCircle className="h-8 w-8 text-zinc-900" />
                     ) : (
-                        <CheckCircle2 className="h-8 w-8 text-success-500" />
+                        <CheckCircle2 className="h-8 w-8 text-white" />
                     )}
                 </motion.div>
-                <h3 className="text-xl font-bold text-fg-primary mb-2">
+                <h3 className="text-xl font-black text-zinc-900 mb-2 uppercase tracking-wide">
                     {hasErrors ? 'Importação Concluída com Avisos' : 'Importação Concluída!'}
                 </h3>
-                <p className="text-sm text-fg-secondary">
+                <p className="text-sm text-zinc-900 font-semibold">
                     {successCount} de {totalProcessed} registros foram processados com sucesso.
                 </p>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-4 gap-3">
-                <div className="p-4 bg-success-500/5 border border-success-500/20 rounded-none text-center">
-                    <Users className="h-5 w-5 mx-auto text-success-500 mb-2" />
-                    <p className="text-2xl font-bold text-success-600">{imported}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-success-600 font-semibold">
+                <div className="p-4 bg-primary/5 border-2 border-primary text-center">
+                    <Users className="h-5 w-5 mx-auto text-primary mb-2" />
+                    <p className="text-2xl font-black text-primary">{imported}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-primary font-black">
                         Importados
                     </p>
                 </div>
-                <div className="p-4 bg-primary-500/5 border border-primary-500/20 rounded-none text-center">
-                    <RefreshCw className="h-5 w-5 mx-auto text-primary-500 mb-2" />
-                    <p className="text-2xl font-bold text-primary-600">{updated}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-primary-600 font-semibold">
+                <div className="p-4 bg-white border-2 border-zinc-900 text-center">
+                    <RefreshCw className="h-5 w-5 mx-auto text-zinc-900 mb-2" />
+                    <p className="text-2xl font-black text-zinc-900">{updated}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-zinc-900 font-black">
                         Atualizados
                     </p>
                 </div>
-                <div className="p-4 bg-bg-tertiary/50 border border-border-subtle rounded-none text-center">
-                    <XCircle className="h-5 w-5 mx-auto text-fg-tertiary mb-2" />
-                    <p className="text-2xl font-bold text-fg-secondary">{skipped}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-fg-tertiary font-semibold">
+                <div className="p-4 bg-zinc-100 border-2 border-zinc-900 text-center">
+                    <XCircle className="h-5 w-5 mx-auto text-zinc-900 mb-2" />
+                    <p className="text-2xl font-black text-zinc-900">{skipped}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-zinc-900 font-black">
                         Ignorados
                     </p>
                 </div>
-                <div className="p-4 bg-danger-500/5 border border-danger-500/20 rounded-none text-center">
-                    <AlertCircle className="h-5 w-5 mx-auto text-danger-500 mb-2" />
-                    <p className="text-2xl font-bold text-danger-600">{errors.length}</p>
-                    <p className="text-[10px] uppercase tracking-wider text-danger-600 font-semibold">
+                <div className="p-4 bg-primary/5 border-2 border-primary text-center">
+                    <AlertCircle className="h-5 w-5 mx-auto text-primary mb-2" />
+                    <p className="text-2xl font-black text-primary">{errors.length}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-primary font-black">
                         Erros
                     </p>
                 </div>
@@ -120,9 +120,9 @@ export function ImportStepResults({ results, onComplete }: ImportStepResultsProp
 
             {/* Errors List */}
             {hasErrors && (
-                <div className="border border-danger-500/20 rounded-none overflow-hidden">
-                    <div className="px-4 py-3 bg-danger-500/10 border-b border-danger-500/20 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-danger-600 flex items-center gap-2">
+                <div className="border-2 border-primary overflow-hidden">
+                    <div className="px-4 py-3 bg-primary/5 border-b-2 border-primary flex items-center justify-between">
+                        <span className="text-sm font-black text-primary flex items-center gap-2 uppercase tracking-wide">
                             <AlertCircle className="h-4 w-4" />
                             Registros com erro ({errors.length})
                         </span>
@@ -130,7 +130,7 @@ export function ImportStepResults({ results, onComplete }: ImportStepResultsProp
                             variant="ghost"
                             size="sm"
                             onClick={downloadErrorsCsv}
-                            className="text-danger-600 hover:bg-danger-500/10"
+                            className="text-primary hover:bg-primary/10 font-bold uppercase tracking-wider"
                         >
                             <Download className="h-4 w-4 mr-2" />
                             Baixar CSV
@@ -138,29 +138,29 @@ export function ImportStepResults({ results, onComplete }: ImportStepResultsProp
                     </div>
                     <div className="max-h-[200px] overflow-y-auto">
                         <table className="w-full text-sm">
-                            <thead className="bg-bg-tertiary/50 sticky top-0">
+                            <thead className="bg-zinc-900 sticky top-0">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                         Linha
                                     </th>
-                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                         Nome
                                     </th>
-                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-bold text-fg-tertiary">
+                                    <th className="px-4 py-2 text-left text-[10px] uppercase tracking-wider font-black text-white">
                                         Motivo
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border-subtle">
+                            <tbody className="divide-y-2 divide-primary">
                                 {errors.map((error, idx) => (
-                                    <tr key={idx} className="bg-danger-500/5">
-                                        <td className="px-4 py-2 text-fg-tertiary">
+                                    <tr key={idx} className="bg-primary/5">
+                                        <td className="px-4 py-2 text-zinc-600 font-semibold">
                                             {error.index + 1}
                                         </td>
-                                        <td className="px-4 py-2 font-medium text-fg-primary">
+                                        <td className="px-4 py-2 font-bold text-zinc-900">
                                             {error.name}
                                         </td>
-                                        <td className="px-4 py-2 text-danger-500">
+                                        <td className="px-4 py-2 text-primary font-semibold">
                                             {error.reason}
                                         </td>
                                     </tr>

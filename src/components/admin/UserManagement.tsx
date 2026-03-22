@@ -8,7 +8,20 @@ import { deleteUser } from '@/app/actions/users';
 import { useToast } from '@/components/ui/toast';
 import { useRouter } from 'next/navigation';
 
-export default function UserManagement({ initialUsers }: { initialUsers: any[] }) {
+interface UserManagementProps {
+    initialUsers: any[];
+    initialCities: any[];
+}
+
+const ROLE_LABELS: Record<string, string> = {
+    ADMIN: 'Admin Geral',
+    STATE_COORD: 'Coord. Estadual',
+    CITY_COORD: 'Coord. Municipal',
+    ZONE_COORD: 'Coord. Zonal',
+    LOCAL_COORD: 'Coord. Local',
+};
+
+export default function UserManagement({ initialUsers, initialCities }: UserManagementProps) {
     const [iscreateModalOpen, setIsCreateModalOpen] = useState(false);
     const { addToast } = useToast();
     const router = useRouter();
@@ -18,7 +31,7 @@ export default function UserManagement({ initialUsers }: { initialUsers: any[] }
         try {
             await deleteUser(id);
             addToast({ title: 'Usuário excluído', type: 'success' });
-            router.refresh(); // Refresh server data
+            router.refresh();
         } catch (e) {
             addToast({ title: 'Erro ao excluir', type: 'error' });
         }
@@ -31,7 +44,6 @@ export default function UserManagement({ initialUsers }: { initialUsers: any[] }
                 <Button onClick={() => setIsCreateModalOpen(true)}>Novo Usuário</Button>
             </CardHeader>
             <CardContent>
-                {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="border-b bg-white dark:bg-white">
@@ -50,15 +62,14 @@ export default function UserManagement({ initialUsers }: { initialUsers: any[] }
                                     <td className="p-4 text-zinc-500">{user.email}</td>
                                     <td className="p-4">
                                         <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary shadow hover:bg-primary/20">
-                                            {user.role}
+                                            {ROLE_LABELS[user.role] || user.role}
                                         </span>
                                     </td>
                                     <td className="p-4 text-zinc-500">
-                                        {user.role === 'STATE_COORD' && `Estado: ${user.scopeState}`}
-                                        {user.role === 'CITY_COORD' && `Cidade: ${user.scopeCity} (${user.scopeState})`}
-                                        {user.role === 'ZONE_COORD' && `Zona: ${user.scopeZone}`}
-                                        {user.role === 'LOCAL_COORD' && `Núcleo ID: ${user.scopeNucleusId?.substring(0, 8)}...`}
-                                        {user.role === 'ADMIN' && 'Global'}
+                                        {user.scopeCity && user.scopeState
+                                            ? `${user.scopeCity} - ${user.scopeState}`
+                                            : user.scopeState || 'Global'}
+                                        {user.scopeZone && ` (Zona: ${user.scopeZone})`}
                                     </td>
                                     <td className="p-4 text-right">
                                         <Button variant="ghost" size="sm" onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20">
@@ -83,6 +94,7 @@ export default function UserManagement({ initialUsers }: { initialUsers: any[] }
                     setIsCreateModalOpen(false);
                     router.refresh();
                 }}
+                cities={initialCities}
             />
         </Card>
     );

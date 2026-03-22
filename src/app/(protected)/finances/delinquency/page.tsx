@@ -174,7 +174,7 @@ export default function DelinquencyPage() {
                             {data.delinquent.map((member) => (
                                 <tr key={member.memberId} className={`border-b border-gray-200 ${member.daysOverdue > 60 ? 'bg-red-50' : member.daysOverdue > 30 ? 'bg-yellow-50' : ''}`}>
                                     <td className="py-3 px-3 font-semibold">{member.fullName}</td>
-                                    <td className="py-3 px-3 text-gray-600">{member.email}</td>
+                                    <td className="py-3 px-3 text-gray-600">{member.email || '-'}</td>
                                     <td className="py-3 px-3 text-right font-bold text-red-600">{member.daysOverdue}d</td>
                                     <td className="py-3 px-3 text-right font-semibold">R$ {member.totalOwed.toFixed(2)}</td>
                                     <td className="py-3 px-3">
@@ -202,21 +202,21 @@ export default function DelinquencyPage() {
                                 <p className="text-sm text-gray-600 mb-2">Email</p>
                                 <div className="flex items-center gap-2">
                                     <Mail className="w-4 h-4 text-gray-600" />
-                                    <p className="font-semibold">{selectedMember.email}</p>
+                                    <p className="font-semibold">{selectedMember.email || '-'}</p>
                                 </div>
                             </div>
                             <div className="border-b-2 border-gray-900 pb-4">
                                 <p className="text-sm text-gray-600 mb-2">Telefone</p>
                                 <div className="flex items-center gap-2">
                                     <Phone className="w-4 h-4 text-gray-600" />
-                                    <p className="font-semibold">{selectedMember.phone}</p>
+                                    <p className="font-semibold">{selectedMember.phone || '-'}</p>
                                 </div>
                             </div>
                             <div className="border-b-2 border-gray-900 pb-4">
                                 <p className="text-sm text-gray-600 mb-2">Localização</p>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-gray-600" />
-                                    <p className="font-semibold">{selectedMember.city}, {selectedMember.state}</p>
+                                    <p className="font-semibold">{selectedMember.city || '-'}, {selectedMember.state || '-'}</p>
                                 </div>
                             </div>
                             <div className="border-b-2 border-gray-900 pb-4">

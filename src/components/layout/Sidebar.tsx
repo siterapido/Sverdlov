@@ -14,7 +14,7 @@ import {
     Calendar,
     MessageSquare,
     X,
-    ClipboardList,
+    CheckSquare,
     LogOut,
     ChevronDown,
     ChevronRight,
@@ -51,7 +51,7 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                 { name: "Pessoas", href: "/members", icon: Users, newHref: "/members/new" },
                 { name: "Núcleos", href: "/members/nucleos", icon: Layers, newHref: "/members/nucleos/new" },
                 { name: "Projetos", href: "/projects", icon: FolderKanban, newHref: "/projects/new" },
-                { name: "Escalas", href: "/escalas", icon: ClipboardList, newHref: "/escalas/nova" },
+                { name: "Tarefas", href: "/tarefas", icon: CheckSquare },
             ],
         },
     ];
@@ -156,47 +156,48 @@ export function Sidebar({ isOpen, isCollapsed, isMobile, toggleSidebar, userRole
                                             );
                                             const hasNewLink = "newHref" in item && item.newHref;
                                             return (
-                                                <li key={item.href}>
-                                                    <Link
-                                                        href={item.href}
-                                                        className={cn(
-                                                            "flex items-center gap-3 rounded-none px-3 py-2 text-[13px] transition-all",
-                                                            isCollapsed && "justify-center px-2",
-                                                            isActive
-                                                                ? "bg-primary text-white font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
-                                                                : "text-muted hover:bg-surface-hover hover:text-zinc-900"
-                                                        )}
-                                                        title={isCollapsed ? item.name : undefined}
-                                                    >
-                                                        <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-muted")} />
+                                                <li key={item.href} className="relative group/item">
+                                                    <div className="flex items-center gap-1">
+                                                        <Link
+                                                            href={item.href}
+                                                            className={cn(
+                                                                "flex items-center gap-3 rounded-none px-3 py-2 text-[13px] transition-all flex-1",
+                                                                isCollapsed && "justify-center px-2",
+                                                                isActive
+                                                                    ? "bg-primary text-white font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
+                                                                    : "text-muted hover:bg-surface-hover hover:text-zinc-900"
+                                                            )}
+                                                            title={isCollapsed ? item.name : undefined}
+                                                        >
+                                                            <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-muted")} />
 
-                                                        {!isCollapsed && (
-                                                            <>
-                                                                <span className="flex-1">{item.name}</span>
-                                                                {hasNewLink && (
-                                                                    <Link
-                                                                        href={item.newHref}
-                                                                        className={cn(
-                                                                            "flex items-center justify-center rounded-none h-5 w-5 text-[13px] transition-all hover:scale-110",
-                                                                            isActive ? "bg-white text-primary" : "bg-primary text-primary-foreground"
-                                                                        )}
-                                                                        title={`Novo ${item.name}`}
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <Plus className="h-3 w-3" />
-                                                                    </Link>
+                                                            {!isCollapsed && (
+                                                                <>
+                                                                    <span className="flex-1">{item.name}</span>
+                                                                    {"badge" in item && typeof item.badge === "number" && item.badge > 0 && (
+                                                                        <span className={cn(
+                                                                            "flex h-4 min-w-4 items-center justify-center rounded-none text-[9px] font-black px-1 shadow-sm",
+                                                                            isActive ? "bg-white text-primary" : "bg-primary text-white"
+                                                                        )}>
+                                                                            {item.badge}
+                                                                        </span>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </Link>
+                                                        {!isCollapsed && hasNewLink && (
+                                                            <Link
+                                                                href={item.newHref}
+                                                                className={cn(
+                                                                    "flex items-center justify-center rounded-none h-8 w-8 text-[13px] transition-all hover:scale-110",
+                                                                    isActive ? "bg-white text-primary" : "bg-primary text-primary-foreground"
                                                                 )}
-                                                                {"badge" in item && typeof item.badge === "number" && item.badge > 0 && (
-                                                                    <span className={cn(
-                                                                        "flex h-4 min-w-4 items-center justify-center rounded-none text-[9px] font-black px-1 shadow-sm",
-                                                                        isActive ? "bg-white text-primary" : "bg-primary text-white"
-                                                                    )}>
-                                                                        {item.badge}
-                                                                    </span>
-                                                                )}
-                                                            </>
+                                                                title={`Novo ${item.name}`}
+                                                            >
+                                                                <Plus className="h-3 w-3" />
+                                                            </Link>
                                                         )}
-                                                    </Link>
+                                                    </div>
                                                 </li>
                                             );
                                         })}

@@ -1,20 +1,27 @@
 import { getUsers } from '@/app/actions/users';
-import UserManagement from '@/components/admin/UserManagement';
+import { getCities } from '@/app/actions/cities';
+import AdminPanel from '@/components/admin/AdminPanel';
 
 export default async function AdminPage() {
-    const usersResult = await getUsers();
+    const [usersResult, citiesResult] = await Promise.all([
+        getUsers(),
+        getCities(),
+    ]);
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
                 <h1 className="text-2xl font-black uppercase tracking-tighter text-black">
-                    Administração de Usuários
+                    Administração
                 </h1>
                 <p className="text-zinc-500 dark:text-zinc-400">
-                    Gerencie coordenadores e permissões de acesso ao sistema.
+                    Gerencie usuários, cidades e permissões de acesso ao sistema.
                 </p>
             </div>
-            <UserManagement initialUsers={usersResult.success ? (usersResult.data || []) : []} />
+            <AdminPanel
+                initialUsers={usersResult.success ? (usersResult.data || []) : []}
+                initialCities={citiesResult.success ? (citiesResult.data || []) : []}
+            />
         </div>
     );
 }

@@ -3,7 +3,7 @@
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema/users';
 import { hashPassword } from '@/lib/auth/password';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { hasRole } from '@/lib/auth/rbac';
 import { cookies } from 'next/headers';
@@ -16,10 +16,30 @@ async function getCurrentUser() {
     return await verifyToken(token);
 }
 
+async function canAccessAdmin() {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) return { allowed: false, user: null };
+
+    // Allow ADMIN and coordinator roles to manage users
+    if (hasRole(currentUser, ['ADMIN', 'STATE_COORD', 'CITY_COORD'])) {
+        return { allowed: true, user: currentUser };
+    }
+
+    // Bootstrap mode: if no ADMIN users exist, allow any authenticated user
+    const adminCount = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(users)
+        .where(eq(users.role, 'ADMIN'));
+
+    if (adminCount[0].count === 0) return { allowed: true, user: currentUser };
+
+    return { allowed: false, user: currentUser };
+}
+
 export async function getUsers() {
     try {
-        const currentUser = await getCurrentUser();
-        if (!hasRole(currentUser, ['ADMIN'])) {
+        const { allowed } = await canAccessAdmin();
+        if (!allowed) {
             throw new Error('Unauthorized');
         }
         const result = await db.select().from(users).orderBy(users.createdAt);
@@ -33,16 +53,16 @@ export async function getUsers() {
 export type CreateUserData = {
     fullName: string;
     email: string;
+    password: string;
     role: "ADMIN" | "STATE_COORD" | "CITY_COORD" | "ZONE_COORD" | "LOCAL_COORD";
     scopeState?: string;
     scopeCity?: string;
     scopeZone?: string;
-    scopeNucleusId?: string;
 };
 
 export async function createUser(data: CreateUserData) {
-    const currentUser = await getCurrentUser();
-    if (!hasRole(currentUser, ['ADMIN'])) {
+    const { allowed } = await canAccessAdmin();
+    if (!allowed) {
         throw new Error('Unauthorized');
     }
 
@@ -52,7 +72,11 @@ export async function createUser(data: CreateUserData) {
         throw new Error('Email already exists');
     }
 
-    const hashedPassword = await hashPassword('12345678'); // Default password
+    if (!data.password || data.password.length < 8) {
+        throw new Error('Password must be at least 8 characters');
+    }
+
+    const hashedPassword = await hashPassword(data.password);
 
     await db.insert(users).values({
         fullName: data.fullName,
@@ -62,7 +86,6 @@ export async function createUser(data: CreateUserData) {
         scopeState: data.scopeState || null,
         scopeCity: data.scopeCity || null,
         scopeZone: data.scopeZone || null,
-        scopeNucleusId: data.scopeNucleusId || null,
     });
 
     revalidatePath('/admin');
@@ -70,8 +93,8 @@ export async function createUser(data: CreateUserData) {
 }
 
 export async function deleteUser(userId: string) {
-    const currentUser = await getCurrentUser();
-    if (!hasRole(currentUser, ['ADMIN'])) {
+    const { allowed } = await canAccessAdmin();
+    if (!allowed) {
         throw new Error('Unauthorized');
     }
     await db.delete(users).where(eq(users.id, userId));

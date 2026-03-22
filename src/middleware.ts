@@ -54,6 +54,10 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('auth_token')?.value;
 
     if (!token) {
+        // Return JSON 401 for API routes instead of redirecting to HTML page
+        if (pathname.startsWith('/api/')) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+        }
         // Redirect to login (home) if no token
         const url = new URL('/', request.url);
         url.searchParams.set('from', pathname);
@@ -63,6 +67,10 @@ export async function middleware(request: NextRequest) {
     const payload = await verifyToken(token);
 
     if (!payload) {
+        // Return JSON 401 for API routes instead of redirecting to HTML page
+        if (pathname.startsWith('/api/')) {
+            return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        }
         // Redirect to login (home) if token is invalid
         const url = new URL('/', request.url);
         return NextResponse.redirect(url);
